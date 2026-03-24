@@ -64,27 +64,25 @@
     align-items: center;
     font-size: 0;
   }
-  #legend .title { color: #8899bb; font-size: 0.92em; font-weight: 700; margin-right: 8px; letter-spacing: 0.5px; }
+  #legend .title { color: #556688; font-size: 0.78em; margin-right: 6px; }
   .legend-item {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    font-size: 0.92em;
-    color: #dde4f0;
+    gap: 5px;
+    font-size: 0.76em;
     cursor: pointer;
-    padding: 4px 10px;
+    padding: 3px 8px;
     border-radius: 12px;
     transition: all 0.2s;
-    opacity: 0.95;
-    font-weight: 500;
+    opacity: 0.9;
   }
-  .legend-item:hover { background: rgba(255,255,255,0.08); opacity: 1; }
+  .legend-item:hover { background: rgba(255,255,255,0.06); opacity: 1; }
   .legend-item.dim { opacity: 0.3; }
   .legend-dot {
-    width: 12px; height: 12px;
+    width: 10px; height: 10px;
     border-radius: 50%;
     display: inline-block;
-    box-shadow: 0 0 6px currentColor;
+    box-shadow: 0 0 4px currentColor;
   }
   .legend-divider {
     width: 1px;
@@ -93,28 +91,24 @@
     margin: 0 6px;
   }
   .legend-index {
-    font-size: 0.82em;
-    color: #ddeeff;
-    font-weight: 700;
-    margin-left: 2px;
-    letter-spacing: 0.5px;
+    font-size: 0.62em;
+    color: #889;
+    font-weight: 600;
+    margin-left: -2px;
+    letter-spacing: 0.3px;
     font-family: 'Segoe UI', monospace;
     white-space: nowrap;
-    text-shadow: 0 0 8px rgba(100,180,255,0.35);
   }
   #update-timestamp {
-    font-size: 0.88em;
-    color: #00ffaa;
-    font-weight: 600;
+    font-size: 0.72em;
+    color: #00dd88;
     font-family: 'Segoe UI', monospace;
     margin-left: auto;
-    padding: 5px 14px;
-    background: rgba(0,255,170,0.1);
-    border: 1px solid rgba(0,255,170,0.35);
+    padding: 3px 10px;
+    background: rgba(0,221,136,0.08);
+    border: 1px solid rgba(0,221,136,0.2);
     border-radius: 10px;
     white-space: nowrap;
-    letter-spacing: 0.5px;
-    text-shadow: 0 0 10px rgba(0,255,170,0.4);
     animation: pulse-ts 2s infinite;
   }
   @keyframes pulse-ts {
@@ -148,7 +142,7 @@
     padding: 14px 16px;
   }
   .sidebar-section h3 {
-    font-size: 0.88em;
+    font-size: 0.78rem;
     color: #8899bb;
     margin-bottom: 10px;
     display: flex;
@@ -231,7 +225,7 @@
     border-radius: 8px;
     padding: 10px 12px;
     margin-bottom: 6px;
-    font-size: 0.82em;
+    font-size: 0.72rem;
     border-left: 2px solid rgba(255,100,100,0.3);
   }
   .econ-impact .label { color: #556677; font-size: 0.78em; }
@@ -436,7 +430,7 @@
   .stock-index-card.idx-down { border-left-color: #4488ff; }
   .stock-index-card.idx-flat { border-left-color: #88aa88; }
   .stock-header { display: flex; justify-content: space-between; align-items: baseline; }
-  .stock-name { font-weight: 700; font-size: 0.92em; color: #eef; }
+  .stock-name { font-weight: 700; font-size: 0.82rem; color: #eef; }
   .stock-price { font-size: 1.15em; font-weight: 700; }
   .stock-price.up { color: #ff5566; }
   .stock-price.down { color: #4499ff; }
