@@ -1,0 +1,2039 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌍 Global Conflict & Disaster Monitor - 2026년 3월</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #060a14;
+    color: #e0e0e0;
+    overflow-x: hidden;
+  }
+  #header {
+    background: linear-gradient(135deg, #0f1428 0%, #1a1f38 50%, #0d1225 100%);
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(100,140,255,0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+  }
+  #header h1 {
+    font-size: 1.4em;
+    color: #fff;
+    letter-spacing: 1.5px;
+    font-weight: 300;
+  }
+  #header h1 .accent1 { color: #ff5555; font-weight: 700; }
+  #header h1 .accent2 { color: #ffaa33; font-weight: 700; }
+  #header .date {
+    color: #667799;
+    font-size: 0.85em;
+  }
+  #tabs {
+    display: flex;
+    background: #0a0f1e;
+    border-bottom: 1px solid rgba(100,140,255,0.1);
+  }
+  .tab-btn {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    color: #556688;
+    cursor: pointer;
+    font-size: 0.85em;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s;
+    font-family: inherit;
+  }
+  .tab-btn:hover { color: #aabbdd; }
+  .tab-btn.active { color: #fff; border-bottom-color: #ff5555; }
+  .tab-btn.active-disaster { color: #fff; border-bottom-color: #ffaa33; }
+  .tab-btn.active-commodity { color: #fff; border-bottom-color: #44ddaa; }
+  #legend {
+    display: flex;
+    gap: 8px;
+    padding: 8px 24px;
+    background: #0b1020;
+    border-bottom: 1px solid rgba(100,140,255,0.08);
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: 0;
+  }
+  #legend .title { color: #556688; font-size: 0.78em; margin-right: 6px; }
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.76em;
+    cursor: pointer;
+    padding: 3px 8px;
+    border-radius: 12px;
+    transition: all 0.2s;
+    opacity: 0.9;
+  }
+  .legend-item:hover { background: rgba(255,255,255,0.06); opacity: 1; }
+  .legend-item.dim { opacity: 0.3; }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 4px currentColor;
+  }
+  .legend-divider {
+    width: 1px;
+    height: 16px;
+    background: rgba(100,140,255,0.15);
+    margin: 0 6px;
+  }
+  .legend-index {
+    font-size: 0.62em;
+    color: #889;
+    font-weight: 600;
+    margin-left: -2px;
+    letter-spacing: 0.3px;
+    font-family: 'Segoe UI', monospace;
+    white-space: nowrap;
+  }
+  #update-timestamp {
+    font-size: 0.72em;
+    color: #00dd88;
+    font-family: 'Segoe UI', monospace;
+    margin-left: auto;
+    padding: 3px 10px;
+    background: rgba(0,221,136,0.08);
+    border: 1px solid rgba(0,221,136,0.2);
+    border-radius: 10px;
+    white-space: nowrap;
+    animation: pulse-ts 2s infinite;
+  }
+  @keyframes pulse-ts {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.65; }
+  }
+  #main {
+    display: flex;
+    height: calc(100vh - 110px);
+  }
+  #globe-container {
+    flex: 1;
+    position: relative;
+    min-height: 500px;
+    overflow: hidden;
+  }
+  #canvas { width: 100%; height: 100%; display: block; cursor: grab; }
+  #canvas:active { cursor: grabbing; }
+  #sidebar {
+    width: 400px;
+    background: #0b1020;
+    border-left: 1px solid rgba(100,140,255,0.1);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-track { background: transparent; }
+  #sidebar::-webkit-scrollbar-thumb { background: rgba(100,140,255,0.2); border-radius: 4px; }
+  .sidebar-section {
+    border-bottom: 1px solid rgba(100,140,255,0.06);
+    padding: 14px 16px;
+  }
+  .sidebar-section h3 {
+    font-size: 0.88em;
+    color: #8899bb;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .conflict-card, .disaster-card {
+    background: rgba(20,28,55,0.6);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.25s;
+    border-left: 3px solid transparent;
+    backdrop-filter: blur(5px);
+  }
+  .conflict-card:hover, .disaster-card:hover {
+    background: rgba(30,40,75,0.8);
+    transform: translateX(3px);
+  }
+  .conflict-card.war { border-left-color: #ff2020; }
+  .conflict-card.confrontation { border-left-color: #ff6600; }
+  .conflict-card.tension { border-left-color: #ffcc00; }
+  .conflict-card.caution { border-left-color: #00aaff; }
+  .conflict-card.protest { border-left-color: #cc44ff; }
+  .conflict-card.peace { border-left-color: #00dd66; }
+  .disaster-card.flood { border-left-color: #00bbff; }
+  .disaster-card.earthquake { border-left-color: #ff8800; }
+  .disaster-card.drought { border-left-color: #cc8833; }
+  .disaster-card.snow { border-left-color: #aaccff; }
+  .disaster-card.fire { border-left-color: #ff3300; }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  .card-title {
+    font-weight: 700;
+    font-size: 0.9em;
+    color: #eef;
+  }
+  .card-badge {
+    font-size: 0.68em;
+    padding: 2px 7px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .badge-war { background: rgba(255,32,32,0.2); color: #ff4444; }
+  .badge-confrontation { background: rgba(255,102,0,0.2); color: #ff8833; }
+  .badge-tension { background: rgba(255,204,0,0.2); color: #ffdd33; }
+  .badge-caution { background: rgba(0,170,255,0.2); color: #33bbff; }
+  .badge-protest { background: rgba(204,68,255,0.2); color: #dd66ff; }
+  .badge-peace { background: rgba(0,221,102,0.2); color: #33ee88; }
+  .badge-flood { background: rgba(0,187,255,0.2); color: #44ccff; }
+  .badge-earthquake { background: rgba(255,136,0,0.2); color: #ffaa33; }
+  .badge-drought { background: rgba(204,136,51,0.2); color: #ddaa55; }
+  .badge-snow { background: rgba(170,204,255,0.2); color: #bbddff; }
+  .badge-fire { background: rgba(255,51,0,0.2); color: #ff5533; }
+  .card-desc {
+    font-size: 0.78em;
+    color: #778899;
+    line-height: 1.55;
+    margin-top: 3px;
+  }
+  .card-stats {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+    font-size: 0.72em;
+  }
+  .stat { color: #556677; }
+  .stat strong { color: #99aabb; }
+  .econ-impact {
+    background: rgba(20,28,55,0.6);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    font-size: 0.82em;
+    border-left: 2px solid rgba(255,100,100,0.3);
+  }
+  .econ-impact .label { color: #556677; font-size: 0.78em; }
+  .econ-impact .value { color: #ff6b6b; font-size: 1.15em; font-weight: 700; margin-top: 2px; }
+  .econ-impact .detail { color: #667788; font-size: 0.78em; margin-top: 3px; }
+  #tooltip {
+    position: fixed;
+    background: rgba(10,15,30,0.96);
+    border: 1px solid rgba(100,140,255,0.2);
+    border-radius: 10px;
+    padding: 14px 18px;
+    pointer-events: none;
+    display: none;
+    z-index: 1000;
+    max-width: 320px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  }
+  #tooltip .tt-title { font-weight: 700; color: #fff; margin-bottom: 4px; font-size: 0.95em; }
+  #tooltip .tt-type { font-size: 0.72em; margin-bottom: 4px; }
+  #tooltip .tt-desc { font-size: 0.8em; color: #8899aa; line-height: 1.4; }
+  #controls {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    display: flex;
+    gap: 6px;
+    z-index: 10;
+    flex-wrap: wrap;
+  }
+  .ctrl-btn {
+    background: rgba(10,18,40,0.85);
+    border: 1px solid rgba(100,140,255,0.15);
+    color: #8899bb;
+    padding: 7px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.78em;
+    transition: all 0.2s;
+    backdrop-filter: blur(10px);
+    font-family: inherit;
+  }
+  .ctrl-btn:hover { background: rgba(30,45,80,0.9); color: #ccd; border-color: rgba(100,140,255,0.3); }
+  .ctrl-btn.active { background: rgba(255,80,80,0.2); color: #ff6b6b; border-color: rgba(255,80,80,0.4); }
+  #info-panel {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: rgba(10,18,40,0.85);
+    border: 1px solid rgba(100,140,255,0.12);
+    border-radius: 10px;
+    padding: 12px 16px;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+    font-size: 0.78em;
+    color: #8899bb;
+    max-width: 200px;
+  }
+  #info-panel .count { font-size: 1.8em; font-weight: 700; color: #fff; }
+  #info-panel .count .c-red { color: #ff4444; }
+  #info-panel .count .c-orange { color: #ffaa33; }
+  #zoom-info {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(10,18,40,0.7);
+    border: 1px solid rgba(100,140,255,0.1);
+    border-radius: 8px;
+    padding: 6px 10px;
+    z-index: 10;
+    font-size: 0.72em;
+    color: #556688;
+  }
+  #loading-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #4488cc;
+    font-size: 0.9em;
+    z-index: 20;
+    text-align: center;
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+  #loading-indicator.hidden { opacity: 0; }
+  .loading-spinner {
+    width: 30px; height: 30px;
+    border: 3px solid rgba(68,136,204,0.2);
+    border-top-color: #4488cc;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  /* COMMODITY STYLES */
+  .commodity-card {
+    background: rgba(20,28,55,0.6);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border-left: 3px solid rgba(68,221,170,0.5);
+    transition: all 0.25s;
+  }
+  .commodity-card:hover { background: rgba(30,40,75,0.8); }
+  .commodity-card.up { border-left-color: #ff4455; }
+  .commodity-card.down { border-left-color: #44aaff; }
+  .commodity-card.stable { border-left-color: #88aa88; }
+  .comm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .comm-name { font-weight: 700; font-size: 0.88em; color: #eef; }
+  .comm-price { font-size: 1.05em; font-weight: 700; }
+  .comm-price.up { color: #ff5566; }
+  .comm-price.down { color: #44aaff; }
+  .comm-price.stable { color: #99bb99; }
+  .comm-change {
+    font-size: 0.72em;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 6px;
+    margin-left: 6px;
+  }
+  .comm-change.up { background: rgba(255,68,85,0.15); color: #ff5566; }
+  .comm-change.down { background: rgba(68,170,255,0.15); color: #44aaff; }
+  .comm-change.stable { background: rgba(136,170,136,0.15); color: #99bb99; }
+  .comm-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 6px;
+    height: 14px;
+  }
+  .comm-bar-label { font-size: 0.62em; color: #556677; min-width: 30px; }
+  .comm-bar-bg {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .comm-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s;
+  }
+  .comm-detail {
+    font-size: 0.76em;
+    color: #667788;
+    line-height: 1.45;
+    margin-top: 5px;
+  }
+  .comm-impact {
+    font-size: 0.72em;
+    color: #889;
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(100,140,255,0.06);
+  }
+  .comm-impact strong { color: #aabbcc; }
+  .comm-category-title {
+    font-size: 0.78em;
+    color: #44ddaa;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(68,221,170,0.15);
+  }
+  .comm-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .comm-summary-item {
+    background: rgba(20,28,55,0.5);
+    border-radius: 6px;
+    padding: 8px 10px;
+    text-align: center;
+  }
+  .comm-summary-item .s-label { font-size: 0.68em; color: #556677; }
+  .comm-summary-item .s-value { font-size: 1.0em; font-weight: 700; margin-top: 2px; }
+  .comm-summary-item .s-sub { font-size: 0.62em; margin-top: 1px; }
+  /* US STOCK MARKET STYLES */
+  .tab-btn.active-usstock { color: #fff; border-bottom-color: #6699ff; }
+  .stock-index-card {
+    background: rgba(20,28,55,0.6);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border-left: 3px solid rgba(102,153,255,0.5);
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+  .stock-index-card:hover { background: rgba(30,40,75,0.8); transform: translateX(3px); }
+  .stock-index-card.idx-up { border-left-color: #ff4455; }
+  .stock-index-card.idx-down { border-left-color: #4488ff; }
+  .stock-index-card.idx-flat { border-left-color: #88aa88; }
+  .stock-header { display: flex; justify-content: space-between; align-items: baseline; }
+  .stock-name { font-weight: 700; font-size: 0.92em; color: #eef; }
+  .stock-price { font-size: 1.15em; font-weight: 700; }
+  .stock-price.up { color: #ff5566; }
+  .stock-price.down { color: #4499ff; }
+  .stock-price.flat { color: #99bb99; }
+  .stock-change-row { display: flex; gap: 8px; align-items: center; margin-top: 5px; }
+  .stock-change {
+    font-size: 0.76em; font-weight: 600;
+    padding: 2px 8px; border-radius: 6px;
+  }
+  .stock-change.up { background: rgba(255,68,85,0.15); color: #ff5566; }
+  .stock-change.down { background: rgba(68,136,255,0.15); color: #4499ff; }
+  .stock-change.flat { background: rgba(136,170,136,0.15); color: #99bb99; }
+  .stock-period-tabs {
+    display: flex; gap: 4px; margin-top: 10px;
+  }
+  .stock-period-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(100,140,255,0.12);
+    color: #667;
+    padding: 4px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.72em;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .stock-period-btn:hover { background: rgba(100,140,255,0.1); color: #aab; }
+  .stock-period-btn.active { background: rgba(102,153,255,0.2); color: #6699ff; border-color: rgba(102,153,255,0.4); }
+  .stock-detail-panel {
+    margin-top: 8px;
+    padding: 10px 12px;
+    background: rgba(15,22,45,0.5);
+    border-radius: 8px;
+    font-size: 0.78em;
+    color: #8899aa;
+    line-height: 1.55;
+    display: none;
+  }
+  .stock-detail-panel.open { display: block; }
+  .stock-detail-row {
+    display: flex; justify-content: space-between;
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(100,140,255,0.05);
+  }
+  .stock-detail-row:last-child { border-bottom: none; }
+  .stock-detail-label { color: #556677; }
+  .stock-detail-value { font-weight: 600; }
+  .stock-mini-chart {
+    height: 40px;
+    margin-top: 8px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+  }
+  .stock-mini-chart canvas { width: 100%; height: 100%; }
+  .stock-timestamp {
+    font-size: 0.68em;
+    color: #445566;
+    margin-top: 6px;
+    text-align: right;
+  }
+  .stock-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .stock-summary-item {
+    background: rgba(20,28,55,0.5);
+    border-radius: 6px;
+    padding: 8px 10px;
+    text-align: center;
+  }
+  .stock-summary-item .s-label { font-size: 0.68em; color: #556677; }
+  .stock-summary-item .s-value { font-size: 1.0em; font-weight: 700; margin-top: 2px; }
+  .stock-summary-item .s-sub { font-size: 0.62em; margin-top: 1px; }
+  @media (max-width: 900px) {
+    #main { flex-direction: column; height: auto; }
+    #sidebar { width: 100%; }
+    #globe-container { min-height: 450px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <h1>🌍 Global <span class="accent1">Conflict</span> & <span class="accent2">Disaster</span> Monitor</h1>
+  <div class="date">2026.03.24 기준 | 분쟁 20개 · 자연재해 15개 추적중</div>
+</div>
+
+<div id="tabs">
+  <button class="tab-btn active" onclick="setView('all')">🌐 전체보기</button>
+  <button class="tab-btn" onclick="setView('conflict')">⚔️ 분쟁지역</button>
+  <button class="tab-btn" onclick="setView('disaster')">🌊 자연재해</button>
+  <button class="tab-btn" onclick="setView('commodity')">📈 원자재</button>
+  <button class="tab-btn" onclick="setView('usstock')">🇺🇸 미국증시</button>
+</div>
+
+<div id="legend">
+  <span class="title">분쟁:</span>
+  <div class="legend-item" onclick="filterByLevel('war')"><span class="legend-dot" style="background:#ff2020;color:#ff2020"></span> 전쟁 <span class="legend-index">Lv.5</span></div>
+  <div class="legend-item" onclick="filterByLevel('confrontation')"><span class="legend-dot" style="background:#ff6600;color:#ff6600"></span> 대치 <span class="legend-index">Lv.4</span></div>
+  <div class="legend-item" onclick="filterByLevel('tension')"><span class="legend-dot" style="background:#ffcc00;color:#ffcc00"></span> 긴장 <span class="legend-index">Lv.3</span></div>
+  <div class="legend-item" onclick="filterByLevel('caution')"><span class="legend-dot" style="background:#00aaff;color:#00aaff"></span> 주의 <span class="legend-index">Lv.2</span></div>
+  <div class="legend-item" onclick="filterByLevel('protest')"><span class="legend-dot" style="background:#cc44ff;color:#cc44ff"></span> 시위 <span class="legend-index">Lv.1</span></div>
+  <div class="legend-divider"></div>
+  <span class="title">재해:</span>
+  <div class="legend-item" onclick="filterByLevel('flood')"><span class="legend-dot" style="background:#00bbff;color:#00bbff"></span> 홍수 <span class="legend-index">FLOOD</span></div>
+  <div class="legend-item" onclick="filterByLevel('earthquake')"><span class="legend-dot" style="background:#ff8800;color:#ff8800"></span> 지진 <span class="legend-index">QUAKE</span></div>
+  <div class="legend-item" onclick="filterByLevel('drought')"><span class="legend-dot" style="background:#cc8833;color:#cc8833"></span> 가뭄 <span class="legend-index">DROUGHT</span></div>
+  <div class="legend-item" onclick="filterByLevel('snow')"><span class="legend-dot" style="background:#aaccff;color:#aaccff"></span> 폭설 <span class="legend-index">SNOW</span></div>
+  <div class="legend-item" onclick="filterByLevel('fire')"><span class="legend-dot" style="background:#ff3300;color:#ff3300"></span> 화재 <span class="legend-index">FIRE</span></div>
+  <div class="legend-divider"></div>
+  <div class="legend-item" onclick="filterByLevel('all')" style="color:#aab;font-weight:600;">전체</div>
+  <span id="update-timestamp"></span>
+</div>
+
+<div id="main">
+  <div id="globe-container">
+    <canvas id="canvas"></canvas>
+    <div id="loading-indicator"><div class="loading-spinner"></div>지도 데이터 로딩중...</div>
+    <div id="info-panel">
+      <div style="margin-bottom:6px;">활성 모니터링</div>
+      <div class="count"><span class="c-red">20</span> + <span class="c-orange">15</span></div>
+      <div style="margin-top:4px;">분쟁 · 재해</div>
+    </div>
+    <div id="zoom-info">마우스 드래그: 회전 | 스크롤: 줌</div>
+    <div id="controls">
+      <button class="ctrl-btn active" onclick="toggleAutoRotate()">⟳ 자동회전</button>
+      <button class="ctrl-btn" onclick="resetView()">⌂ 초기화</button>
+      <button class="ctrl-btn" onclick="focusRegion('middleeast')">중동</button>
+      <button class="ctrl-btn" onclick="focusRegion('europe')">유럽</button>
+      <button class="ctrl-btn" onclick="focusRegion('africa')">아프리카</button>
+      <button class="ctrl-btn" onclick="focusRegion('asia')">아시아</button>
+      <button class="ctrl-btn" onclick="focusRegion('americas')">아메리카</button>
+      <button class="ctrl-btn" onclick="focusRegion('oceania')">오세아니아</button>
+    </div>
+  </div>
+
+  <div id="sidebar">
+    <!-- CONFLICT SIDEBAR -->
+    <div id="sidebar-conflict">
+      <div class="sidebar-section">
+        <h3>📊 경제 파급효과 핵심 지표</h3>
+        <div class="econ-impact">
+          <div class="label">브렌트유 가격</div>
+          <div class="value">$126/배럴 <span style="font-size:0.55em;color:#ff4444">▲ +57%</span></div>
+          <div class="detail">호르무즈 해협 봉쇄로 글로벌 석유공급 20% 차단</div>
+        </div>
+        <div class="econ-impact">
+          <div class="label">글로벌 GDP 영향</div>
+          <div class="value">-2.9%p <span style="font-size:0.55em;color:#ff4444">Q2 2026 연율</span></div>
+          <div class="detail">역사상 최대 규모의 석유 공급 차질</div>
+        </div>
+        <div class="econ-impact">
+          <div class="label">미국 소비자물가 전망</div>
+          <div class="value">3.0% <span style="font-size:0.55em;color:#ff4444">▲ +0.6%p</span></div>
+          <div class="detail">골드만삭스 연말 전망치 (1월 2.4% → 3.0%)</div>
+        </div>
+        <div class="econ-impact">
+          <div class="label">GCC 식량수입 차질</div>
+          <div class="value">70% <span style="font-size:0.55em;color:#ff4444">차단</span></div>
+          <div class="detail">걸프 국가 칼로리 섭취의 80% 해상 의존</div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>🔴 전쟁 (War)</h3>
+        <div class="conflict-card war" onclick="focusConflict(32.0,53.0)">
+          <div class="card-header"><span class="card-title">🇮🇷 이란 전쟁</span><span class="card-badge badge-war">전쟁</span></div>
+          <div class="card-desc">미국·이스라엘의 이란 공습(2/28) → 하메네이 사망 → 이란 보복 미사일 수백 발. 호르무즈 해협 봉쇄(3/4)로 글로벌 에너지 위기</div>
+          <div class="card-stats"><span class="stat">유형: <strong>국제전쟁</strong></span><span class="stat">개시: <strong>2026.2.28</strong></span></div>
+        </div>
+        <div class="conflict-card war" onclick="focusConflict(33.8,35.8)">
+          <div class="card-header"><span class="card-title">🇱🇧 레바논 전쟁</span><span class="card-badge badge-war">전쟁</span></div>
+          <div class="card-desc">3/2 헤즈볼라 이스라엘 공격으로 휴전 붕괴. 사망자 1,039명, 100만 명 실향(인구 19%)</div>
+          <div class="card-stats"><span class="stat">사망: <strong>1,039+</strong></span><span class="stat">실향: <strong>100만+</strong></span></div>
+        </div>
+        <div class="conflict-card war" onclick="focusConflict(48.5,35.0)">
+          <div class="card-header"><span class="card-title">🇺🇦 러시아-우크라이나</span><span class="card-badge badge-war">전쟁</span></div>
+          <div class="card-desc">러시아 춘계 대공세 개시. 러시아 사상자 100만 명, 우크라이나 25~30만 명. 영토 20% 점령</div>
+          <div class="card-stats"><span class="stat">기간: <strong>4년차</strong></span><span class="stat">에너지: <strong>2/3 파괴</strong></span></div>
+        </div>
+        <div class="conflict-card war" onclick="focusConflict(15.5,32.5)">
+          <div class="card-header"><span class="card-title">🇸🇩 수단 내전</span><span class="card-badge badge-war">전쟁</span></div>
+          <div class="card-desc">SAF vs RSF 내전 지속. RSF 민간인 4,471명 사망. 코르도판 전투 격화</div>
+          <div class="card-stats"><span class="stat">사망: <strong>20,373+</strong></span><span class="stat">유형: <strong>내전</strong></span></div>
+        </div>
+        <div class="conflict-card war" onclick="focusConflict(31.5,34.5)">
+          <div class="card-header"><span class="card-title">🇵🇸 가자지구</span><span class="card-badge badge-war">전쟁</span></div>
+          <div class="card-desc">이스라엘-하마스 교전 지속. 21,417명 사망. 인도적 위기 심화</div>
+          <div class="card-stats"><span class="stat">사망: <strong>21,417+</strong></span></div>
+        </div>
+        <div class="conflict-card war" onclick="focusConflict(19.7,96.2)">
+          <div class="card-header"><span class="card-title">🇲🇲 미얀마 내전</span><span class="card-badge badge-war">전쟁</span></div>
+          <div class="card-desc">군부 vs 반군 내전 5년차. 중국 군부 지원으로 정세 역전</div>
+          <div class="card-stats"><span class="stat">기간: <strong>5년차</strong></span></div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>🟠 대치 (Confrontation)</h3>
+        <div class="conflict-card confrontation" onclick="focusConflict(9.0,7.5)">
+          <div class="card-header"><span class="card-title">🇳🇬 나이지리아</span><span class="card-badge badge-confrontation">대치</span></div>
+          <div class="card-desc">풀라니 무장세력 기독교 공동체 공격. 벤웨주 옐와타 학살(258명 사망)</div>
+        </div>
+        <div class="conflict-card confrontation" onclick="focusConflict(9.0,38.7)">
+          <div class="card-header"><span class="card-title">🇪🇹/🇪🇷 에티오피아-에리트레아</span><span class="card-badge badge-confrontation">대치</span></div>
+          <div class="card-desc">"지역 초대형 전쟁" 경고. 수단 내전과 연쇄 효과로 아프리카의 뿔 전역 위험</div>
+        </div>
+        <div class="conflict-card confrontation" onclick="focusConflict(15.5,48.5)">
+          <div class="card-header"><span class="card-title">🇾🇪 예멘</span><span class="card-badge badge-confrontation">대치</span></div>
+          <div class="card-desc">후티 반군 홍해 선박 공격 지속. 이란 전쟁과 연계된 지역 불안정</div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>🟡 긴장 (Tension)</h3>
+        <div class="conflict-card tension" onclick="focusConflict(23.5,121.0)">
+          <div class="card-header"><span class="card-title">🇹🇼 대만해협</span><span class="card-badge badge-tension">긴장</span></div>
+          <div class="card-desc">중국 해상봉쇄 시뮬레이션 훈련. 2026 최대 지정학적 위험 1위</div>
+        </div>
+        <div class="conflict-card tension" onclick="focusConflict(12.0,115.0)">
+          <div class="card-header"><span class="card-title">🇨🇳🇵🇭 남중국해</span><span class="card-badge badge-tension">긴장</span></div>
+          <div class="card-desc">중국 해경 필리핀 어선 물대포 공격. 미-필 500건+ 합동훈련 예정</div>
+        </div>
+        <div class="conflict-card tension" onclick="focusConflict(38.5,127.0)">
+          <div class="card-header"><span class="card-title">🇰🇵 한반도</span><span class="card-badge badge-tension">긴장</span></div>
+          <div class="card-desc">북한 잠수함 시설 방문, 한미 핵추진 잠수함 사업 비난</div>
+        </div>
+        <div class="conflict-card tension" onclick="focusConflict(30.0,130.0)">
+          <div class="card-header"><span class="card-title">🇯🇵🇨🇳 중일 외교위기</span><span class="card-badge badge-tension">긴장</span></div>
+          <div class="card-desc">일본 총리 대만 유사시 개입 발언으로 수개월간 외교 마찰</div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>🔵 주의 · 🟣 시위</h3>
+        <div class="conflict-card caution" onclick="focusConflict(4.5,-74.0)">
+          <div class="card-header"><span class="card-title">🇨🇴 콜롬비아</span><span class="card-badge badge-caution">주의</span></div>
+          <div class="card-desc">무장단체-정부군 충돌 72% 증가. 드론 사용 4배 급증</div>
+        </div>
+        <div class="conflict-card caution" onclick="focusConflict(18.9,-72.3)">
+          <div class="card-header"><span class="card-title">🇭🇹 아이티</span><span class="card-badge badge-caution">주의</span></div>
+          <div class="card-desc">갱단 포르토프랭스 장악. 경제·치안·인도적 위기 심화</div>
+        </div>
+        <div class="conflict-card caution" onclick="focusConflict(10.5,-67.0)">
+          <div class="card-header"><span class="card-title">🇻🇪 베네수엘라</span><span class="card-badge badge-caution">주의</span></div>
+          <div class="card-desc">미국 마약 소탕 공습 30건+, 114명 사망</div>
+        </div>
+        <div class="conflict-card protest" onclick="focusConflict(-4.0,22.0)">
+          <div class="card-header"><span class="card-title">🇨🇩 콩고민주공화국</span><span class="card-badge badge-protest">시위</span></div>
+          <div class="card-desc">동부 무장세력 활동. 종교·민족 갈등 민간인 피해</div>
+        </div>
+        <div class="conflict-card protest" onclick="focusConflict(12.0,-1.5)">
+          <div class="card-header"><span class="card-title">🇧🇫 부르키나파소</span><span class="card-badge badge-protest">시위</span></div>
+          <div class="card-desc">이슬람 무장세력 지속 공격. 종교 소수자 대상 폭력 확산</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISASTER SIDEBAR -->
+    <div id="sidebar-disaster">
+      <div class="sidebar-section">
+        <h3>📊 자연재해 경제 영향 (2026 Q1)</h3>
+        <div class="econ-impact" style="border-left-color:rgba(255,160,50,0.4);">
+          <div class="label">2025 글로벌 재해 피해액</div>
+          <div class="value" style="color:#ffaa33;">$2,200억+ <span style="font-size:0.55em;color:#ff8833">역대 최고 수준</span></div>
+          <div class="detail">기후변화로 재해 빈도·강도 모두 증가 추세</div>
+        </div>
+        <div class="econ-impact" style="border-left-color:rgba(255,160,50,0.4);">
+          <div class="label">LA 산불 보험 손실 (2025.1)</div>
+          <div class="value" style="color:#ffaa33;">$450억 <span style="font-size:0.55em;color:#ff8833">총 피해 $760~1,310억</span></div>
+          <div class="detail">미국 역사상 최대 산불 피해 (구조물 16,000+ 파괴)</div>
+        </div>
+        <div class="econ-impact" style="border-left-color:rgba(255,160,50,0.4);">
+          <div class="label">글로벌 평균기온 (2026 전망)</div>
+          <div class="value" style="color:#ffaa33;">+1.46°C <span style="font-size:0.55em;color:#ff8833">산업화 이전 대비</span></div>
+          <div class="detail">1.5°C 임계선까지 0.04°C — 영국 기상청 전망</div>
+        </div>
+        <div class="econ-impact" style="border-left-color:rgba(255,160,50,0.4);">
+          <div class="label">동아프리카 식량 위기</div>
+          <div class="value" style="color:#ffaa33;">1,740만명 <span style="font-size:0.55em;color:#ff8833">급성 식량 불안정</span></div>
+          <div class="detail">아프가니스탄 인구 1/3 이상 식량 위기 직면</div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>🌊 홍수 (Flood)</h3>
+        <div class="disaster-card flood" onclick="focusConflict(-1.3,36.8)">
+          <div class="card-header"><span class="card-title">🇰🇪 케냐 대홍수</span><span class="card-badge badge-flood">홍수</span></div>
+          <div class="card-desc">3월 초 나이로비에 24시간 동안 한 달치 폭우. 21개 카운티 피해, 사망 81명+, 수천 명 이재민</div>
+          <div class="card-stats"><span class="stat">사망: <strong>81+</strong></span><span class="stat">시기: <strong>2026.3</strong></span></div>
+        </div>
+        <div class="disaster-card flood" onclick="focusConflict(23.5,57.0)">
+          <div class="card-header"><span class="card-title">🇴🇲 오만 돌발홍수</span><span class="card-badge badge-flood">홍수</span></div>
+          <div class="card-desc">남부 알바티나 주 돌발홍수로 5명 사망, 40명+ 구조. 3/30까지 비상경보 발령</div>
+          <div class="card-stats"><span class="stat">사망: <strong>5+</strong></span><span class="stat">시기: <strong>2026.3.20~</strong></span></div>
+        </div>
+        <div class="disaster-card flood" onclick="focusConflict(20.8,-156.3)">
+          <div class="card-header"><span class="card-title">🇺🇸 하와이 대홍수</span><span class="card-badge badge-flood">홍수</span></div>
+          <div class="card-desc">코나 저기압으로 마우이·빅아일랜드 최대 762mm 폭우. 5,500명+ 대피, 도로·인프라 심각 피해</div>
+          <div class="card-stats"><span class="stat">대피: <strong>5,500+</strong></span><span class="stat">시기: <strong>2026.3.10~16</strong></span></div>
+        </div>
+        <div class="disaster-card flood" onclick="focusConflict(-1.8,-78.2)">
+          <div class="card-header"><span class="card-title">🇪🇨 에콰도르 홍수·산사태</span><span class="card-badge badge-flood">홍수</span></div>
+          <div class="card-desc">1월 이후 629건 홍수, 612건 산사태. 23/24개 주 피해, 46,000명+ 피해, 11명 사망</div>
+          <div class="card-stats"><span class="stat">사망: <strong>11+</strong></span><span class="stat">피해: <strong>46,000명+</strong></span></div>
+        </div>
+        <div class="disaster-card flood" onclick="focusConflict(-0.5,101.4)">
+          <div class="card-header"><span class="card-title">🇮🇩 인도네시아 홍수·산사태</span><span class="card-badge badge-flood">홍수</span></div>
+          <div class="card-desc">아체·북수마트라·서수마트라 대규모 홍수. 사망 1,204명, 실종 140명. 서자바 반둥 산사태 7명+사망</div>
+          <div class="card-stats"><span class="stat">사망: <strong>1,204+</strong></span><span class="stat">이재민: <strong>106,000+</strong></span></div>
+        </div>
+        <div class="disaster-card flood" onclick="focusConflict(35.7,10.8)">
+          <div class="card-header"><span class="card-title">🇹🇳 튀니지 모나스티르 홍수</span><span class="card-badge badge-flood">홍수</span></div>
+          <div class="card-desc">1950년 이후 최대 규모 홍수. 4명 사망</div>
+          <div class="card-stats"><span class="stat">사망: <strong>4</strong></span></div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>🔶 지진 (Earthquake)</h3>
+        <div class="disaster-card earthquake" onclick="focusConflict(35.3,132.8)">
+          <div class="card-header"><span class="card-title">🇯🇵 일본 시마네현 지진</span><span class="card-badge badge-earthquake">지진</span></div>
+          <div class="card-desc">M6.4 지진 발생(1/6). 진도 5강, 후속 지진 21회+. 5명 부상, 건물 피해</div>
+          <div class="card-stats"><span class="stat">규모: <strong>M6.4</strong></span><span class="stat">시기: <strong>2026.1.6</strong></span></div>
+        </div>
+        <div class="disaster-card earthquake" onclick="focusConflict(7.3,126.5)">
+          <div class="card-header"><span class="card-title">🇵🇭 필리핀 민다나오 지진</span><span class="card-badge badge-earthquake">지진</span></div>
+          <div class="card-desc">M6.4 지진(1/7). 다바오 동쪽 해저 진원. 슈퍼태풍 라가사 직후 연쇄 재해</div>
+          <div class="card-stats"><span class="stat">규모: <strong>M6.4</strong></span><span class="stat">시기: <strong>2026.1.7</strong></span></div>
+        </div>
+        <div class="disaster-card earthquake" onclick="focusConflict(24.0,142.0)">
+          <div class="card-header"><span class="card-title">🇯🇵 이오지마 해역 지진</span><span class="card-badge badge-earthquake">지진</span></div>
+          <div class="card-desc">화산열도(이오섬) 해역에서 M6.0 천발 지진 발생</div>
+          <div class="card-stats"><span class="stat">규모: <strong>M6.0</strong></span><span class="stat">시기: <strong>2026.3.2</strong></span></div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>🔥 대형화재 (Wildfire)</h3>
+        <div class="disaster-card fire" onclick="focusConflict(34.0,-118.5)">
+          <div class="card-header"><span class="card-title">🇺🇸 LA 팰리세이즈·이튼 화재</span><span class="card-badge badge-fire">화재</span></div>
+          <div class="card-desc">2025.1 산타아나 바람 속 LA 대형 산불. 31명 사망, 16,000+ 구조물 파괴. 보험 $450억, 총 $760~1,310억 피해</div>
+          <div class="card-stats"><span class="stat">사망: <strong>31</strong></span><span class="stat">면적: <strong>78mi²</strong></span></div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>🏜️ 가뭄 (Drought)</h3>
+        <div class="disaster-card drought" onclick="focusConflict(5.0,46.0)">
+          <div class="card-header"><span class="card-title">🇸🇴🇪🇹 동아프리카 가뭄</span><span class="card-badge badge-drought">가뭄</span></div>
+          <div class="card-desc">소말리아 작물 생산 장기 평균 대비 83% 감소. 남부 에티오피아 목초지 황폐화, 가축 폐사</div>
+          <div class="card-stats"><span class="stat">피해: <strong>극심</strong></span><span class="stat">식량위기: <strong>진행중</strong></span></div>
+        </div>
+        <div class="disaster-card drought" onclick="focusConflict(33.0,65.0)">
+          <div class="card-header"><span class="card-title">🇦🇫 아프가니스탄 동계 가뭄</span><span class="card-badge badge-drought">가뭄</span></div>
+          <div class="card-desc">1,740만 명(인구 1/3+) 급성 식량 불안정. 겨울 가뭄으로 밀·보리 생장 지연</div>
+          <div class="card-stats"><span class="stat">피해인구: <strong>1,740만</strong></span></div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>❄️ 폭설 (Heavy Snow)</h3>
+        <div class="disaster-card snow" onclick="focusConflict(52.3,4.8)">
+          <div class="card-header"><span class="card-title">🇳🇱 네덜란드 한파·폭설</span><span class="card-badge badge-snow">폭설</span></div>
+          <div class="card-desc">강추위·폭설로 항공편 대거 취소, 암스테르담 인근 열차 운행 전면 중단</div>
+          <div class="card-stats"><span class="stat">시기: <strong>2026.1~2월</strong></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMMODITY SIDEBAR -->
+    <div id="sidebar-commodity" style="display:none;">
+      <div class="sidebar-section">
+        <h3>📈 원자재 시장 종합 현황 (2026.3.24)</h3>
+        <div class="comm-summary-grid">
+          <div class="comm-summary-item">
+            <div class="s-label">상승 원자재</div>
+            <div class="s-value" style="color:#ff5566;">9개</div>
+            <div class="s-sub" style="color:#ff5566;">에너지·귀금속·곡물</div>
+          </div>
+          <div class="comm-summary-item">
+            <div class="s-label">하락 원자재</div>
+            <div class="s-value" style="color:#44aaff;">3개</div>
+            <div class="s-sub" style="color:#44aaff;">산업금속 일부</div>
+          </div>
+          <div class="comm-summary-item">
+            <div class="s-label">호르무즈 해협</div>
+            <div class="s-value" style="color:#ff5566;">봉쇄</div>
+            <div class="s-sub" style="color:#ff5566;">글로벌 석유 20% 차단</div>
+          </div>
+          <div class="comm-summary-item">
+            <div class="s-label">중국 희토류</div>
+            <div class="s-value" style="color:#ff5566;">수출통제</div>
+            <div class="s-sub" style="color:#ff5566;">일본향 수출 규제 강화</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENERGY -->
+      <div class="sidebar-section">
+        <div class="comm-category-title">🛢️ 에너지 (Energy)</div>
+
+        <div class="commodity-card up">
+          <div class="comm-header">
+            <span class="comm-name">🛢️ 브렌트유 (Brent Crude)</span>
+            <span><span class="comm-price up">$113.21</span><span class="comm-change up">▲ +41%</span></span>
+          </div>
+          <div class="comm-bar-container">
+            <span class="comm-bar-label">YTD</span>
+            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:85%;background:linear-gradient(90deg,#ff4455,#ff6677)"></div></div>
+          </div>
+          <div class="comm-detail">이란 전쟁 → 호르무즈 해협 봉쇄(3/4) → $126 최고가 기록 후 조정. 글로벌 석유 수송 20% 차단</div>
+          <div class="comm-impact"><strong>분쟁연계:</strong> 이란 전쟁 / 예멘 후티 홍해 공격 / 카타르 LNG 시설 드론 피격</div>
+        </div>
+
+        <div class="commodity-card up">
+          <div class="comm-header">
+            <span class="comm-name">⛽ 천연가스 (TTF)</span>
+            <span><span class="comm-price up">€61/MWh</span><span class="comm-change up">▲ +11%</span></span>
+          </div>
+          <div class="comm-bar-container">
+            <span class="comm-bar-label">YTD</span>
+            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:72%;background:linear-gradient(90deg,#ff4455,#ff6677)"></div></div>
+          </div>
+          <div class="comm-detail">카타르 LNG 생산 중단(3/2 이란 드론 피격), 유럽 가스 재고 급감. 미국 Henry Hub $3.12/MMBtu</div>
+          <div class="comm-impact"><strong>분쟁연계:</strong> 이란-카타르 LNG 중단 / 러시아-우크라이나 파이프라인 차단</div>
+        </div>
+      </div>
+
+      <!-- PRECIOUS METALS -->
+      <div class="sidebar-section">
+        <div class="comm-category-title">✨ 귀금속 (Precious Metals)</div>
+
+        <div class="commodity-card up">
+          <div class="comm-header">
+            <span class="comm-name">🥇 금 (Gold)</span>
+            <span><span class="comm-price up">$4,800/oz</span><span class="comm-change up">▲ +66% YoY</span></span>
+          </div>
+          <div class="comm-bar-container">
+            <span class="comm-bar-label">YTD</span>
+            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:78%;background:linear-gradient(90deg,#ffcc33,#ffaa00)"></div></div>
+          </div>
+          <div class="comm-detail">3월 초 $5,400 돌파 후 조정 중. 고금리 환경에서 달러 강세로 하방 압력. JP모건 Q4 전망 $5,055</div>
+          <div class="comm-impact"><strong>분쟁연계:</strong> 지정학 리스크 → 안전자산 수요 vs $120유가 → 고금리 → 달러 강세 역풍</div>
+        </div>
+
+        <div class="commodity-card up">
+          <div class="comm-header">
+            <span class="comm-name">🥈 은 (Silver)</span>
+            <span><span class="comm-price up">$77/oz</span><span class="comm-change up">▲ +166% YoY</span></span>
+          </div>
+          <div class="comm-bar-container">
+            <span class="comm-bar-label">YTD</span>
+            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:92%;background:linear-gradient(90deg,#ccddff,#8899cc)"></div></div>
+          </div>
+          <div class="comm-detail">3월 초 패닉 $97 기록 후 1주 -11% 급락. 5년 연속 공급 부족. 산업 수요(태양광·전자) 지속 증가</div>
+          <div class="comm-impact"><strong>분쟁연계:</strong> 안전자산 + 산업용 이중 수요. 호르무즈 위기 시 $97까지 폭등</div>
+        </div>
+      </div>
+
+      <!-- INDUSTRIAL METALS -->
+      <div class="sidebar-section">
+        <div class="comm-category-title">🔩 산업금속 (Industrial Metals)</div>
+
+        <div class="commodity-card down">
+          <div class="comm-header">
+            <span class="comm-name">🔶 구리 (Copper)</span>
+            <span><span class="comm-price down">$5.40/lb</span><span class="comm-change down">▼ 3개월 저점</span></span>
+          </div>
+          <div class="comm-bar-container">
+            <span class="comm-bar-label">YTD</span>
+            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:55%;background:linear-gradient(90deg,#44aaff,#6699cc)"></div></div>
+          </div>
+          <div class="comm-detail">LME $11,771/톤 사상 최고가 후 조정. 달러 강세 + 고에너지 비용 → 제조업 수요 둔화 우려</div>
+          <div class="comm-impact"><strong>분쟁연계:</strong> 고유가 → 제조업 위축 → 구리 수요 감소. 단, 신에너지·AI 인프라 장기 수요 견조</div>
+        </div>
+
+        <div class="commodity-card stable">
+          <div class="comm-header">
+            <span class="comm-name">🪨 철광석 (Iron Ore)</span>
+            <span><span class="comm-price stable">$99/톤</span><span class="comm-change stable">▲ 3월 반등</span></span>
+          </div>
+          <div class="comm-bar-container">
+            <span class="comm-bar-label">YTD</span>
+            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:48%;background:linear-gradient(90deg,#88aa88,#66886e)"></div></div>
+          </div>
+          <div class="comm-detail">중국 경기부양 기대감으로 3월 반등. 대련거래소 753.5위안/톤. GS 전망 $93 (약세 유지)</div>
+          <div class="comm-impact"><strong>분쟁연계:</strong> 호르무즈 봉쇄 → 해상 운임 상승 → 물류비 증가. 중국 수요가 핵심 변수</div>
+        </div>
+
+        <div class="commodity-card stable">
+          <div class="comm-header">
+            <span class="comm-name">🔲 알루미늄 (Aluminum)</span>
+            <span><span class="comm-price stable">$3,195/톤</span><span class="comm-change up">▲ +23% YoY</span></span>
+          </div>
+          <div class="comm-bar-container">
+            <span class="comm-bar-label">YTD</span>
+            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:62%;background:linear-gradient(90deg,#88aa88,#66886e)"></div></div>
+          </div>
+          <div class="comm-detail">LME $3,195. 52주 범위 $2,303~$3,542. 에너지 비용 상승이 제련 마진 압박</div>
+          <div class="comm-impact"><strong>분쟁연계:</strong> 전력 집약 산업 → 에너지 가격 민감. 러시아산 제재 영향 지속</div>
+        </div>
+      </div>
+
+      <!-- RARE EARTH -->
+      <div class="sidebar-section">
+        <div class="comm-category-title">💎 희토류 (Rare Earth Elements)</div>
+
+        <div class="commodity-card up">
+          <div class="comm-header">
+            <span class="comm-name">🧲 네오디뮴-프라세오디뮴 (NdPr)</span>
+            <span><span class="comm-price up">$55,450/톤</span><span class="comm-change up">▲ +10%</span></span>
+          </div>
+          <div class="comm-bar-container">
+            <span class="comm-bar-label">2月</span>
+            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:75%;background:linear-gradient(90deg,#dd55ff,#aa33cc)"></div></div>
+          </div>
+          <div class="comm-detail">NdPr 산화물 $12,100/톤(+29%). 중국 희토류 가격지수 2월 +17.5% (257.6→307.3)</div>
+          <div class="comm-impact"><strong>분쟁연계:</strong> 중국 수출 통제 강화(일본향). 글로벌 자석 제조 중국 의존도 94%. EV·풍력·방산 핵심</div>
+        </div>
+
+        <div class="commodity-card up">
+          <div class="comm-header">
+            <span class="comm-name">⚙️ 중희토류 (Heavy REE)</span>
+            <span><span class="comm-price up">3~4x 프리미엄</span><span class="comm-change up">▲ 공급 병목</span></span>
+          </div>
+          <div class="comm-bar-container">
+            <span class="comm-bar-label">Gap</span>
+            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:90%;background:linear-gradient(90deg,#ff4455,#dd2233)"></div></div>
+          </div>
+          <div class="comm-detail">비중국 시장에서 중국 시세 대비 3~4배 프리미엄. 이트륨·터븀·디스프로슘 공급 병목 2027년까지 지속 전망</div>
+          <div class="comm-impact"><strong>분쟁연계:</strong> 중국, 정련·가공 91% 장악. 대일 수출규제로 반도체·방산 공급망 위기</div>
+        </div>
+      </div>
+
+      <!-- GRAINS -->
+      <div class="sidebar-section">
+        <div class="comm-category-title">🌾 곡물 (Grains & Agriculture)</div>
+
+        <div class="commodity-card up">
+          <div class="comm-header">
+            <span class="comm-name">🌽 옥수수 (Corn)</span>
+            <span><span class="comm-price up">465.5¢/bu</span><span class="comm-change up">▲ 투기매수</span></span>
+          </div>
+          <div class="comm-bar-container">
+            <span class="comm-bar-label">YTD</span>
+            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:58%;background:linear-gradient(90deg,#ffcc33,#ddaa00)"></div></div>
+          </div>
+          <div class="comm-detail">CBOT 5월물 465.50¢/bu. 이란 전쟁 → 고유가 → 비료 가격 상승 → 곡물 투기 매수 유입</div>
+          <div class="comm-impact"><strong>분쟁연계:</strong> 호르무즈 봉쇄 → 질소비료 수출 30% 차단 → 중동 요소 가격 48시간 내 +20%</div>
+        </div>
+
+        <div class="commodity-card up">
+          <div class="comm-header">
+            <span class="comm-name">🌾 밀 (Wheat)</span>
+            <span><span class="comm-price up">595.25¢/bu</span><span class="comm-change up">▲ 변동성 확대</span></span>
+          </div>
+          <div class="comm-bar-container">
+            <span class="comm-bar-label">YTD</span>
+            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:65%;background:linear-gradient(90deg,#ffcc33,#ddaa00)"></div></div>
+          </div>
+          <div class="comm-detail">CBOT 5월물 595.25¢/bu. 흑해 수출 불안 + 동아프리카 가뭄 + 아프간 동계 작황 부진</div>
+          <div class="comm-impact"><strong>분쟁연계:</strong> 러-우 전쟁 → 흑해 곡물회랑 불안. 이란 전쟁 장기화 시 4,500만 명 추가 식량 위기</div>
+        </div>
+
+        <div class="commodity-card up">
+          <div class="comm-header">
+            <span class="comm-name">🫘 대두 (Soybean)</span>
+            <span><span class="comm-price up">1161.25¢/bu</span><span class="comm-change stable">— 보합세</span></span>
+          </div>
+          <div class="comm-bar-container">
+            <span class="comm-bar-label">YTD</span>
+            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:52%;background:linear-gradient(90deg,#88aa88,#66886e)"></div></div>
+          </div>
+          <div class="comm-detail">CBOT 5월물 $11.61/bu. 남미 풍작 전망과 지정학 리스크 프리미엄 상충. 손익분기 근접</div>
+          <div class="comm-impact"><strong>분쟁연계:</strong> 브라질 풍작이 지정학 리스크 상쇄. 단, 해상 운임 상승이 수입국 가격 압박</div>
+        </div>
+
+        <div class="commodity-card up">
+          <div class="comm-header">
+            <span class="comm-name">🧪 요소비료 (Urea)</span>
+            <span><span class="comm-price up">급등</span><span class="comm-change up">▲ +20% (48h)</span></span>
+          </div>
+          <div class="comm-bar-container">
+            <span class="comm-bar-label">충격</span>
+            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:82%;background:linear-gradient(90deg,#ff4455,#ff6677)"></div></div>
+          </div>
+          <div class="comm-detail">호르무즈 해협 통과 질소비료 글로벌 수출의 30%. 봉쇄 48시간 만에 중동·북아프리카 요소 가격 +20%</div>
+          <div class="comm-impact"><strong>분쟁연계:</strong> 이란 전쟁 직접 영향. 비료 가격 상승 → 2026 하반기 작물 생산비 증가 전망</div>
+        </div>
+      </div>
+
+      <!-- PAPER & POLYMERS -->
+      <div class="sidebar-section">
+        <div class="comm-category-title">📦 종이·고분자 (Paper & Polymers)</div>
+
+        <div class="commodity-card down">
+          <div class="comm-header">
+            <span class="comm-name">📄 크라프트 펄프 (Kraft Pulp)</span>
+            <span><span class="comm-price down">5,220 CNY/톤</span><span class="comm-change down">▼ -14% YoY</span></span>
+          </div>
+          <div class="comm-bar-container">
+            <span class="comm-bar-label">YoY</span>
+            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:38%;background:linear-gradient(90deg,#44aaff,#6699cc)"></div></div>
+          </div>
+          <div class="comm-detail">크라프트 펄프 전월 대비 -4.3%, 전년 대비 -14.3%. 미국 42lb 크라프트 라이너보드 $940~950/톤(+$40 인상)</div>
+          <div class="comm-impact"><strong>분쟁연계:</strong> 포장재 수요 견조(e-커머스)하나, 고에너지 비용이 제지 공정 마진 압박. 플라스틱 대체 수요가 크라프트지 가격 하방 지지</div>
+        </div>
+
+        <div class="commodity-card up">
+          <div class="comm-header">
+            <span class="comm-name">📋 라이너보드 (Linerboard)</span>
+            <span><span class="comm-price up">$940~950/톤</span><span class="comm-change up">▲ +$40</span></span>
+          </div>
+          <div class="comm-bar-container">
+            <span class="comm-bar-label">M/M</span>
+            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:56%;background:linear-gradient(90deg,#ff4455,#ff6677)"></div></div>
+          </div>
+          <div class="comm-detail">북미 42lb 크라프트 라이너보드 3~4월 수요 증가 기대로 인상. GCC PIX 테스트라이너 $462/톤 보합</div>
+          <div class="comm-impact"><strong>분쟁연계:</strong> 이란 전쟁 → 물류비 상승 → 포장재 단가 전가. 지속가능 포장 의무화로 구조적 수요 증가</div>
+        </div>
+
+        <div class="commodity-card down">
+          <div class="comm-header">
+            <span class="comm-name">🧴 폴리에틸렌 HDPE</span>
+            <span><span class="comm-price down">6,750 CNY/톤</span><span class="comm-change down">▼ -15% YoY</span></span>
+          </div>
+          <div class="comm-bar-container">
+            <span class="comm-bar-label">YoY</span>
+            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:35%;background:linear-gradient(90deg,#44aaff,#6699cc)"></div></div>
+          </div>
+          <div class="comm-detail">전월 대비 +3.7% 반등하나 전년 대비 -15.3%. HDPE 글로벌 시장 점유율 45%+. 인도 HDPE·LLDPE ₹7/kg 인상(3/20)</div>
+          <div class="comm-impact"><strong>분쟁연계:</strong> 나프타(석유 유도체) 가격이 PE 원가 60%+. 유가 $113 → 나프타 연동 상승 vs 수요 둔화 상충. 다년간 저점 구간에서 바닥론 부상</div>
+        </div>
+
+        <div class="commodity-card stable">
+          <div class="comm-header">
+            <span class="comm-name">🧪 폴리에틸렌 LDPE/LLDPE</span>
+            <span><span class="comm-price stable">$1,050~1,150/톤</span><span class="comm-change stable">— 보합</span></span>
+          </div>
+          <div class="comm-bar-container">
+            <span class="comm-bar-label">YTD</span>
+            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:45%;background:linear-gradient(90deg,#88aa88,#66886e)"></div></div>
+          </div>
+          <div class="comm-detail">LDPE(포장필름, 25% 시장점유) 및 LLDPE 가격 보합세. 글로벌 PE 시장 $1,710억(2025) → $2,790억(2035) 전망</div>
+          <div class="comm-impact"><strong>분쟁연계:</strong> 중동 PE 생산시설 가동률 하락(이란 전쟁) → 아시아·유럽向 수출 감소. 플라스틱 규제 강화 속 종이 대체 압력</div>
+        </div>
+      </div>
+
+      <!-- IMPACT ANALYSIS -->
+      <div class="sidebar-section">
+        <h3>🔗 분쟁·재해 ↔ 원자재 연쇄 영향 분석</h3>
+        <div class="econ-impact" style="border-left-color:rgba(68,221,170,0.5);">
+          <div class="label">호르무즈 해협 봉쇄 파급 경로</div>
+          <div class="value" style="color:#44ddaa;font-size:0.85em;">석유 → 비료 → 곡물 → 식량위기</div>
+          <div class="detail">석유 20% + LNG + 비료 30% 차단 → 에너지·식량 동시 위기. 3.18억 명 기아 위기(WFP)</div>
+        </div>
+        <div class="econ-impact" style="border-left-color:rgba(68,221,170,0.5);">
+          <div class="label">중국 희토류 무기화</div>
+          <div class="value" style="color:#44ddaa;font-size:0.85em;">수출규제 → 비중국 3~4x 프리미엄</div>
+          <div class="detail">대만해협·남중국해 긴장 → 대일 수출규제 → EV·반도체·방산 공급망 재편 가속</div>
+        </div>
+        <div class="econ-impact" style="border-left-color:rgba(68,221,170,0.5);">
+          <div class="label">러-우 전쟁 4년차</div>
+          <div class="value" style="color:#44ddaa;font-size:0.85em;">에너지 + 곡물 + 금속 삼중 충격</div>
+          <div class="detail">유럽 가스 의존 재편, 흑해 곡물 불안, 러시아산 알루미늄·니켈 제재 → 글로벌 공급망 구조 변화</div>
+        </div>
+        <div class="econ-impact" style="border-left-color:rgba(68,221,170,0.5);">
+          <div class="label">동아프리카 가뭄 + 수단 내전</div>
+          <div class="value" style="color:#44ddaa;font-size:0.85em;">식량 생산 83% 감소 → 곡물 수입 급증</div>
+          <div class="detail">소말리아·에티오피아 곡물 수입 의존도 급등 → 국제 곡물가 추가 상승 압력</div>
+        </div>
+      </div>
+    </div>
+    <!-- US STOCK MARKET -->
+    <div id="sidebar-usstock" style="display:none;">
+      <div class="sidebar-section">
+        <h3>🇺🇸 미국 증시 (전일 종가 기준)</h3>
+        <div class="stock-summary-grid">
+          <div class="stock-summary-item">
+            <div class="s-label">시장 분위기</div>
+            <div class="s-value" style="color:#ff5566;">약세</div>
+            <div class="s-sub" style="color:#ff5566;">지정학 리스크 반영</div>
+          </div>
+          <div class="stock-summary-item">
+            <div class="s-label">VIX 공포지수</div>
+            <div class="s-value" style="color:#ff5566;">28.5</div>
+            <div class="s-sub" style="color:#ff5566;">경계 구간</div>
+          </div>
+          <div class="stock-summary-item">
+            <div class="s-label">USD/KRW</div>
+            <div class="s-value" style="color:#ff5566;">1,445</div>
+            <div class="s-sub" style="color:#ff5566;">원화 약세</div>
+          </div>
+          <div class="stock-summary-item">
+            <div class="s-label">미국 10Y 국채</div>
+            <div class="s-value" style="color:#4499ff;">4.32%</div>
+            <div class="s-sub" style="color:#4499ff;">금리 하락</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DOW JONES -->
+      <div class="sidebar-section">
+        <div class="stock-index-card idx-down" onclick="toggleStockDetail('dow')">
+          <div class="stock-header">
+            <span class="stock-name">📊 다우존스 (DJIA)</span>
+            <span class="stock-price down">41,580.25</span>
+          </div>
+          <div class="stock-change-row">
+            <span class="stock-change down">▼ -322.47 (-0.77%)</span>
+            <span style="font-size:0.68em;color:#556677;">2026.03.23 종가</span>
+          </div>
+          <div class="stock-mini-chart"><canvas id="chart-dow"></canvas></div>
+          <div class="stock-period-tabs">
+            <button class="stock-period-btn active" onclick="event.stopPropagation();setStockPeriod('dow','1d')">1일</button>
+            <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('dow','1w')">1주</button>
+            <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('dow','1m')">1개월</button>
+            <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('dow','1y')">1년</button>
+          </div>
+          <div class="stock-detail-panel" id="detail-dow">
+            <div class="stock-detail-row"><span class="stock-detail-label">시가</span><span class="stock-detail-value">41,875.10</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">고가</span><span class="stock-detail-value">41,932.68</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">저가</span><span class="stock-detail-value">41,488.52</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">거래량</span><span class="stock-detail-value">3.82억 주</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">52주 고점</span><span class="stock-detail-value">45,073.63</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">52주 저점</span><span class="stock-detail-value">38,315.40</span></div>
+            <div style="margin-top:6px;font-size:0.9em;color:#778899;">이란 전쟁 장기화 + 고유가 우려로 산업주 매도 압력. Boeing·Caterpillar 하락 주도.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- S&P 500 -->
+      <div class="sidebar-section">
+        <div class="stock-index-card idx-down" onclick="toggleStockDetail('sp500')">
+          <div class="stock-header">
+            <span class="stock-name">📈 S&P 500</span>
+            <span class="stock-price down">5,667.82</span>
+          </div>
+          <div class="stock-change-row">
+            <span class="stock-change down">▼ -48.93 (-0.86%)</span>
+            <span style="font-size:0.68em;color:#556677;">2026.03.23 종가</span>
+          </div>
+          <div class="stock-mini-chart"><canvas id="chart-sp500"></canvas></div>
+          <div class="stock-period-tabs">
+            <button class="stock-period-btn active" onclick="event.stopPropagation();setStockPeriod('sp500','1d')">1일</button>
+            <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('sp500','1w')">1주</button>
+            <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('sp500','1m')">1개월</button>
+            <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('sp500','1y')">1년</button>
+          </div>
+          <div class="stock-detail-panel" id="detail-sp500">
+            <div class="stock-detail-row"><span class="stock-detail-label">시가</span><span class="stock-detail-value">5,710.34</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">고가</span><span class="stock-detail-value">5,721.05</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">저가</span><span class="stock-detail-value">5,648.70</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">거래량</span><span class="stock-detail-value">45.2억 주</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">52주 고점</span><span class="stock-detail-value">6,147.43</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">52주 저점</span><span class="stock-detail-value">5,091.20</span></div>
+            <div style="margin-top:6px;font-size:0.9em;color:#778899;">에너지 섹터 강세(+1.2%) vs 기술·소비재 약세. 유가 $113 돌파에 인플레이션 재점화 우려.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NASDAQ -->
+      <div class="sidebar-section">
+        <div class="stock-index-card idx-down" onclick="toggleStockDetail('nasdaq')">
+          <div class="stock-header">
+            <span class="stock-name">💻 나스닥 (NASDAQ)</span>
+            <span class="stock-price down">17,688.45</span>
+          </div>
+          <div class="stock-change-row">
+            <span class="stock-change down">▼ -215.62 (-1.21%)</span>
+            <span style="font-size:0.68em;color:#556677;">2026.03.23 종가</span>
+          </div>
+          <div class="stock-mini-chart"><canvas id="chart-nasdaq"></canvas></div>
+          <div class="stock-period-tabs">
+            <button class="stock-period-btn active" onclick="event.stopPropagation();setStockPeriod('nasdaq','1d')">1일</button>
+            <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('nasdaq','1w')">1주</button>
+            <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('nasdaq','1m')">1개월</button>
+            <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('nasdaq','1y')">1년</button>
+          </div>
+          <div class="stock-detail-panel" id="detail-nasdaq">
+            <div class="stock-detail-row"><span class="stock-detail-label">시가</span><span class="stock-detail-value">17,880.12</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">고가</span><span class="stock-detail-value">17,915.30</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">저가</span><span class="stock-detail-value">17,622.88</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">거래량</span><span class="stock-detail-value">62.8억 주</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">52주 고점</span><span class="stock-detail-value">20,204.58</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">52주 저점</span><span class="stock-detail-value">15,708.54</span></div>
+            <div style="margin-top:6px;font-size:0.9em;color:#778899;">고금리 장기화 우려로 기술주 전반 약세. NVIDIA -2.3%, Apple -1.8%. 중국 희토류 규제가 반도체 공급망 불안 가중.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FUTURES -->
+      <div class="sidebar-section">
+        <div class="stock-index-card idx-up" onclick="toggleStockDetail('futures')">
+          <div class="stock-header">
+            <span class="stock-name">⏰ 선물지수 (E-mini S&P 500)</span>
+            <span class="stock-price up">5,682.50</span>
+          </div>
+          <div class="stock-change-row">
+            <span class="stock-change up">▲ +14.68 (+0.26%)</span>
+            <span style="font-size:0.68em;color:#556677;">2026.03.24 06:00 KST</span>
+          </div>
+          <div class="stock-mini-chart"><canvas id="chart-futures"></canvas></div>
+          <div class="stock-period-tabs">
+            <button class="stock-period-btn active" onclick="event.stopPropagation();setStockPeriod('futures','1d')">1일</button>
+            <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('futures','1w')">1주</button>
+            <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('futures','1m')">1개월</button>
+            <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('futures','1y')">1년</button>
+          </div>
+          <div class="stock-detail-panel" id="detail-futures">
+            <div class="stock-detail-row"><span class="stock-detail-label">시가</span><span class="stock-detail-value">5,668.25</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">고가</span><span class="stock-detail-value">5,695.00</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">저가</span><span class="stock-detail-value">5,655.75</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">나스닥 100 선물</span><span class="stock-detail-value" style="color:#ff5566;">19,845 (▼-0.15%)</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">다우 선물</span><span class="stock-detail-value" style="color:#4499ff;">41,625 (▲+0.11%)</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">러셀 2000 선물</span><span class="stock-detail-value" style="color:#ff5566;">2,028 (▼-0.32%)</span></div>
+            <div style="margin-top:6px;font-size:0.9em;color:#778899;">아시아 장 오픈 전 소폭 반등. 이란 핵시설 공격 가능성 보도 후 일시 급락 후 회복. 금일 FOMC 의사록 공개 예정.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MARKET ANALYSIS -->
+      <div class="sidebar-section">
+        <h3>🔗 분쟁 ↔ 증시 연쇄 영향</h3>
+        <div class="econ-impact" style="border-left-color:rgba(102,153,255,0.5);">
+          <div class="label">이란 전쟁 → 고유가 → 인플레이션</div>
+          <div class="value" style="color:#6699ff;font-size:0.85em;">Fed 금리인하 기대 후퇴 → 기술주 약세</div>
+          <div class="detail">유가 $113 → CPI 상방 압력 → 6월 금리인하 확률 18%로 급감. 성장주 밸류에이션 부담 가중.</div>
+        </div>
+        <div class="econ-impact" style="border-left-color:rgba(102,153,255,0.5);">
+          <div class="label">중국 희토류 규제 → 반도체 공급망</div>
+          <div class="value" style="color:#6699ff;font-size:0.85em;">필라델피아 반도체지수 -2.1%</div>
+          <div class="detail">일본향 희토류 수출통제 → EV·반도체 장비 원가 상승. ASML·TSMC·삼성전자 하락.</div>
+        </div>
+        <div class="econ-impact" style="border-left-color:rgba(102,153,255,0.5);">
+          <div class="label">에너지 섹터 수혜 vs 소비재 타격</div>
+          <div class="value" style="color:#6699ff;font-size:0.85em;">XLE +1.2% / XLY -1.8%</div>
+          <div class="detail">ExxonMobil·Chevron 강세. 반면 Amazon·Tesla 소비 위축 우려로 하락. 섹터 로테이션 가속.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tooltip">
+  <div class="tt-title"></div>
+  <div class="tt-type"></div>
+  <div class="tt-desc"></div>
+</div>
+
+<script>
+// ========== DATA ==========
+const conflicts = [
+  { name:"이란 전쟁", lat:32.0, lon:53.0, level:"war", radius:18, desc:"미국·이스라엘 vs 이란 전면전", cat:"conflict" },
+  { name:"레바논 전쟁", lat:33.8, lon:35.8, level:"war", radius:12, desc:"이스라엘-헤즈볼라 전쟁", cat:"conflict" },
+  { name:"러시아-우크라이나", lat:48.5, lon:35.0, level:"war", radius:20, desc:"러시아 춘계 대공세", cat:"conflict" },
+  { name:"수단 내전", lat:15.5, lon:32.5, level:"war", radius:16, desc:"SAF vs RSF 내전", cat:"conflict" },
+  { name:"가자지구", lat:31.5, lon:34.5, level:"war", radius:10, desc:"이스라엘-하마스 교전", cat:"conflict" },
+  { name:"미얀마 내전", lat:19.7, lon:96.2, level:"war", radius:14, desc:"군부 vs 반군 내전", cat:"conflict" },
+  { name:"나이지리아", lat:9.0, lon:7.5, level:"confrontation", radius:14, desc:"종교·민족 무력충돌", cat:"conflict" },
+  { name:"에티오피아-에리트레아", lat:9.0, lon:38.7, level:"confrontation", radius:12, desc:"전쟁 위기 고조", cat:"conflict" },
+  { name:"예멘", lat:15.5, lon:48.5, level:"confrontation", radius:12, desc:"후티 반군 홍해 공격", cat:"conflict" },
+  { name:"시리아", lat:35.0, lon:38.0, level:"confrontation", radius:10, desc:"내전 잔여 불안정", cat:"conflict" },
+  { name:"대만해협", lat:23.5, lon:121.0, level:"tension", radius:14, desc:"중국 해상봉쇄 시뮬레이션", cat:"conflict" },
+  { name:"남중국해", lat:12.0, lon:115.0, level:"tension", radius:16, desc:"중국-필리핀 영토분쟁", cat:"conflict" },
+  { name:"한반도", lat:38.5, lon:127.0, level:"tension", radius:10, desc:"북한 군비 확장", cat:"conflict" },
+  { name:"중일 외교위기", lat:30.0, lon:130.0, level:"tension", radius:8, desc:"대만 관련 외교 마찰", cat:"conflict" },
+  { name:"콜롬비아", lat:4.5, lon:-74.0, level:"caution", radius:10, desc:"무장단체 충돌 증가", cat:"conflict" },
+  { name:"아이티", lat:18.9, lon:-72.3, level:"caution", radius:8, desc:"갱단 장악, 국가 붕괴", cat:"conflict" },
+  { name:"베네수엘라", lat:10.5, lon:-67.0, level:"caution", radius:10, desc:"미국 마약소탕 공습", cat:"conflict" },
+  { name:"콩고민주공화국", lat:-4.0, lon:22.0, level:"protest", radius:12, desc:"동부 무장세력 활동", cat:"conflict" },
+  { name:"부르키나파소", lat:12.0, lon:-1.5, level:"protest", radius:8, desc:"이슬람 무장세력 공격", cat:"conflict" },
+  { name:"모잠비크", lat:-18.0, lon:35.0, level:"protest", radius:8, desc:"북부 불안정 지속", cat:"conflict" },
+];
+
+const disasters = [
+  { name:"케냐 대홍수", lat:-1.3, lon:36.8, level:"flood", radius:14, desc:"21개 카운티 홍수, 81명+ 사망 (2026.3)", cat:"disaster" },
+  { name:"오만 돌발홍수", lat:23.5, lon:57.0, level:"flood", radius:10, desc:"알바티나 주 5명+ 사망, 비상경보 (2026.3)", cat:"disaster" },
+  { name:"하와이 홍수", lat:20.8, lon:-156.3, level:"flood", radius:12, desc:"코나 저기압 762mm 폭우, 5,500명 대피 (2026.3)", cat:"disaster" },
+  { name:"에콰도르 홍수", lat:-1.8, lon:-78.2, level:"flood", radius:12, desc:"629건 홍수, 46,000명 피해, 11명 사망 (2026.1~3)", cat:"disaster" },
+  { name:"인도네시아 홍수", lat:-0.5, lon:101.4, level:"flood", radius:16, desc:"아체 등 3개 주 1,204명 사망 (2025.12~2026.1)", cat:"disaster" },
+  { name:"튀니지 홍수", lat:35.7, lon:10.8, level:"flood", radius:8, desc:"모나스티르 1950년 이후 최대 홍수, 4명 사망", cat:"disaster" },
+  { name:"시마네 지진", lat:35.3, lon:132.8, level:"earthquake", radius:12, desc:"M6.4, 진도 5강, 후속 21회 (2026.1)", cat:"disaster" },
+  { name:"민다나오 지진", lat:7.3, lon:126.5, level:"earthquake", radius:12, desc:"M6.4, 다바오 동쪽 (2026.1)", cat:"disaster" },
+  { name:"이오지마 지진", lat:24.0, lon:142.0, level:"earthquake", radius:10, desc:"M6.0 천발 지진 (2026.3)", cat:"disaster" },
+  { name:"LA 산불", lat:34.0, lon:-118.5, level:"fire", radius:16, desc:"31명 사망, $760~1,310억 피해 (2025.1)", cat:"disaster" },
+  { name:"동아프리카 가뭄", lat:5.0, lon:46.0, level:"drought", radius:18, desc:"소말리아 작물 83% 감소, 식량 위기", cat:"disaster" },
+  { name:"아프간 가뭄", lat:33.0, lon:65.0, level:"drought", radius:14, desc:"1,740만 명 식량 불안정", cat:"disaster" },
+  { name:"네덜란드 폭설", lat:52.3, lon:4.8, level:"snow", radius:10, desc:"항공 취소, 열차 전면 중단 (2026.1~2)", cat:"disaster" },
+  { name:"아프간 홍수", lat:34.5, lon:69.0, level:"flood", radius:10, desc:"17명+ 사망, 10명 부상 (2026.2)", cat:"disaster" },
+  { name:"북아프리카 가뭄", lat:32.0, lon:3.0, level:"drought", radius:14, desc:"알제리·모로코·튀니지 작물 생장 지연", cat:"disaster" },
+];
+
+const allPoints = [...conflicts, ...disasters];
+
+const levelColors = {
+  war:[255,32,32], confrontation:[255,102,0], tension:[255,204,0],
+  caution:[0,170,255], protest:[204,68,255], peace:[0,221,102],
+  flood:[0,187,255], earthquake:[255,136,0], drought:[204,136,51],
+  snow:[170,204,255], fire:[255,51,0]
+};
+
+const levelLabels = {
+  war:"전쟁", confrontation:"대치", tension:"긴장", caution:"주의", protest:"시위",
+  flood:"홍수", earthquake:"지진", drought:"가뭄", snow:"폭설", fire:"화재"
+};
+
+const disasterIcons = {
+  flood:"💧", earthquake:"⚡", drought:"☀", snow:"❄", fire:"🔥"
+};
+
+// ========== TOPOJSON DATA LOADING ==========
+let worldCountries = []; // GeoJSON features
+let worldBorders = [];   // border line segments
+let dataLoaded = false;
+
+// Load real world map data from CDN
+async function loadWorldData() {
+  try {
+    const resp = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
+    const topo = await resp.json();
+
+    // Parse TopoJSON to GeoJSON manually (no external library needed)
+    const obj = topo.objects.countries;
+    const arcs = topo.arcs;
+    const tf = topo.transform;
+
+    // Decode arcs from delta-encoded quantized coordinates
+    function decodeArc(arcIdx) {
+      const arc = arcs[arcIdx < 0 ? ~arcIdx : arcIdx];
+      const coords = [];
+      let x = 0, y = 0;
+      for (const pt of arc) {
+        x += pt[0]; y += pt[1];
+        coords.push([
+          x * tf.scale[0] + tf.translate[0],
+          y * tf.scale[1] + tf.translate[1]
+        ]);
+      }
+      return arcIdx < 0 ? coords.reverse() : coords;
+    }
+
+    function decodeRing(arcIndices) {
+      let ring = [];
+      for (const idx of arcIndices) {
+        const decoded = decodeArc(idx);
+        // skip first point of subsequent arcs to avoid duplicates
+        ring = ring.concat(ring.length ? decoded.slice(1) : decoded);
+      }
+      return ring;
+    }
+
+    // Extract country polygons
+    for (const geom of obj.geometries) {
+      const polys = [];
+      if (geom.type === 'Polygon') {
+        polys.push(geom.arcs.map(ring => decodeRing(ring)));
+      } else if (geom.type === 'MultiPolygon') {
+        for (const polygon of geom.arcs) {
+          polys.push(polygon.map(ring => decodeRing(ring)));
+        }
+      }
+      worldCountries.push({ id: geom.id, polys });
+    }
+
+    // Extract borders (shared edges between countries) from mesh
+    // We collect all arcs that appear in country boundaries
+    const arcUsage = new Map();
+    for (const geom of obj.geometries) {
+      const allArcs = geom.type === 'Polygon' ? geom.arcs :
+        geom.type === 'MultiPolygon' ? geom.arcs.flat() : [];
+      for (const ring of allArcs) {
+        for (const idx of ring) {
+          const key = idx < 0 ? ~idx : idx;
+          arcUsage.set(key, (arcUsage.get(key) || 0) + 1);
+        }
+      }
+    }
+    // Borders = arcs used by 2+ countries (shared edges)
+    // Coastlines = arcs used by only 1 country
+    for (const [key, count] of arcUsage) {
+      const decoded = decodeArc(key);
+      if (count >= 2) {
+        worldBorders.push({ coords: decoded, type: 'border' });
+      }
+    }
+
+    dataLoaded = true;
+    const li = document.getElementById('loading-indicator');
+    if (li) li.classList.add('hidden');
+    setTimeout(() => { if (li) li.style.display = 'none'; }, 600);
+  } catch(e) {
+    console.error('Failed to load world data:', e);
+    dataLoaded = false;
+    const li = document.getElementById('loading-indicator');
+    if (li) li.textContent = '지도 데이터 로드 실패';
+  }
+}
+
+loadWorldData();
+
+// ========== RENDERER ==========
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+let W, H, cx, cy, R;
+let rotX = -0.15, rotY = Math.PI;
+let tgtRotX = -0.15, tgtRotY = Math.PI;
+let dragging = false, lx, ly;
+let autoRot = true;
+let activeFilter = 'all';
+let currentView = 'all'; // all, conflict, disaster
+let t = 0;
+let stars = [];
+
+function resize() {
+  const c = document.getElementById('globe-container');
+  W = c.clientWidth; H = c.clientHeight;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  cx = W / 2; cy = H / 2;
+  R = Math.min(W, H) * 0.38;
+  if (!stars.length) {
+    for (let i = 0; i < 350; i++) stars.push({ x:Math.random()*3000, y:Math.random()*2000, s:Math.random()*1.2+0.2, b:Math.random()*6.28 });
+  }
+}
+
+function ll2xyz(lat, lon) {
+  const phi = lat * Math.PI / 180;
+  const lam = lon * Math.PI / 180;
+  return {
+    x: R * Math.cos(phi) * Math.sin(lam),
+    y: -R * Math.sin(phi),           // 음수 → 북극이 화면 위쪽
+    z: R * Math.cos(phi) * Math.cos(lam)
+  };
+}
+
+function rot(p) {
+  let { x, y, z } = p;
+  let x1 = x * Math.cos(rotY) - z * Math.sin(rotY);
+  let z1 = x * Math.sin(rotY) + z * Math.cos(rotY);
+  let y2 = y * Math.cos(rotX) - z1 * Math.sin(rotX);
+  let z2 = y * Math.sin(rotX) + z1 * Math.cos(rotX);
+  return { x: x1, y: y2, z: z2 };
+}
+
+function proj(p) { return { x: cx + p.x, y: cy + p.y, z: p.z }; }
+
+function drawLine(pts, color, lw) {
+  ctx.strokeStyle = color;
+  ctx.lineWidth = lw;
+  ctx.beginPath();
+  let started = false;
+  for (const [lon, lat] of pts) {
+    const p = proj(rot(ll2xyz(lat, lon)));
+    if (p.z > 0) { if (!started) { ctx.moveTo(p.x, p.y); started = true; } else ctx.lineTo(p.x, p.y); }
+    else started = false;
+  }
+  ctx.stroke();
+}
+
+// Project a behind-globe point to the nearest horizon edge
+function toHorizon(p) {
+  if (p.z > 0) return p;
+  const dx = p.x - cx, dy = p.y - cy;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  if (dist < 0.5) return { x: cx, y: cy - R * 0.99, z: 0.01 };
+  const s = R * 0.99 / dist;
+  return { x: cx + dx * s, y: cy + dy * s, z: 0.01 };
+}
+
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  t += 0.016;
+
+  // === STARS ===
+  stars.forEach(s => {
+    const a = 0.15 + 0.2 * Math.sin(t * 1.5 + s.b);
+    ctx.fillStyle = `rgba(180,200,240,${a})`;
+    ctx.fillRect(s.x % W, s.y % H, s.s, s.s);
+  });
+
+  // === ATMOSPHERE OUTER GLOW ===
+  const atmoGrad = ctx.createRadialGradient(cx, cy, R * 0.95, cx, cy, R * 1.35);
+  atmoGrad.addColorStop(0, 'rgba(40,80,200,0.08)');
+  atmoGrad.addColorStop(0.5, 'rgba(30,60,150,0.04)');
+  atmoGrad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = atmoGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // === GLOBE SPHERE (enhanced lighting) ===
+  // Deep ocean base
+  const oceanGrad = ctx.createRadialGradient(cx - R * 0.25, cy - R * 0.25, 0, cx, cy, R);
+  oceanGrad.addColorStop(0, '#0e1d42');
+  oceanGrad.addColorStop(0.4, '#0a1530');
+  oceanGrad.addColorStop(0.7, '#07102a');
+  oceanGrad.addColorStop(1, '#040818');
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, Math.PI * 2);
+  ctx.fillStyle = oceanGrad;
+  ctx.fill();
+
+  // Specular highlight
+  const specGrad = ctx.createRadialGradient(cx - R * 0.35, cy - R * 0.35, 0, cx - R * 0.35, cy - R * 0.35, R * 0.7);
+  specGrad.addColorStop(0, 'rgba(80,120,200,0.12)');
+  specGrad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = specGrad;
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, Math.PI * 2);
+  ctx.fill();
+
+  // === GRID ===
+  ctx.strokeStyle = 'rgba(30,50,90,0.25)';
+  ctx.lineWidth = 0.3;
+  // Latitude lines
+  for (let lat = -75; lat <= 75; lat += 15) {
+    ctx.beginPath();
+    let s = false;
+    for (let lon = -180; lon <= 180; lon += 3) {
+      const p = proj(rot(ll2xyz(lat, lon)));
+      if (p.z > 0) { if (!s) { ctx.moveTo(p.x, p.y); s = true; } else ctx.lineTo(p.x, p.y); }
+      else s = false;
+    }
+    ctx.stroke();
+  }
+  // Longitude lines
+  for (let lon = -180; lon < 180; lon += 20) {
+    ctx.beginPath();
+    let s = false;
+    for (let lat = -90; lat <= 90; lat += 3) {
+      const p = proj(rot(ll2xyz(lat, lon)));
+      if (p.z > 0) { if (!s) { ctx.moveTo(p.x, p.y); s = true; } else ctx.lineTo(p.x, p.y); }
+      else s = false;
+    }
+    ctx.stroke();
+  }
+
+  // Equator highlight
+  ctx.strokeStyle = 'rgba(50,80,120,0.35)';
+  ctx.lineWidth = 0.6;
+  ctx.beginPath();
+  let se = false;
+  for (let lon = -180; lon <= 180; lon += 2) {
+    const p = proj(rot(ll2xyz(0, lon)));
+    if (p.z > 0) { if (!se) { ctx.moveTo(p.x, p.y); se = true; } else ctx.lineTo(p.x, p.y); }
+    else se = false;
+  }
+  ctx.stroke();
+
+  // === LAND MASSES (Real TopoJSON Data) ===
+  if (dataLoaded) {
+    // Clip all land rendering to the globe circle
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.clip();
+
+    // PASS 1: Fill country polygons
+    worldCountries.forEach(country => {
+      country.polys.forEach(polygon => {
+        const ring = polygon[0];
+        if (!ring || ring.length < 3) return;
+
+        // Project all points
+        const pts = ring.map(([lon, lat]) => proj(rot(ll2xyz(lat, lon))));
+        const visCount = pts.filter(p => p.z > 0).length;
+        if (visCount === 0) return;
+
+        // Map behind-globe points to horizon
+        const mapped = pts.map(p => p.z > 0 ? p : toHorizon(p));
+
+        ctx.fillStyle = 'rgba(22,42,65,0.75)';
+        ctx.beginPath();
+        ctx.moveTo(mapped[0].x, mapped[0].y);
+        for (let i = 1; i < mapped.length; i++) {
+          ctx.lineTo(mapped[i].x, mapped[i].y);
+        }
+        ctx.closePath();
+        ctx.fill();
+      });
+    });
+
+    // PASS 2: Country outlines (coastlines)
+    worldCountries.forEach(country => {
+      country.polys.forEach(polygon => {
+        const ring = polygon[0];
+        if (!ring || ring.length < 3) return;
+
+        ctx.strokeStyle = 'rgba(70,130,200,0.6)';
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        let s = false;
+        for (const [lon, lat] of ring) {
+          const p = proj(rot(ll2xyz(lat, lon)));
+          if (p.z > 0) {
+            if (!s) { ctx.moveTo(p.x, p.y); s = true; }
+            else ctx.lineTo(p.x, p.y);
+          } else { s = false; }
+        }
+        ctx.stroke();
+      });
+    });
+
+    // PASS 3: Country borders (shared internal edges) - brighter
+    worldBorders.forEach(b => {
+      drawLine(b.coords, 'rgba(90,160,230,0.5)', 0.7);
+    });
+
+    ctx.restore(); // Remove clip
+  }
+
+  // === CONFLICT & DISASTER POINTS ===
+  const visible = allPoints.filter(c => {
+    if (currentView === 'conflict' && c.cat !== 'conflict') return false;
+    if (currentView === 'disaster' && c.cat !== 'disaster') return false;
+    if (activeFilter !== 'all' && c.level !== activeFilter) return false;
+    return true;
+  });
+
+  const sorted = [...visible].sort((a, b) => {
+    return proj(rot(ll2xyz(a.lat, a.lon))).z - proj(rot(ll2xyz(b.lat, b.lon))).z;
+  });
+
+  sorted.forEach(c => {
+    const p3d = rot(ll2xyz(c.lat, c.lon));
+    const p = proj(p3d);
+    if (p.z < 0) return;
+
+    const col = levelColors[c.level];
+    const isWar = c.level === 'war';
+    const isDisaster = c.cat === 'disaster';
+    const pulse = isWar ? (1 + 0.3 * Math.sin(t * 4)) : (isDisaster ? (1 + 0.15 * Math.sin(t * 3 + c.lon)) : 1);
+    const scale = R / 250;
+    const r = c.radius * pulse * scale;
+
+    // Outer glow (larger for war/major)
+    const glowR = isWar ? r * 4 : (isDisaster ? r * 3.5 : r * 3);
+    const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
+    glow.addColorStop(0, `rgba(${col[0]},${col[1]},${col[2]},0.25)`);
+    glow.addColorStop(0.5, `rgba(${col[0]},${col[1]},${col[2]},0.08)`);
+    glow.addColorStop(1, `rgba(${col[0]},${col[1]},${col[2]},0)`);
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, glowR, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Shockwave ring for war zones
+    if (isWar) {
+      const ringR = r * (2 + Math.sin(t * 2) * 1.5);
+      const ringA = 0.3 * (1 - (ringR - r * 0.5) / (r * 3));
+      if (ringA > 0) {
+        ctx.strokeStyle = `rgba(${col[0]},${col[1]},${col[2]},${Math.max(0, ringA)})`;
+        ctx.lineWidth = 1.5 * scale;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, ringR, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+
+    // Disaster wave rings
+    if (isDisaster && (c.level === 'flood' || c.level === 'earthquake')) {
+      for (let i = 0; i < 2; i++) {
+        const phase = (t * 1.5 + i * 1.5) % 3;
+        const ringR2 = r * (1 + phase);
+        const ringA2 = 0.25 * (1 - phase / 3);
+        if (ringA2 > 0) {
+          ctx.strokeStyle = `rgba(${col[0]},${col[1]},${col[2]},${ringA2})`;
+          ctx.lineWidth = 1 * scale;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, ringR2, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Core circle
+    const coreGrad = ctx.createRadialGradient(p.x - r * 0.2, p.y - r * 0.2, 0, p.x, p.y, r);
+    coreGrad.addColorStop(0, `rgba(${Math.min(255, col[0]+60)},${Math.min(255, col[1]+60)},${Math.min(255, col[2]+60)},0.95)`);
+    coreGrad.addColorStop(0.6, `rgba(${col[0]},${col[1]},${col[2]},0.7)`);
+    coreGrad.addColorStop(1, `rgba(${col[0]},${col[1]},${col[2]},0.2)`);
+    ctx.fillStyle = coreGrad;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Center dot
+    ctx.fillStyle = `rgba(255,255,255,0.8)`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, Math.max(1.5, r * 0.2), 0, Math.PI * 2);
+    ctx.fill();
+
+    // Label
+    const fontSize = Math.max(9, 10.5 * scale);
+    ctx.font = `600 ${fontSize}px 'Segoe UI', sans-serif`;
+    ctx.textAlign = 'center';
+    // Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+    ctx.fillText(c.name, p.x + 1, p.y - r - 5);
+    // Text
+    ctx.fillStyle = `rgba(${col[0]},${col[1]},${col[2]},0.95)`;
+    ctx.fillText(c.name, p.x, p.y - r - 6);
+
+    // Disaster icon
+    if (isDisaster && disasterIcons[c.level]) {
+      ctx.font = `${Math.max(10, 13 * scale)}px sans-serif`;
+      ctx.fillText(disasterIcons[c.level], p.x, p.y + 3);
+    }
+  });
+
+  // === ATMOSPHERE EDGE ===
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, Math.PI * 2);
+  const edgeGrad = ctx.createRadialGradient(cx, cy, R * 0.98, cx, cy, R * 1.02);
+  edgeGrad.addColorStop(0, 'rgba(50,100,200,0.25)');
+  edgeGrad.addColorStop(1, 'rgba(30,60,150,0)');
+  ctx.strokeStyle = edgeGrad;
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  // Thin bright edge
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(80,140,220,0.15)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // === ROTATION ===
+  if (autoRot && !dragging) tgtRotY += 0.002;
+  rotX += (tgtRotX - rotX) * 0.06;
+  rotY += (tgtRotY - rotY) * 0.06;
+
+  requestAnimationFrame(render);
+}
+
+// ========== INTERACTION ==========
+canvas.addEventListener('mousedown', e => { dragging = true; lx = e.clientX; ly = e.clientY; });
+canvas.addEventListener('mousemove', e => {
+  if (dragging) {
+    tgtRotY += (e.clientX - lx) * 0.005;
+    tgtRotX -= (e.clientY - ly) * 0.005;
+    tgtRotX = Math.max(-1.4, Math.min(1.4, tgtRotX));
+    lx = e.clientX; ly = e.clientY;
+  }
+  // Tooltip
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  let found = null;
+  const visible = allPoints.filter(c => {
+    if (currentView === 'conflict' && c.cat !== 'conflict') return false;
+    if (currentView === 'disaster' && c.cat !== 'disaster') return false;
+    if (activeFilter !== 'all' && c.level !== activeFilter) return false;
+    return true;
+  });
+  visible.forEach(c => {
+    const p = proj(rot(ll2xyz(c.lat, c.lon)));
+    if (p.z < 0) return;
+    const d = Math.hypot(p.x - mx, p.y - my);
+    if (d < c.radius * 2.5 * (R / 250)) found = { ...c, sx: e.clientX, sy: e.clientY };
+  });
+  const tt = document.getElementById('tooltip');
+  if (found) {
+    tt.style.display = 'block';
+    tt.style.left = (found.sx + 15) + 'px';
+    tt.style.top = (found.sy + 15) + 'px';
+    tt.querySelector('.tt-title').textContent = (found.cat === 'disaster' ? (disasterIcons[found.level] || '') + ' ' : '⚔ ') + found.name;
+    const col = levelColors[found.level];
+    tt.querySelector('.tt-type').innerHTML = `<span style="color:rgb(${col[0]},${col[1]},${col[2]})">${levelLabels[found.level] || found.level}</span> · ${found.cat === 'disaster' ? '자연재해' : '분쟁'}`;
+    tt.querySelector('.tt-desc').textContent = found.desc;
+    canvas.style.cursor = 'pointer';
+  } else {
+    tt.style.display = 'none';
+    canvas.style.cursor = dragging ? 'grabbing' : 'grab';
+  }
+});
+canvas.addEventListener('mouseup', () => dragging = false);
+canvas.addEventListener('mouseleave', () => { dragging = false; document.getElementById('tooltip').style.display = 'none'; });
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  R *= e.deltaY > 0 ? 0.95 : 1.05;
+  R = Math.max(80, Math.min(Math.min(W, H) * 0.75, R));
+}, { passive: false });
+
+// Touch
+canvas.addEventListener('touchstart', e => { if (e.touches.length === 1) { dragging = true; lx = e.touches[0].clientX; ly = e.touches[0].clientY; }});
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (dragging && e.touches.length === 1) {
+    tgtRotY += (e.touches[0].clientX - lx) * 0.005;
+    tgtRotX -= (e.touches[0].clientY - ly) * 0.005;
+    tgtRotX = Math.max(-1.4, Math.min(1.4, tgtRotX));
+    lx = e.touches[0].clientX; ly = e.touches[0].clientY;
+  }
+}, { passive: false });
+canvas.addEventListener('touchend', () => dragging = false);
+
+// ========== CONTROLS ==========
+function toggleAutoRotate() {
+  autoRot = !autoRot;
+  document.querySelectorAll('.ctrl-btn')[0].classList.toggle('active', autoRot);
+}
+
+function resetView() {
+  tgtRotX = -0.15; tgtRotY = Math.PI;
+  R = Math.min(W, H) * 0.38;
+}
+
+function focusRegion(region) {
+  // rotY = lon(°) × π/180,  rotX = -lat(°) × π/180
+  const regions = {
+    middleeast: { rx: -0.49, ry: 0.79 },   // lat≈28, lon≈45
+    europe:     { rx: -0.87, ry: 0.26 },    // lat≈50, lon≈15
+    africa:     { rx: -0.09, ry: 0.35 },    // lat≈5,  lon≈20
+    asia:       { rx: -0.61, ry: 1.75 },    // lat≈35, lon≈100
+    americas:   { rx: -0.44, ry: -1.57 },   // lat≈25, lon≈-90
+    oceania:    { rx: 0.44,  ry: 2.36 }     // lat≈-25,lon≈135
+  };
+  const r = regions[region];
+  if (r) { tgtRotX = r.rx; tgtRotY = r.ry; }
+}
+
+function focusConflict(lat, lon) {
+  tgtRotY = lon * Math.PI / 180;
+  tgtRotX = -lat * Math.PI / 180;
+}
+
+function filterByLevel(level) {
+  activeFilter = level;
+  document.querySelectorAll('.legend-item').forEach(el => {
+    el.classList.remove('dim');
+    if (level !== 'all') {
+      const onclick = el.getAttribute('onclick') || '';
+      if (!onclick.includes("'" + level + "'") && !onclick.includes("'all'")) el.classList.add('dim');
+    }
+  });
+  // Cards
+  document.querySelectorAll('.conflict-card, .disaster-card').forEach(card => {
+    if (level === 'all' || card.classList.contains(level)) card.style.display = 'block';
+    else card.style.display = 'none';
+  });
+}
+
+function setView(view) {
+  currentView = view;
+  activeFilter = 'all';
+  document.querySelectorAll('.legend-item').forEach(el => el.classList.remove('dim'));
+  document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active','active-disaster','active-commodity','active-usstock'); });
+  const tabs = document.querySelectorAll('.tab-btn');
+  if (view === 'all') tabs[0].classList.add('active');
+  else if (view === 'conflict') tabs[1].classList.add('active');
+  else if (view === 'disaster') tabs[2].classList.add('active-disaster');
+  else if (view === 'commodity') tabs[3].classList.add('active-commodity');
+  else if (view === 'usstock') tabs[4].classList.add('active-usstock');
+
+  const sc = document.getElementById('sidebar-conflict');
+  const sd = document.getElementById('sidebar-disaster');
+  const sm = document.getElementById('sidebar-commodity');
+  const su = document.getElementById('sidebar-usstock');
+  sc.style.display = 'none';
+  sd.style.display = 'none';
+  sm.style.display = 'none';
+  su.style.display = 'none';
+
+  if (view === 'all') { sc.style.display = 'block'; sd.style.display = 'block'; }
+  else if (view === 'conflict') { sc.style.display = 'block'; }
+  else if (view === 'disaster') { sd.style.display = 'block'; }
+  else if (view === 'commodity') { sm.style.display = 'block'; }
+  else if (view === 'usstock') { su.style.display = 'block'; initStockCharts(); }
+
+  document.querySelectorAll('.conflict-card, .disaster-card').forEach(card => card.style.display = 'block');
+}
+
+// ========== US STOCK MARKET ==========
+// Simulated price data per period
+const stockData = {
+  dow: {
+    '1d': { pts: [41875,41920,41933,41890,41820,41750,41710,41650,41600,41540,41488,41530,41580], color: '#4488ff', label: '1일 (03/23)' },
+    '1w': { pts: [42150,42050,41980,41870,41920,41750,41650,41580], color: '#4488ff', label: '1주' },
+    '1m': { pts: [42800,42650,42400,42100,42300,41950,41700,42050,41870,41720,41580], color: '#4488ff', label: '1개월' },
+    '1y': { pts: [38800,39500,40200,41100,42500,43800,45074,44200,43500,42800,42100,41580], color: '#4488ff', label: '1년' }
+  },
+  sp500: {
+    '1d': { pts: [5710,5721,5715,5698,5680,5665,5649,5655,5670,5660,5652,5668], color: '#4488ff', label: '1일 (03/23)' },
+    '1w': { pts: [5780,5750,5720,5695,5710,5680,5668], color: '#4488ff', label: '1주' },
+    '1m': { pts: [5850,5820,5780,5740,5760,5710,5690,5720,5700,5668], color: '#4488ff', label: '1개월' },
+    '1y': { pts: [5200,5400,5550,5700,5900,6147,6050,5900,5800,5750,5700,5668], color: '#4488ff', label: '1년' }
+  },
+  nasdaq: {
+    '1d': { pts: [17880,17915,17890,17830,17770,17720,17680,17623,17650,17700,17688], color: '#4488ff', label: '1일 (03/23)' },
+    '1w': { pts: [18200,18050,17950,17850,17900,17750,17688], color: '#4488ff', label: '1주' },
+    '1m': { pts: [18800,18600,18350,18100,18200,17950,17800,18000,17850,17688], color: '#4488ff', label: '1개월' },
+    '1y': { pts: [16500,17200,17800,18500,19500,20205,19800,19200,18600,18100,17688], color: '#4488ff', label: '1년' }
+  },
+  futures: {
+    '1d': { pts: [5668,5672,5660,5656,5665,5675,5690,5695,5688,5682], color: '#44cc88', label: '금일 선물' },
+    '1w': { pts: [5740,5710,5695,5680,5690,5675,5682], color: '#44cc88', label: '1주' },
+    '1m': { pts: [5830,5800,5760,5730,5750,5710,5690,5700,5682], color: '#44cc88', label: '1개월' },
+    '1y': { pts: [5180,5380,5530,5680,5880,6130,6020,5880,5780,5720,5682], color: '#44cc88', label: '1년' }
+  }
+};
+
+let stockChartsInit = false;
+
+function drawMiniChart(canvasId, data) {
+  const c = document.getElementById(canvasId);
+  if (!c) return;
+  const cctx = c.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const w = c.parentElement.clientWidth;
+  const h = 40;
+  c.width = w * dpr; c.height = h * dpr;
+  c.style.width = w + 'px'; c.style.height = h + 'px';
+  cctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  const pts = data.pts;
+  const mn = Math.min(...pts), mx = Math.max(...pts);
+  const range = mx - mn || 1;
+  const pad = 2;
+
+  const isUp = pts[pts.length - 1] >= pts[0];
+  const lineColor = isUp ? '#44cc88' : '#4488ff';
+  const fillTop = isUp ? 'rgba(68,204,136,0.15)' : 'rgba(68,136,255,0.15)';
+
+  // Fill area
+  cctx.beginPath();
+  for (let i = 0; i < pts.length; i++) {
+    const x = pad + (i / (pts.length - 1)) * (w - pad * 2);
+    const y = pad + (1 - (pts[i] - mn) / range) * (h - pad * 2);
+    if (i === 0) cctx.moveTo(x, y); else cctx.lineTo(x, y);
+  }
+  cctx.lineTo(w - pad, h); cctx.lineTo(pad, h); cctx.closePath();
+  const grad = cctx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, fillTop);
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  cctx.fillStyle = grad;
+  cctx.fill();
+
+  // Line
+  cctx.beginPath();
+  for (let i = 0; i < pts.length; i++) {
+    const x = pad + (i / (pts.length - 1)) * (w - pad * 2);
+    const y = pad + (1 - (pts[i] - mn) / range) * (h - pad * 2);
+    if (i === 0) cctx.moveTo(x, y); else cctx.lineTo(x, y);
+  }
+  cctx.strokeStyle = lineColor;
+  cctx.lineWidth = 1.5;
+  cctx.stroke();
+
+  // End dot
+  const lastX = w - pad;
+  const lastY = pad + (1 - (pts[pts.length - 1] - mn) / range) * (h - pad * 2);
+  cctx.beginPath();
+  cctx.arc(lastX, lastY, 3, 0, Math.PI * 2);
+  cctx.fillStyle = lineColor;
+  cctx.fill();
+}
+
+function initStockCharts() {
+  setTimeout(() => {
+    drawMiniChart('chart-dow', stockData.dow['1d']);
+    drawMiniChart('chart-sp500', stockData.sp500['1d']);
+    drawMiniChart('chart-nasdaq', stockData.nasdaq['1d']);
+    drawMiniChart('chart-futures', stockData.futures['1d']);
+    stockChartsInit = true;
+  }, 50);
+}
+
+function setStockPeriod(index, period) {
+  // Update active button
+  const card = document.getElementById('chart-' + index).closest('.stock-index-card');
+  card.querySelectorAll('.stock-period-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  // Redraw chart
+  drawMiniChart('chart-' + index, stockData[index][period]);
+}
+
+function toggleStockDetail(index) {
+  const panel = document.getElementById('detail-' + index);
+  panel.classList.toggle('open');
+}
+
+// UPDATE TIMESTAMP
+function updateTimestamp() {
+  const el = document.getElementById('update-timestamp');
+  if (!el) return;
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const ts = now.getFullYear() + '.' + pad(now.getMonth()+1) + '.' + pad(now.getDate()) + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+  el.textContent = 'UPDATE ' + ts;
+}
+updateTimestamp();
+setInterval(updateTimestamp, 1000);
+
+// INIT
+window.addEventListener('resize', resize);
+resize();
+render();
+setView('all');
+</script>
+</body>
+</html>
