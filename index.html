@@ -512,6 +512,40 @@
     #sidebar { width: 100%; }
     #globe-container { min-height: 450px; }
   }
+  /* ===== ECONOMIC IMPACT MODAL ===== */
+  #econ-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:900; backdrop-filter:blur(4px); }
+  #econ-modal {
+    display:none; position:fixed; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    z-index:901; background:#09111f;
+    border:1px solid rgba(100,140,255,0.25); border-radius:16px;
+    padding:22px 26px; width:min(680px,96vw); max-height:88vh; overflow-y:auto;
+    box-shadow:0 24px 80px rgba(0,0,0,0.9);
+    animation:econIn 0.22s ease;
+  }
+  @keyframes econIn { from{opacity:0;transform:translate(-50%,-46%)} to{opacity:1;transform:translate(-50%,-50%)} }
+  #econ-modal::-webkit-scrollbar{width:4px}
+  #econ-modal::-webkit-scrollbar-thumb{background:rgba(100,140,255,0.2);border-radius:4px}
+  .econ-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+  .econ-title{font-size:1.15em;font-weight:700;color:#eef}
+  .econ-meta{display:flex;gap:10px;align-items:center;margin-top:5px;flex-wrap:wrap}
+  .econ-badge{font-size:0.7em;padding:2px 9px;border-radius:10px;font-weight:700;letter-spacing:0.3px}
+  .econ-date{font-size:0.72em;color:#556677}
+  .econ-close{background:none;border:1px solid rgba(100,140,255,0.2);color:#8899bb;border-radius:8px;font-size:1em;cursor:pointer;padding:3px 11px;transition:all 0.2s}
+  .econ-close:hover{color:#fff;border-color:rgba(100,140,255,0.5);background:rgba(100,140,255,0.1)}
+  .econ-summary{background:rgba(255,170,40,0.07);border-left:3px solid #ffaa33;border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:18px;font-size:0.8em;color:#ffcc88;line-height:1.65}
+  .econ-chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+  .econ-chart-box{background:rgba(6,12,28,0.9);border-radius:10px;padding:12px 14px;border:1px solid rgba(100,140,255,0.1)}
+  .ecb-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .ecb-label{font-size:0.7em;color:#8899bb;font-weight:600;letter-spacing:0.4px}
+  .ecb-delta{font-size:0.88em;font-weight:700}
+  .ecb-delta.pos{color:#ff5555}
+  .ecb-delta.neg{color:#44dd88}
+  .ecb-delta.pos-good{color:#44dd88}
+  .ecb-delta.neg-bad{color:#ff5555}
+  .econ-footer{margin-top:13px;font-size:0.7em;color:#334455;text-align:center;border-top:1px solid rgba(100,140,255,0.07);padding-top:10px}
+  .econ-click-hint{text-align:center;font-size:0.7em;color:#334455;margin-top:3px}
+  @media(max-width:600px){.econ-chart-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -1312,6 +1346,52 @@
   </div>
 </div>
 
+<div id="econ-overlay" onclick="closeEconomicModal()"></div>
+<div id="econ-modal">
+  <div class="econ-header">
+    <div>
+      <div class="econ-title" id="econ-title">-</div>
+      <div class="econ-meta">
+        <span class="econ-badge" id="econ-badge">-</span>
+        <span class="econ-date" id="econ-date">발생: -</span>
+      </div>
+    </div>
+    <button class="econ-close" onclick="closeEconomicModal()">✕</button>
+  </div>
+  <div class="econ-summary" id="econ-summary"></div>
+  <div class="econ-chart-grid">
+    <div class="econ-chart-box">
+      <div class="ecb-header">
+        <div class="ecb-label">🛢 브렌트 유가 (USD/배럴)</div>
+        <div class="ecb-delta" id="econ-oil-delta"></div>
+      </div>
+      <canvas id="econ-chart-oil" height="110"></canvas>
+    </div>
+    <div class="econ-chart-box">
+      <div class="ecb-header">
+        <div class="ecb-label">🥇 금 (USD/oz)</div>
+        <div class="ecb-delta" id="econ-gold-delta"></div>
+      </div>
+      <canvas id="econ-chart-gold" height="110"></canvas>
+    </div>
+    <div class="econ-chart-box">
+      <div class="ecb-header">
+        <div class="ecb-label">📈 S&amp;P 500</div>
+        <div class="ecb-delta" id="econ-sp500-delta"></div>
+      </div>
+      <canvas id="econ-chart-sp500" height="110"></canvas>
+    </div>
+    <div class="econ-chart-box">
+      <div class="ecb-header">
+        <div class="ecb-label">💱 USD/KRW 환율</div>
+        <div class="ecb-delta" id="econ-krw-delta"></div>
+      </div>
+      <canvas id="econ-chart-krw" height="110"></canvas>
+    </div>
+  </div>
+  <div class="econ-footer">※ 발생 전후 주요 경제지표 변화 (근사치 기반 — 참고용)</div>
+</div>
+
 <div id="tooltip">
   <div class="tt-title"></div>
   <div class="tt-type"></div>
@@ -1365,6 +1445,277 @@ const disasters = [
 ];
 
 const allPoints = [...conflicts, ...disasters];
+
+// ========== ECONOMIC IMPACT DATA ==========
+const economicImpactData = {
+  '이란 전쟁':{date:'2026.02.28',level:'war',
+    summary:'미·이스라엘 vs 이란 전면전 → 호르무즈 해협 봉쇄 공포로 브렌트 +34%, 금 사상최고가 +65%. 원화 1,500원 목전. 나스닥 AI섹터 반등이 하락 부분 상쇄. 이란 역제안(5개항) 협상 지속 중.',
+    labels:['1월(전)','2/28(발생)','3/7','3/14','3/26(현재)'],
+    oil:[76.5,90.2,97.1,101.0,102.2],gold:[2780,3250,3900,4300,4565],sp500:[6100,5780,6050,6400,6591],krw:[1432,1463,1472,1488,1499]},
+  '러시아-우크라이나':{date:'2022.02.24',level:'war',
+    summary:'4년차 전쟁 — 에너지·식량 공급 충격으로 브렌트 +44%(127달러 최고). Fed 긴축 사이클 촉발, 글로벌 인플레이션 급등. 현재 유가는 전쟁 전 수준 회복했으나 금 추세적 상승 지속.',
+    labels:['22.01','22.02(발생)','22.04','22.08','23.02','현재'],
+    oil:[88,97,103,95,82,102],gold:[1800,1900,1940,1772,1830,4565],sp500:[4477,4288,4131,4158,4077,6591],krw:[1198,1208,1240,1330,1245,1499]},
+  '수단 내전':{date:'2023.04.15',level:'war',
+    summary:'아프리카 내부 분쟁 — 글로벌 에너지 직접 충격 제한적. 금 채굴 중단으로 공급 간접 영향. 지역 식량 공급망 붕괴, UN WFP 최대 규모 지원.',
+    labels:['23.03','23.04(발생)','23.06','23.10','24.04','현재'],
+    oil:[80,86,74,85,87,102],gold:[1980,2000,1960,1975,2350,4565],sp500:[3962,4133,4297,4193,5204,6591],krw:[1315,1330,1280,1355,1380,1499]},
+  '가자지구':{date:'2023.10.07',level:'war',
+    summary:'하마스 기습 → 중동 확전 공포로 유가 일시급등했으나 직접 생산 차질 없어 오히려 하락. 반면 금은 안전자산 수요 폭증으로 이때부터 사상최고가 랠리 시작(+70%).',
+    labels:['23.09','23.10(발생)','23.11','24.01','24.10','현재'],
+    oil:[93,84,81,75,77,102],gold:[1920,1832,1980,2030,2660,4565],sp500:[4288,4258,4358,4742,5845,6591],krw:[1330,1340,1360,1330,1375,1499]},
+  '미얀마 내전':{date:'2021.02.01',level:'war',
+    summary:'군부 쿠데타 → 희토류·목재 수출 차질. 동남아 공급망 교란. 글로벌 시장은 팬데믹 회복세로 충격 흡수. 중국 국경 통제 강화로 무역 제한.',
+    labels:['21.01','21.02(발생)','21.06','22.02','23.06','현재'],
+    oil:[55,58,71,88,76,102],gold:[1850,1790,1780,1900,1940,4565],sp500:[3714,3916,4297,4384,4450,6591],krw:[1100,1108,1130,1200,1285,1499]},
+  '파키스탄-아프간':{date:'2026.03.15',level:'war',
+    summary:'공개전쟁 선언·카불 폭격 — 이란 전쟁과 동시 진행으로 중동·남아시아 불안 가중. 아직 단기 영향 국한. 파키스탄 루피·인도 루피 약세 압력.',
+    labels:['3월초(전)','3/15(발생)','3/26(현재)'],
+    oil:[99.5,101.0,102.2],gold:[3600,4300,4565],sp500:[6550,6490,6591],krw:[1490,1495,1499]},
+  '레바논 전쟁':{date:'2024.09.17',level:'war',
+    summary:'이스라엘-헤즈볼라 전면전 — 이란 전쟁의 전주곡. 중동 불안 고조로 금 안전자산 수요 급증 시작. 레바논 경제 붕괴 심화, 페이저 공격으로 충격.',
+    labels:['24.08','24.09(발생)','24.11','25.01','25.06','현재'],
+    oil:[80,72,74,72,70,102],gold:[2470,2560,2680,2680,3300,4565],sp500:[5648,5618,5893,5867,5900,6591],krw:[1335,1355,1390,1472,1480,1499]},
+  '나이지리아':{date:'2015.01.01',level:'confrontation',
+    summary:'보코하람·ISWAP 테러 지속 — 나이지리아 석유 생산량 감소 기여. 서아프리카 불안정. 글로벌 직접 영향 제한적이나 유가 변동성 요인 중 하나.',
+    labels:['2015','2018','2020','2022','2024','현재'],
+    oil:[55,60,40,88,77,102],gold:[1060,1260,1770,1900,2370,4565],sp500:[2044,2674,3756,3839,4845,6591],krw:[1172,1120,1085,1450,1380,1499]},
+  '에티오피아-에리트레아':{date:'2022.08.01',level:'confrontation',
+    summary:'아프리카의 뿔 긴장 — 홍해 인근 지정학 리스크. 에티오피아 커피·식품 수출 차질. 동아프리카 식량 안보 위협. 후티 홍해 공격 배경 요인 중 하나.',
+    labels:['22.01','22.08(위기)','22.12','23.06','24.06','현재'],
+    oil:[88,95,78,75,80,102],gold:[1800,1750,1820,1940,2310,4565],sp500:[4477,4000,3895,4450,5460,6591],krw:[1198,1310,1275,1285,1380,1499]},
+  '예멘':{date:'2023.10.17',level:'confrontation',
+    summary:'후티 홍해 공격 개시 — 수에즈 운하 통항 급감, 해상 물류비 300% 폭등. 에너지·식품 인플레이션 재점화 우려. 2024~2025년 내내 해운보험료 폭등.',
+    labels:['23.10','23.11(홍해)','24.01','24.03','24.12','현재'],
+    oil:[84,80,78,84,73,102],gold:[1975,1993,2028,2160,2655,4565],sp500:[4258,4509,4742,5254,5970,6591],krw:[1340,1305,1320,1337,1430,1499]},
+  '시리아':{date:'2011.03.15',level:'confrontation',
+    summary:'13년 내전 — 초기 원유 생산 차질로 유가 급등 기여. 난민 위기로 유럽 재정 부담. 현재 재건 단계. 인프라 재건 수혜 기업 주가 상승.',
+    labels:['2011','2014','2016','2019','2023','현재'],
+    oil:[102,55,44,55,77,102],gold:[1573,1204,1153,1480,1940,4565],sp500:[1293,2059,2239,2584,4769,6591],krw:[1100,1060,1200,1160,1310,1499]},
+  '콩고민주공화국':{date:'2021.11.01',level:'confrontation',
+    summary:'M23 반군 재활성화 — 코발트·리튬 등 핵심 광물 공급 위협. 전기차 배터리 공급망 직접 영향. 코발트 가격 변동성 확대. 광산 기업 리스크 프리미엄 상승.',
+    labels:['21.01','21.11(M23)','22.06','23.01','24.06','현재'],
+    oil:[55,84,115,80,82,102],gold:[1850,1800,1815,1920,2310,4565],sp500:[3714,4600,3785,3825,5460,6591],krw:[1100,1185,1310,1240,1380,1499]},
+  '사헬 (부르키나·말리)':{date:'2021.01.24',level:'confrontation',
+    summary:'쿠데타 연쇄·지하드 확산 — 프랑스군 철수 후 공백. 금 매장지역 포함으로 광물 공급 불확실성. 식량 위기로 UN 긴급지원. 러시아 바그너 그룹 진입.',
+    labels:['2021','2022','2023(확산)','2024','2025','현재'],
+    oil:[60,88,85,82,72,102],gold:[1820,1900,1940,2370,2660,4565],sp500:[3714,3839,4769,4845,5867,6591],krw:[1100,1200,1310,1350,1472,1499]},
+  '대만해협':{date:'2022.08.02',level:'tension',
+    summary:'펠로시 방문 이후 PLA 포위 훈련 — 반도체 공급망 위기 공포. TSMC 주가 급락 후 회복. 미-중 무역전쟁 재점화 우려로 달러 강세. AI 반도체 패권 경쟁 본격화.',
+    labels:['22.07','22.08(위기)','22.12','23.06','25.01','현재'],
+    oil:[90,90,77,70,72,102],gold:[1700,1750,1820,1940,2660,4565],sp500:[3965,4000,3895,4450,5867,6591],krw:[1295,1330,1270,1285,1472,1499]},
+  '남중국해':{date:'2023.08.05',level:'tension',
+    summary:'필리핀-중국 충돌 격화 — 아세안 무역로 리스크. 에너지 탐사권 분쟁으로 지역 긴장. 해운보험료 상승. 미국 인도태평양 군사력 증강.',
+    labels:['23.04','23.08(충돌)','23.12','24.06','25.01','현재'],
+    oil:[84,86,73,82,72,102],gold:[1990,1900,2060,2296,2660,4565],sp500:[4169,4512,4769,5460,5867,6591],krw:[1320,1340,1320,1380,1472,1499]},
+  '한반도':{date:'2022.09.25',level:'tension',
+    summary:'북한 ICBM 연쇄 발사 → 미 패트리엇 이전으로 방어 공백 논란. 한국 방위산업주 급등(한화에어로+200%). 원화 약세 직결. KF-21 수출 가속화.',
+    labels:['22.09','22.11','23.04','24.01','25.01','현재'],
+    oil:[92,85,80,77,72,102],gold:[1650,1740,2000,2034,2660,4565],sp500:[3642,3963,4169,4742,5867,6591],krw:[1370,1340,1340,1325,1472,1499]},
+  '중일 외교위기':{date:'2023.09.01',level:'tension',
+    summary:'일본 방위비 증액·중국 반발 → 아시아 군비 경쟁 우려. 일본 엔화 약세 심화로 아시아 통화 전반 압박. 한국 방산·반도체 간접 수혜.',
+    labels:['23.06','23.09(위기)','23.12','24.06','25.01','현재'],
+    oil:[75,90,73,82,72,102],gold:[1940,1920,2060,2296,2660,4565],sp500:[4450,4297,4769,5460,5867,6591],krw:[1285,1340,1320,1380,1472,1499]},
+  '콜롬비아':{date:'2022.01.01',level:'caution',
+    summary:'마약카르텔·게릴라 충돌 — 콜롬비아 원유 생산 일부 차질. 커피·코카인 공급망 영향. 미국 마약 단속 강화로 중남미 정치 불안 고조.',
+    labels:['22.01','22.06','23.01','23.06','24.06','현재'],
+    oil:[88,115,80,75,80,102],gold:[1800,1815,1920,1940,2310,4565],sp500:[4477,3666,3895,4450,5460,6591],krw:[1198,1310,1240,1285,1380,1499]},
+  '아이티':{date:'2023.03.01',level:'caution',
+    summary:'갱단 국가 장악 — 카리브해 물류 일부 차질. 인도주의 위기로 유엔 개입. 케냐 다국적 경찰력 파견. 글로벌 금융 시장 직접 영향 최소.',
+    labels:['23.03','23.06','23.12','24.06','25.01','현재'],
+    oil:[78,75,73,82,72,102],gold:[1975,1940,2060,2296,2660,4565],sp500:[3962,4297,4769,5460,5867,6591],krw:[1315,1285,1320,1380,1472,1499]},
+  '베네수엘라':{date:'2025.12.01',level:'caution',
+    summary:'미국 마약소탕 공습 개시 — 베네수엘라 원유(3백만bpd 잠재) 공급 불확실성. 중남미 정치 갈등 고조. 이란 전쟁과 맞물려 글로벌 에너지 공급 불안 가중.',
+    labels:['25.10','25.12(공습)','26.01','26.02','26.03(현재)'],
+    oil:[73,75,80,95,102],gold:[2600,2650,2950,4100,4565],sp500:[5900,5850,5900,5800,6591],krw:[1430,1440,1445,1460,1499]},
+  '모잠비크':{date:'2021.01.01',level:'protest',
+    summary:'북부 카보 델가도 LNG 시설 공격 — 에너지 기업 철수. 모잠비크 LNG 개발 지연으로 유럽 에너지 대안 확보 차질. Total·ENI 사업 중단.',
+    labels:['2021.01','2021.06','2022.06','2023.06','2024.06','현재'],
+    oil:[55,74,115,75,80,102],gold:[1850,1780,1815,1940,2310,4565],sp500:[3714,4297,3785,4450,5460,6591],krw:[1100,1130,1310,1285,1380,1499]},
+  '케냐 대홍수':{date:'2026.03.01',level:'flood',
+    summary:'동아프리카 최대 농경지 피해 — 케냐 차·원예 수출 차질. 식량 가격 지역 급등. 이란 전쟁과 동시 발생으로 아프리카 경제 복합 충격.',
+    labels:['26.02','26.03(발생)','3/26(현재)'],
+    oil:[95,100,102],gold:[3900,4300,4565],sp500:[6400,6500,6591],krw:[1485,1492,1499]},
+  '오만 돌발홍수':{date:'2026.03.10',level:'flood',
+    summary:'호르무즈 해협 인근 — 석유 수출 항구 근접. 이란 전쟁과 동시 발생으로 중동 에너지 공급 불안 가중. 단기 유가 상승 촉매.',
+    labels:['26.02','26.03(발생)','3/26(현재)'],
+    oil:[99,101,102],gold:[4000,4300,4565],sp500:[6480,6520,6591],krw:[1490,1495,1499]},
+  '하와이 홍수':{date:'2026.03.05',level:'flood',
+    summary:'20년 최악 홍수 — $10억 피해, 관광업 직격. 미국 보험주 하락. 태평양 물류 거점 일부 기능 마비. FEMA 최대 규모 지원 선언.',
+    labels:['26.02','26.03(발생)','3/26(현재)'],
+    oil:[97,100,102],gold:[3950,4200,4565],sp500:[6450,6520,6591],krw:[1487,1493,1499]},
+  '에콰도르 홍수':{date:'2026.01.15',level:'flood',
+    summary:'629건 홍수 — 에콰도르 바나나·코코아 수출 차질. 안데스 농업지대 피해. 라틴아메리카 식량 공급망 영향.',
+    labels:['26.01(발생)','26.02','3/26(현재)'],
+    oil:[80,90,102],gold:[2750,3500,4565],sp500:[5900,5950,6591],krw:[1440,1460,1499]},
+  '인도네시아 홍수':{date:'2025.12.15',level:'flood',
+    summary:'아체 등 3개 주 대홍수 — 니켈·팜유 공급 차질. 인도네시아 광물 수출 의존 한국 제조업 영향. 아세안 경제성장 하방 리스크.',
+    labels:['25.11','25.12(발생)','26.01','26.02','현재'],
+    oil:[73,75,80,95,102],gold:[2620,2700,2950,4100,4565],sp500:[5930,5850,5900,5800,6591],krw:[1430,1440,1445,1460,1499]},
+  '튀니지 홍수':{date:'2026.03.01',level:'flood',
+    summary:'1950년 이후 최대 홍수 — 튀니지 인산염 수출 차질. 지중해 농업 피해. EU 식량 공급망 소폭 영향.',
+    labels:['26.02','26.03(발생)','현재'],
+    oil:[95,100,102],gold:[3900,4300,4565],sp500:[6400,6500,6591],krw:[1485,1492,1499]},
+  '모로코 대홍수':{date:'2026.03.15',level:'flood',
+    summary:'북부 기록적 폭우 — 모로코 인산염·희토류 수출 차질. 유럽 최대 식품 공급국 피해로 인플레이션 압박.',
+    labels:['26.02','26.03(발생)','현재'],
+    oil:[97,100,102],gold:[3800,4200,4565],sp500:[6450,6520,6591],krw:[1487,1493,1499]},
+  '시마네 지진':{date:'2026.01.15',level:'earthquake',
+    summary:'M6.4 일본 서부 — 산업시설 일시 가동 중단. 엔화 약세 압력. 재건 수요로 건설주 상승. 반도체 소재(SiC 웨이퍼) 공급 단기 우려.',
+    labels:['25.12','26.01(발생)','26.02','현재'],
+    oil:[73,80,90,102],gold:[2650,2750,3500,4565],sp500:[5950,5900,5950,6591],krw:[1432,1440,1460,1499]},
+  '민다나오 지진':{date:'2026.01.20',level:'earthquake',
+    summary:'M6.4 필리핀 — 농업지대 피해. 바나나·파인애플 수출 차질. 필리핀 페소 약세. 남중국해 긴장과 맞물려 지역 불안 가중.',
+    labels:['25.12','26.01(발생)','26.02','현재'],
+    oil:[73,80,90,102],gold:[2650,2750,3500,4565],sp500:[5950,5900,5950,6591],krw:[1432,1440,1460,1499]},
+  '이오지마 지진':{date:'2026.03.15',level:'earthquake',
+    summary:'M6.0 — 일본 원거리 무인도 지역. 직접 경제 피해 최소화. 해저 화산 활동 모니터링. 해양 케이블 점검 필요.',
+    labels:['26.02','26.03(발생)','현재'],
+    oil:[97,100,102],gold:[3800,4200,4565],sp500:[6400,6500,6591],krw:[1487,1493,1499]},
+  '네브래스카 산불':{date:'2026.03.01',level:'fire',
+    summary:'주 역사상 최대 — 600,000+ 에이커 소실, 옥수수·대두 생산지 직격. 곡물 선물가 급등. 이란 전쟁과 동시 발생해 에너지·식량 복합 충격.',
+    labels:['26.02','26.03(발생)','현재'],
+    oil:[95,100,102],gold:[3900,4300,4565],sp500:[6450,6500,6591],krw:[1485,1492,1499]},
+  '오클라호마·텍사스 산불':{date:'2026.03.10',level:'fire',
+    summary:'다발성 산불 — 텍사스 천연가스 생산 시설 인근. 에너지 인프라 위협. FEMA 지원 선언. 미국 중남부 농업 피해.',
+    labels:['26.02','26.03(발생)','현재'],
+    oil:[99,101,102],gold:[4000,4400,4565],sp500:[6480,6520,6591],krw:[1488,1494,1499]},
+  '알라바마 산불':{date:'2026.03.24',level:'fire',
+    summary:'가뭄·폭염 속 급속 확산 — 이란 전쟁 불안 속 미국 내 재해 동시 발생으로 보험주 하락. 3/24-25 최근 발생, 글로벌 직접 영향 제한.',
+    labels:['3/20(전)','3/24(발생)','현재'],
+    oil:[101,101.5,102.2],gold:[4400,4500,4565],sp500:[6560,6570,6591],krw:[1497,1498,1499]},
+  '동아프리카 가뭄':{date:'2023.01.01',level:'drought',
+    summary:'소말리아 작물 83% 감소 → 국제 식량 원조 비용 급증. UN WFP 최대 규모 지원. 밀·옥수수 선물가 간접 영향. 기후 리스크 프리미엄 확대.',
+    labels:['23.01','23.06','23.12','24.06','25.01','현재'],
+    oil:[78,75,73,82,72,102],gold:[1920,1940,2060,2296,2660,4565],sp500:[3895,4450,4769,5460,5867,6591],krw:[1240,1285,1320,1380,1472,1499]},
+  '아프간 가뭄':{date:'2024.01.01',level:'drought',
+    summary:'1,740만 명 식량 불안 — 탈레반 경제 취약성 심화. 아편 생산량 감소로 파키스탄 밀수 경제 압박. 이란 전쟁으로 아프간 지원 경로 차단 우려.',
+    labels:['24.01','24.06','24.12','25.06','현재'],
+    oil:[77,82,73,72,102],gold:[2034,2296,2650,2750,4565],sp500:[4742,5460,5970,5880,6591],krw:[1325,1380,1430,1472,1499]},
+  '북아프리카 가뭄':{date:'2025.09.01',level:'drought',
+    summary:'알제리·모로코·튀니지 — 지중해 작물 수확 실패. EU 식량 수입 증가로 인플레이션 압박. 오렌지·올리브·밀 가격 상승.',
+    labels:['25.08','25.09(발생)','25.12','26.02','현재'],
+    oil:[73,73,75,95,102],gold:[2500,2550,2700,4100,4565],sp500:[5650,5700,5970,5800,6591],krw:[1420,1430,1440,1460,1499]},
+  '네덜란드 폭설':{date:'2026.01.05',level:'snow',
+    summary:'유럽 물류 허브 마비 — 로테르담 항 일시 폐쇄, 암스테르담 공항 운항 취소. 유럽 에너지 수요 급증으로 천연가스 가격 일시 상승.',
+    labels:['25.12','26.01(발생)','26.02','현재'],
+    oil:[73,80,90,102],gold:[2650,2750,3500,4565],sp500:[5950,5900,5950,6591],krw:[1432,1440,1460,1499]}
+};
+
+// ========== MINI LINE CHART (Canvas 2D) ==========
+function drawEconChart(canvasId, labels, data, lineColor, fillColor) {
+  const cv = document.getElementById(canvasId);
+  if (!cv) return;
+  const W = cv.clientWidth || cv.offsetWidth || 290;
+  const H = 110;
+  cv.width = W; cv.height = H;
+  const c = cv.getContext('2d');
+  c.clearRect(0, 0, W, H);
+  const pL=8, pR=8, pT=12, pB=22;
+  const cW=W-pL-pR, cH=H-pT-pB;
+  const mn=Math.min(...data)*0.996, mx=Math.max(...data)*1.004;
+  const rng=mx-mn||1;
+  const pts=data.map((v,i)=>({
+    x: pL+(i/(data.length-1))*cW,
+    y: pT+(1-(v-mn)/rng)*cH
+  }));
+  // grid
+  c.strokeStyle='rgba(100,140,255,0.07)'; c.lineWidth=1;
+  for(let g=0;g<=3;g++){
+    const y=pT+(g/3)*cH;
+    c.beginPath(); c.moveTo(pL,y); c.lineTo(pL+cW,y); c.stroke();
+  }
+  // fill
+  const grad=c.createLinearGradient(0,pT,0,pT+cH);
+  grad.addColorStop(0, fillColor.replace('0.3','0.28'));
+  grad.addColorStop(1, fillColor.replace('0.3','0.01'));
+  c.beginPath(); c.moveTo(pts[0].x,pts[0].y);
+  for(let i=1;i<pts.length;i++){
+    const cpx=(pts[i-1].x+pts[i].x)/2;
+    c.bezierCurveTo(cpx,pts[i-1].y,cpx,pts[i].y,pts[i].x,pts[i].y);
+  }
+  c.lineTo(pts[pts.length-1].x,pT+cH); c.lineTo(pts[0].x,pT+cH);
+  c.closePath(); c.fillStyle=grad; c.fill();
+  // line
+  c.beginPath(); c.moveTo(pts[0].x,pts[0].y);
+  for(let i=1;i<pts.length;i++){
+    const cpx=(pts[i-1].x+pts[i].x)/2;
+    c.bezierCurveTo(cpx,pts[i-1].y,cpx,pts[i].y,pts[i].x,pts[i].y);
+  }
+  c.strokeStyle=lineColor; c.lineWidth=2; c.stroke();
+  // points
+  pts.forEach((p,i)=>{
+    c.beginPath();
+    c.arc(p.x,p.y,i===pts.length-1?4.5:2.5,0,Math.PI*2);
+    c.fillStyle=i===pts.length-1?lineColor:'rgba(255,255,255,0.55)'; c.fill();
+    if(i===pts.length-1){
+      c.strokeStyle='rgba(255,255,255,0.3)'; c.lineWidth=1.5; c.stroke();
+    }
+  });
+  // labels
+  c.fillStyle='rgba(100,130,180,0.7)'; c.font='8.5px monospace'; c.textAlign='center';
+  const skip=Math.max(1,Math.ceil(labels.length/4));
+  labels.forEach((lb,i)=>{
+    if(i%skip===0||i===labels.length-1){
+      const txt=lb.length>7?lb.slice(-6):lb;
+      c.fillText(txt,pts[i].x,H-3);
+    }
+  });
+  // current value
+  c.fillStyle=lineColor; c.font='bold 9px monospace'; c.textAlign='right';
+  c.fillText(data[data.length-1].toLocaleString(),W-pR,pT+10);
+}
+
+function calcDelta(arr){
+  const f=arr[0], l=arr[arr.length-1];
+  const p=((l-f)/f*100).toFixed(1);
+  return {pct:p, text:(p>=0?'+':'')+p+'%'};
+}
+
+// ========== ECONOMIC MODAL ==========
+let clickStartX=0, clickStartY=0;
+
+function openEconomicModal(point){
+  const d=economicImpactData[point.name];
+  if(!d) return;
+  document.getElementById('econ-title').textContent=point.name;
+  document.getElementById('econ-date').textContent='발생: '+d.date;
+  document.getElementById('econ-summary').textContent=d.summary;
+  const badge=document.getElementById('econ-badge');
+  const col=levelColors[d.level]||[150,150,150];
+  badge.style.background=`rgba(${col[0]},${col[1]},${col[2]},0.18)`;
+  badge.style.color=`rgb(${col[0]},${col[1]},${col[2]})`;
+  badge.textContent=levelLabels[d.level]||d.level;
+  document.getElementById('econ-overlay').style.display='block';
+  document.getElementById('econ-modal').style.display='block';
+  setTimeout(()=>{
+    // Oil
+    let dv=calcDelta(d.oil);
+    const oel=document.getElementById('econ-oil-delta');
+    oel.textContent=dv.text; oel.className='ecb-delta '+(dv.pct>=0?'pos':'neg');
+    drawEconChart('econ-chart-oil',d.labels,d.oil,'#ff9944','rgba(255,153,68,0.3)');
+    // Gold
+    dv=calcDelta(d.gold);
+    const gel=document.getElementById('econ-gold-delta');
+    gel.textContent=dv.text; gel.className='ecb-delta '+(dv.pct>=0?'pos':'neg');
+    drawEconChart('econ-chart-gold',d.labels,d.gold,'#ffd700','rgba(255,215,0,0.3)');
+    // S&P500
+    dv=calcDelta(d.sp500);
+    const sel=document.getElementById('econ-sp500-delta');
+    sel.textContent=dv.text; sel.className='ecb-delta '+(dv.pct>=0?'pos-good':'neg-bad');
+    drawEconChart('econ-chart-sp500',d.labels,d.sp500,'#44ccff','rgba(68,204,255,0.25)');
+    // KRW
+    dv=calcDelta(d.krw);
+    const kel=document.getElementById('econ-krw-delta');
+    kel.textContent=dv.text; kel.className='ecb-delta '+(dv.pct>=0?'pos':'neg');
+    drawEconChart('econ-chart-krw',d.labels,d.krw,'#cc88ff','rgba(204,136,255,0.25)');
+  },40);
+}
+
+function closeEconomicModal(){
+  document.getElementById('econ-overlay').style.display='none';
+  document.getElementById('econ-modal').style.display='none';
+}
 
 const levelColors = {
   war:[255,32,32], confrontation:[255,102,0], tension:[255,204,0],
@@ -1808,10 +2159,10 @@ function render() {
 }
 
 // ========== INTERACTION ==========
-canvas.addEventListener('mousedown', e => { dragging = true; lx = e.clientX; ly = e.clientY; });
+canvas.addEventListener('mousedown', e => { dragging = true; lx = e.clientX; ly = e.clientY; clickStartX = e.clientX; clickStartY = e.clientY; });
 canvas.addEventListener('mousemove', e => {
   if (dragging) {
-    tgtRotY += (e.clientX - lx) * 0.005;
+    tgtRotY -= (e.clientX - lx) * 0.005;
     tgtRotX -= (e.clientY - ly) * 0.005;
     tgtRotX = Math.max(-1.4, Math.min(1.4, tgtRotX));
     lx = e.clientX; ly = e.clientY;
@@ -1849,6 +2200,25 @@ canvas.addEventListener('mousemove', e => {
 });
 canvas.addEventListener('mouseup', () => dragging = false);
 canvas.addEventListener('mouseleave', () => { dragging = false; document.getElementById('tooltip').style.display = 'none'; });
+canvas.addEventListener('click', e => {
+  if (Math.abs(e.clientX - clickStartX) > 5 || Math.abs(e.clientY - clickStartY) > 5) return;
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  let found = null;
+  const visible = allPoints.filter(c => {
+    if (currentView === 'conflict' && c.cat !== 'conflict') return false;
+    if (currentView === 'disaster' && c.cat !== 'disaster') return false;
+    if (activeFilter !== 'all' && c.level !== activeFilter) return false;
+    return true;
+  });
+  visible.forEach(c => {
+    const p = proj(rot(ll2xyz(c.lat, c.lon)));
+    if (p.z < 0) return;
+    const d = Math.hypot(p.x - mx, p.y - my);
+    if (d < c.radius * 3.5 * (R / 250)) found = c;
+  });
+  if (found && economicImpactData[found.name]) openEconomicModal(found);
+});
 canvas.addEventListener('wheel', e => {
   e.preventDefault();
   R *= e.deltaY > 0 ? 0.95 : 1.05;
@@ -1860,7 +2230,7 @@ canvas.addEventListener('touchstart', e => { if (e.touches.length === 1) { dragg
 canvas.addEventListener('touchmove', e => {
   e.preventDefault();
   if (dragging && e.touches.length === 1) {
-    tgtRotY += (e.touches[0].clientX - lx) * 0.005;
+    tgtRotY -= (e.touches[0].clientX - lx) * 0.005;
     tgtRotX -= (e.touches[0].clientY - ly) * 0.005;
     tgtRotX = Math.max(-1.4, Math.min(1.4, tgtRotX));
     lx = e.touches[0].clientX; ly = e.touches[0].clientY;
