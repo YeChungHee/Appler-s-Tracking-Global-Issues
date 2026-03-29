@@ -34,26 +34,86 @@
     color: #667799;
     font-size: 0.85em;
   }
-  #tabs {
-    display: flex;
+  /* ===== TOSS-STYLE NAVIGATION ===== */
+  #nav-wrapper {
     background: #0a0f1e;
     border-bottom: 1px solid rgba(100,140,255,0.1);
   }
-  .tab-btn {
-    padding: 10px 20px;
-    background: none;
-    border: none;
-    color: #556688;
-    cursor: pointer;
-    font-size: 0.85em;
-    border-bottom: 2px solid transparent;
-    transition: all 0.3s;
-    font-family: inherit;
+  /* 1단계: 메인 메뉴 (세계이슈 / 주요지표) */
+  #main-menu {
+    display: flex;
+    padding: 6px 16px;
+    gap: 8px;
   }
-  .tab-btn:hover { color: #aabbdd; }
-  .tab-btn.active { color: #fff; border-bottom-color: #ff5555; }
-  .tab-btn.active-disaster { color: #fff; border-bottom-color: #ffaa33; }
-  .tab-btn.active-commodity { color: #fff; border-bottom-color: #44ddaa; }
+  .main-menu-btn {
+    flex: 1;
+    position: relative;
+    padding: 10px 0;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    color: #667799;
+    cursor: pointer;
+    font-size: 0.88em;
+    font-family: inherit;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+  .main-menu-btn:hover { background: rgba(255,255,255,0.06); color: #aabbdd; }
+  .main-menu-btn.active {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border-color: rgba(255,255,255,0.15);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  .main-menu-btn .menu-icon { font-size: 1.1em; margin-right: 6px; }
+  /* 2단계: 서브 메뉴 */
+  #sub-menu {
+    display: flex;
+    padding: 6px 16px 8px;
+    gap: 6px;
+  }
+  .sub-menu-group { display: none; gap: 6px; }
+  .sub-menu-group.visible { display: flex; }
+  #sub-world.visible { justify-content: flex-start; }
+  #sub-indicators.visible { justify-content: flex-end; margin-left: auto; }
+  .sub-tab {
+    position: relative;
+    padding: 7px 20px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 20px;
+    color: #667799;
+    cursor: pointer;
+    font-size: 0.8em;
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    white-space: nowrap;
+  }
+  .sub-tab:hover { background: rgba(255,255,255,0.07); color: #aabbdd; }
+  .sub-tab.active-conflict {
+    background: rgba(255,85,85,0.15);
+    color: #ff6b6b;
+    border-color: rgba(255,85,85,0.3);
+  }
+  .sub-tab.active-disaster {
+    background: rgba(255,170,51,0.15);
+    color: #ffaa33;
+    border-color: rgba(255,170,51,0.3);
+  }
+  .sub-tab.active-commodity {
+    background: rgba(68,221,170,0.15);
+    color: #44ddaa;
+    border-color: rgba(68,221,170,0.3);
+  }
+  .sub-tab.active-usstock {
+    background: rgba(102,153,255,0.15);
+    color: #6699ff;
+    border-color: rgba(102,153,255,0.3);
+  }
   #legend {
     display: flex;
     gap: 8px;
@@ -63,6 +123,14 @@
     flex-wrap: wrap;
     align-items: center;
     font-size: 13px;
+  }
+  #legend-conflict, #legend-disaster {
+    display: none;
+    gap: 8px;
+    align-items: center;
+  }
+  #legend-conflict[style*="contents"], #legend-disaster[style*="contents"] {
+    gap: 8px;
   }
   #legend .title { color: #556688; font-size: 0.78em; margin-right: 6px; }
   .legend-item {
@@ -231,22 +299,85 @@
   .econ-impact .label { color: #556677; font-size: 0.78em; }
   .econ-impact .value { color: #ff6b6b; font-size: 1.15em; font-weight: 700; margin-top: 2px; }
   .econ-impact .detail { color: #667788; font-size: 0.78em; margin-top: 3px; }
-  #tooltip {
+  /* ===== TOSS-STYLE CENTER MODAL ===== */
+  #modal-overlay {
     position: fixed;
-    background: rgba(10,15,30,0.96);
-    border: 1px solid rgba(100,140,255,0.2);
-    border-radius: 10px;
-    padding: 14px 18px;
-    pointer-events: none;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 999;
     display: none;
-    z-index: 1000;
-    max-width: 320px;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.4,0,0.2,1);
   }
-  #tooltip .tt-title { font-weight: 700; color: #fff; margin-bottom: 4px; font-size: 0.95em; }
-  #tooltip .tt-type { font-size: 0.72em; margin-bottom: 4px; }
-  #tooltip .tt-desc { font-size: 0.8em; color: #8899aa; line-height: 1.4; }
+  #modal-overlay.show { display: flex; opacity: 1; }
+  #modal-popup {
+    background: rgba(15,20,40,0.97);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 24px 28px;
+    max-width: 420px;
+    width: 90%;
+    backdrop-filter: blur(24px);
+    box-shadow: 0 24px 48px rgba(0,0,0,0.5);
+    transform: scale(0.95) translateY(10px);
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    position: relative;
+  }
+  #modal-overlay.show #modal-popup {
+    transform: scale(1) translateY(0);
+  }
+  .modal-close {
+    position: absolute;
+    top: 12px; right: 14px;
+    background: rgba(255,255,255,0.06);
+    border: none;
+    color: #667;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .modal-close:hover { background: rgba(255,255,255,0.12); color: #aab; }
+  .modal-icon { font-size: 2em; margin-bottom: 12px; }
+  .modal-title { font-weight: 700; color: #fff; font-size: 1.15em; margin-bottom: 6px; }
+  .modal-type {
+    font-size: 0.78em;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .modal-type .level-badge {
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.88em;
+  }
+  .modal-type .cat-label { color: #667; }
+  .modal-desc {
+    font-size: 0.88em;
+    color: #99aabb;
+    line-height: 1.65;
+    padding: 14px 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .modal-stats {
+    display: flex;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    font-size: 0.78em;
+  }
+  .modal-stats .stat-item { color: #556677; }
+  .modal-stats .stat-item strong { color: #aabbcc; }
+  /* Legacy tooltip hidden */
+  #tooltip { display: none !important; }
   #controls {
     position: absolute;
     bottom: 16px;
@@ -415,7 +546,7 @@
   .comm-summary-item .s-value { font-size: 1.0em; font-weight: 700; margin-top: 2px; }
   .comm-summary-item .s-sub { font-size: 0.62em; margin-top: 1px; }
   /* US STOCK MARKET STYLES */
-  .tab-btn.active-usstock { color: #fff; border-bottom-color: #6699ff; }
+  /* legacy removed - now using nav-wrapper */
   .stock-index-card {
     background: rgba(20,28,55,0.6);
     border-radius: 10px;
@@ -518,34 +649,65 @@
 
 <div id="header">
   <h1>🌍 Global <span class="accent1">Conflict</span> & <span class="accent2">Disaster</span> Monitor</h1>
-  <div class="date">2026.03.29 기준 | 분쟁 21개 · 자연재해 17개 추적중</div>
+  <div class="date">2026.03.30 기준 | 분쟁 21개 · 자연재해 17개 추적중</div>
 </div>
 
-<div id="tabs">
-  <button class="tab-btn active" onclick="setView('all')">🌐 전체보기</button>
-  <button class="tab-btn" onclick="setView('conflict')">⚔️ 분쟁지역</button>
-  <button class="tab-btn" onclick="setView('disaster')">🌊 자연재해</button>
-  <button class="tab-btn" onclick="setView('commodity')">📈 원자재</button>
-  <button class="tab-btn" onclick="setView('usstock')">🇺🇸 미국증시</button>
+<div id="nav-wrapper">
+  <!-- 1단계: 메인 메뉴 -->
+  <div id="main-menu">
+    <button class="main-menu-btn active" onclick="switchMainMenu('world')">
+      <span class="menu-icon">🌍</span>세계이슈
+    </button>
+    <button class="main-menu-btn" onclick="switchMainMenu('indicators')">
+      <span class="menu-icon">📊</span>주요지표
+    </button>
+  </div>
+  <!-- 2단계: 서브 메뉴 -->
+  <div id="sub-menu">
+    <div class="sub-menu-group visible" id="sub-world">
+      <button class="sub-tab active-conflict" onclick="setView('conflict')">⚔️ 분쟁지역</button>
+      <button class="sub-tab" onclick="setView('disaster')">🌊 자연재해</button>
+    </div>
+    <div class="sub-menu-group" id="sub-indicators">
+      <button class="sub-tab" onclick="setView('commodity')">📈 원자재</button>
+      <button class="sub-tab" onclick="setView('usstock')">🇺🇸 미국증시</button>
+    </div>
+  </div>
 </div>
 
+<!-- 3단계: 범례 필터 (동적) -->
 <div id="legend">
-  <span class="title">분쟁:</span>
-  <div class="legend-item" onclick="filterByLevel('war')"><span class="legend-dot" style="background:#ff2020;color:#ff2020"></span> 전쟁 <span class="legend-index">Lv.5</span></div>
-  <div class="legend-item" onclick="filterByLevel('confrontation')"><span class="legend-dot" style="background:#ff6600;color:#ff6600"></span> 대치 <span class="legend-index">Lv.4</span></div>
-  <div class="legend-item" onclick="filterByLevel('tension')"><span class="legend-dot" style="background:#ffcc00;color:#ffcc00"></span> 긴장 <span class="legend-index">Lv.3</span></div>
-  <div class="legend-item" onclick="filterByLevel('caution')"><span class="legend-dot" style="background:#00aaff;color:#00aaff"></span> 주의 <span class="legend-index">Lv.2</span></div>
-  <div class="legend-item" onclick="filterByLevel('protest')"><span class="legend-dot" style="background:#cc44ff;color:#cc44ff"></span> 시위 <span class="legend-index">Lv.1</span></div>
-  <div class="legend-divider"></div>
-  <span class="title">재해:</span>
-  <div class="legend-item" onclick="filterByLevel('flood')"><span class="legend-dot" style="background:#00bbff;color:#00bbff"></span> 홍수 <span class="legend-index">FLOOD</span></div>
-  <div class="legend-item" onclick="filterByLevel('earthquake')"><span class="legend-dot" style="background:#ff8800;color:#ff8800"></span> 지진 <span class="legend-index">QUAKE</span></div>
-  <div class="legend-item" onclick="filterByLevel('drought')"><span class="legend-dot" style="background:#cc8833;color:#cc8833"></span> 가뭄 <span class="legend-index">DROUGHT</span></div>
-  <div class="legend-item" onclick="filterByLevel('snow')"><span class="legend-dot" style="background:#aaccff;color:#aaccff"></span> 폭설 <span class="legend-index">SNOW</span></div>
-  <div class="legend-item" onclick="filterByLevel('fire')"><span class="legend-dot" style="background:#ff3300;color:#ff3300"></span> 화재 <span class="legend-index">FIRE</span></div>
-  <div class="legend-divider"></div>
+  <div id="legend-conflict">
+    <span class="title">분쟁:</span>
+    <div class="legend-item" onclick="filterByLevel('war')"><span class="legend-dot" style="background:#ff2020;color:#ff2020"></span> 전쟁 <span class="legend-index">Lv.5</span></div>
+    <div class="legend-item" onclick="filterByLevel('confrontation')"><span class="legend-dot" style="background:#ff6600;color:#ff6600"></span> 대치 <span class="legend-index">Lv.4</span></div>
+    <div class="legend-item" onclick="filterByLevel('tension')"><span class="legend-dot" style="background:#ffcc00;color:#ffcc00"></span> 긴장 <span class="legend-index">Lv.3</span></div>
+    <div class="legend-item" onclick="filterByLevel('caution')"><span class="legend-dot" style="background:#00aaff;color:#00aaff"></span> 주의 <span class="legend-index">Lv.2</span></div>
+    <div class="legend-item" onclick="filterByLevel('protest')"><span class="legend-dot" style="background:#cc44ff;color:#cc44ff"></span> 시위 <span class="legend-index">Lv.1</span></div>
+  </div>
+  <div id="legend-disaster" style="display:none;">
+    <span class="title">재해:</span>
+    <div class="legend-item" onclick="filterByLevel('flood')"><span class="legend-dot" style="background:#00bbff;color:#00bbff"></span> 홍수 <span class="legend-index">FLOOD</span></div>
+    <div class="legend-item" onclick="filterByLevel('earthquake')"><span class="legend-dot" style="background:#ff8800;color:#ff8800"></span> 지진 <span class="legend-index">QUAKE</span></div>
+    <div class="legend-item" onclick="filterByLevel('drought')"><span class="legend-dot" style="background:#cc8833;color:#cc8833"></span> 가뭄 <span class="legend-index">DROUGHT</span></div>
+    <div class="legend-item" onclick="filterByLevel('snow')"><span class="legend-dot" style="background:#aaccff;color:#aaccff"></span> 폭설 <span class="legend-index">SNOW</span></div>
+    <div class="legend-item" onclick="filterByLevel('fire')"><span class="legend-dot" style="background:#ff3300;color:#ff3300"></span> 화재 <span class="legend-index">FIRE</span></div>
+  </div>
+  <div class="legend-divider" id="legend-divider-reset"></div>
   <div class="legend-item" onclick="filterByLevel('all')" style="color:#aab;font-weight:600;">전체</div>
   <span id="update-timestamp"></span>
+</div>
+
+<!-- 중앙 모달 팝업 (토스 Alert 스타일) -->
+<div id="modal-overlay" onclick="closeModal(event)">
+  <div id="modal-popup">
+    <button class="modal-close" onclick="closeModal(event, true)">✕</button>
+    <div class="modal-icon" id="modal-icon"></div>
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-type" id="modal-type"></div>
+    <div class="modal-desc" id="modal-desc"></div>
+    <div class="modal-stats" id="modal-stats"></div>
+  </div>
 </div>
 
 <div id="main">
@@ -578,7 +740,7 @@
         <div class="econ-impact">
           <div class="label">브렌트유 가격</div>
           <div class="value">$112.57/배럴 <span style="font-size:0.55em;color:#ff4444">▲ +4.22% (2022년 이후 최고)</span></div>
-          <div class="detail">이란 전쟁 29일차. 이란 평화협상 거부 + 호르무즈 사고 → WTI $99.64 ($100 돌파 임박). 스태그플레이션 공포 절정</div>
+          <div class="detail">이란 전쟁 31일차. 테헤란 폭격 지속 + 후티 참전 + 4개국 외교장관 평화회담. WTI $99.64. 스태그플레이션 공포 절정</div>
         </div>
         <div class="econ-impact">
           <div class="label">글로벌 GDP 영향</div>
@@ -878,7 +1040,7 @@
             <span class="comm-bar-label">YTD</span>
             <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:94%;background:linear-gradient(90deg,#ff4455,#ff6677)"></div></div>
           </div>
-          <div class="comm-detail">이란 전쟁 29일차. 이란 평화협상 거부 + 호르무즈 해협 사고 → 2022년 이후 최고. WTI $99.64(+5.46%), $100 돌파 임박. 2,000척 선박 좌초</div>
+          <div class="comm-detail">이란 전쟁 31일차. 테헤란 폭격 지속 + 후티 참전 + IRGC 보복 최후통첩(3/30) → 2022년 이후 최고. WTI $99.64(+5.46%). 호르무즈 해협 위기 지속</div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 이란 전쟁 / 예멘 후티 홍해 공격 / 카타르 LNG 시설 드론 피격</div>
         </div>
 
@@ -903,13 +1065,13 @@
         <div class="commodity-card up">
           <div class="comm-header">
             <span class="comm-name">🥇 금 (Gold)</span>
-            <span><span class="comm-price up">$4,433.53/oz</span><span class="comm-change up">▲ +0.68%</span></span>
+            <span><span class="comm-price up">$4,524/oz</span><span class="comm-change up">▲ +2.6%</span></span>
           </div>
           <div class="comm-bar-container">
             <span class="comm-bar-label">YTD</span>
             <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:80%;background:linear-gradient(90deg,#ffcc33,#ffaa00)"></div></div>
           </div>
-          <div class="comm-detail">3/27 $4,433.53 (소폭 반등). 고점 $5,589 대비 -21% 조정. Fed 금리인하 전망 축소(2→1회) + 달러 강세 역풍. 장기 $4,700~$6,000 전망 유지</div>
+          <div class="comm-detail">3/28 $4,524 (+2.6%). 이란전 장기화 + 후티 참전 → 안전자산 수요 급증. 고점 $5,589 대비 -19% 조정. Fed 금리인하 전망 축소(2→1회). 장기 $4,700~$6,000 전망 유지</div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 지정학 리스크 안전자산 vs Fed 금리인상 가능성 → 실질금리 상승 → 금 하방 압력</div>
         </div>
 
@@ -1122,7 +1284,7 @@
         <div class="econ-impact" style="border-left-color:rgba(68,221,170,0.5);">
           <div class="label">이란 평화협상 거부 → 유가 폭등, $100 돌파 임박</div>
           <div class="value" style="color:#ff6b6b;font-size:0.85em;">Brent $112.57 (+4.22%) / WTI $99.64 (+5.46%)</div>
-          <div class="detail">이란 직접 협상 거부 → 호르무즈 해협 사고 → 2022년 이후 최고 유가. 금 $4,433(소폭 반등). VIX 31 돌파로 공포 구간</div>
+          <div class="detail">이란전 31일차 장기화 + 후티 참전 확전 → 2022년 이후 최고 유가. 금 $4,524(+2.6%). VIX 31 돌파 공포 구간</div>
         </div>
         <div class="econ-impact" style="border-left-color:rgba(68,221,170,0.5);">
           <div class="label">중국 희토류 무기화</div>
@@ -1194,7 +1356,7 @@
             <div class="stock-detail-row"><span class="stock-detail-label">거래량</span><span class="stock-detail-value">3.85억 주</span></div>
             <div class="stock-detail-row"><span class="stock-detail-label">52주 고점</span><span class="stock-detail-value">50,512.79</span></div>
             <div class="stock-detail-row"><span class="stock-detail-label">52주 저점</span><span class="stock-detail-value">36,611.78</span></div>
-            <div style="margin-top:6px;font-size:0.9em;color:#778899;">다우 조정장 진입 (-793pt). 후티 이란전 참전(3/28) → 중동 확전 공포. Brent $112 돌파. 5주 연속 주간 하락. USS Tripoli 중동 도착. 스태그플레이션 공포 절정.</div>
+            <div style="margin-top:6px;font-size:0.9em;color:#778899;">다우 조정장 진입 (-793pt). 이란전 31일차 장기화 + 후티 참전 → 중동 확전 공포. Brent $112 돌파. 5주 연속 주간 하락. 4개국 외교장관 평화회담 개최. 스태그플레이션 공포 절정.</div>
           </div>
         </div>
       </div>
@@ -1284,7 +1446,7 @@
             <div class="stock-detail-row"><span class="stock-detail-label">나스닥 100 선물</span><span class="stock-detail-value" style="color:#ff5566;">20,780 (▼-0.81%)</span></div>
             <div class="stock-detail-row"><span class="stock-detail-label">다우 선물</span><span class="stock-detail-value" style="color:#ff5566;">45,020 (▼-0.32%)</span></div>
             <div class="stock-detail-row"><span class="stock-detail-label">러셀 2000 선물</span><span class="stock-detail-value" style="color:#ff5566;">2,440 (▼-0.57%)</span></div>
-            <div style="margin-top:6px;font-size:0.9em;color:#778899;">선물 약세 지속. VIX 31 돌파 공포 구간. 후티 참전 + 이란 전쟁 30일 장기화. 트럼프 에너지 공격 4/6 유예로 단기 불확실성. Fed 금리인상 가능성 부상.</div>
+            <div style="margin-top:6px;font-size:0.9em;color:#778899;">선물 약세 지속. VIX 31 돌파 공포 구간. 이란전 31일 장기화 + IRGC 보복 최후통첩(3/30). 트럼프 에너지 공격 4/6 유예. 4개국 외교장관 평화회담 결과 주시. Fed 금리인상 가능성 부상.</div>
           </div>
         </div>
       </div>
@@ -1312,35 +1474,31 @@
   </div>
 </div>
 
-<div id="tooltip">
-  <div class="tt-title"></div>
-  <div class="tt-type"></div>
-  <div class="tt-desc"></div>
-</div>
+<!-- tooltip replaced by modal-overlay above -->
 
 <script>
 // ========== DATA ==========
 const conflicts = [
-  { name:"이란 전쟁", lat:32.0, lon:53.0, level:"war", radius:18, desc:"미국·이스라엘 vs 이란 전면전 (30일차) — 후티 참전, 이스라엘 미사일 공격; 이란 사망 1,900+; 트럼프 에너지 공격 4/6까지 유예", cat:"conflict" },
-  { name:"레바논 전쟁", lat:33.8, lon:35.8, level:"war", radius:12, desc:"이스라엘-헤즈볼라 전쟁 (3/2~), 1,189명+ 사망, 100만 실향 (인구 20%)", cat:"conflict" },
-  { name:"러시아-우크라이나", lat:48.5, lon:35.0, level:"war", radius:20, desc:"4년차 — 러 948드론 24시간 공격(역대 최대), 춘계 공세 개시; 러 총손실 129만명", cat:"conflict" },
-  { name:"수단 내전", lat:15.5, lon:32.5, level:"war", radius:16, desc:"SAF vs RSF 내전, 1000만 실향·기근 확산, 엘파셔 함락 후 사실상 분단", cat:"conflict" },
-  { name:"가자지구", lat:31.5, lon:34.5, level:"war", radius:10, desc:"정전 유지 중 저강도 충돌 지속, 하마스 재장악 시도, IDF 가자 50% 통제", cat:"conflict" },
-  { name:"미얀마 내전", lat:19.7, lon:96.2, level:"war", radius:14, desc:"세계 최장 내전 지속, 군부 vs 다전선 저항, 사망 15,000+", cat:"conflict" },
-  { name:"파키스탄-아프간", lat:33.5, lon:69.5, level:"war", radius:14, desc:"공개전쟁 선언, 카불 22+ 지역 폭격 지속", cat:"conflict" },
-  { name:"나이지리아", lat:9.0, lon:7.5, level:"confrontation", radius:14, desc:"종교·민족 무력충돌, 보코하람 위협", cat:"conflict" },
-  { name:"에티오피아-에리트레아", lat:9.0, lon:38.7, level:"confrontation", radius:12, desc:"ENDF·TDF·EDF 북부 병력 대규모 집결, 전면전 임박 경고", cat:"conflict" },
-  { name:"예멘", lat:15.5, lon:48.5, level:"confrontation", radius:12, desc:"후티 이란전 참전(3/28), 이스라엘 탄도미사일 공격; 남부 정부군-STC 교전", cat:"conflict" },
-  { name:"시리아", lat:35.0, lon:38.0, level:"confrontation", radius:10, desc:"내전 잔여 불안정, 재건 지연", cat:"conflict" },
-  { name:"콩고민주공화국", lat:-4.0, lon:22.0, level:"confrontation", radius:12, desc:"FARDC vs M23, 사상 최대 드론전·GPS 재밍, 츠호포주까지 확전 — UN 경고", cat:"conflict" },
-  { name:"사헬 (부르키나·말리)", lat:12.0, lon:-1.5, level:"confrontation", radius:10, desc:"JNIM 30+ 공격(부르키나), 120+ 사망; 러시아 바그너 사헬 강화", cat:"conflict" },
-  { name:"대만해협", lat:23.5, lon:121.0, level:"tension", radius:14, desc:"중국 국방비 7% 증액, 미중 군사 긴장 고조", cat:"conflict" },
-  { name:"남중국해", lat:12.0, lon:115.0, level:"tension", radius:16, desc:"중국-필리핀 영토분쟁, 스카보로·세컨드토마스 긴장", cat:"conflict" },
-  { name:"한반도", lat:38.5, lon:127.0, level:"tension", radius:10, desc:"미 패트리엇 이전 방어 공백, 북중 열차 운항 재개(3/12), 핵실험 우려", cat:"conflict" },
+  { name:"이란 전쟁", lat:32.0, lon:53.0, level:"war", radius:18, desc:"미국·이스라엘 vs 이란 전면전 (31일차) — 테헤란 폭격 지속(사아다바드·샤프트 주거지역 2명 사망); IDF '최우선 표적 수일 내 완료' 선언; 이란 사망 1,900+; 파키스탄·터키·이집트·사우디 외교장관 이슬라마바드 평화회담; 이란 IRGC 대학 폭격 보복 최후통첩(3/30 기한)", cat:"conflict" },
+  { name:"레바논 전쟁", lat:33.8, lon:35.8, level:"war", radius:12, desc:"이스라엘-헤즈볼라 전쟁 29일차(3/2~), 1,189명+ 사망, 100만 실향(인구 20%); 이스라엘 남레바논 리타니강까지 점령 선언(3/24); UN 평화유지군 공격 의혹", cat:"conflict" },
+  { name:"러시아-우크라이나", lat:48.5, lon:35.0, level:"war", radius:20, desc:"4년차 — 러 948드론+34미사일 24시간 역대최대 공격; 춘계 공세 개시, 포크로우스크 집중; 우크라 발틱해 러 석유터미널(우스트루가·프리모르스크) 타격 → 러 수출량 40% 차단; 러 총손실 129.6만명", cat:"conflict" },
+  { name:"수단 내전", lat:15.5, lon:32.5, level:"war", radius:16, desc:"SAF vs RSF 내전, 1000만 실향·기근 확산, 엘파셔 함락 후 사실상 분단; 이집트·사우디·UAE·러시아 개입 심화", cat:"conflict" },
+  { name:"가자지구", lat:31.5, lon:34.5, level:"war", radius:10, desc:"정전 유지 중 저강도 충돌 지속, 정전 이후 631명 사망; IDF 가자 50% 통제, 인도적 위기 심각", cat:"conflict" },
+  { name:"미얀마 내전", lat:19.7, lon:96.2, level:"war", radius:14, desc:"세계 최장 내전, 군부 vs 다전선 저항세력 영토전, 사망 15,000+; 전세계 46개 무력분쟁 중 최다 전선", cat:"conflict" },
+  { name:"파키스탄-아프간", lat:33.5, lon:69.5, level:"war", radius:14, desc:"공개전쟁 선언, 카불 22+ 지역 폭격 지속; 파키스탄 GTI 1위 등극(부르키나 제치고)", cat:"conflict" },
+  { name:"나이지리아", lat:9.0, lon:7.5, level:"confrontation", radius:14, desc:"종교·민족 무력충돌, 보코하람·ISWAP 위협 지속", cat:"conflict" },
+  { name:"에티오피아-에리트레아", lat:9.0, lon:38.7, level:"confrontation", radius:12, desc:"ENDF·TDF·EDF 북부 병력 대규모 집결(2월~), 전면전 임박 경고; 도하 휴전 합의 무력화", cat:"conflict" },
+  { name:"예멘", lat:15.5, lon:48.5, level:"confrontation", radius:12, desc:"후티 이란전 참전(3/28), 이스라엘 탄도미사일 공격; AQAP·알샤바브·IS 연계 확대 → 홍해·아프리카의 뿔 위협 증대", cat:"conflict" },
+  { name:"시리아", lat:35.0, lon:38.0, level:"confrontation", radius:10, desc:"내전 잔여 불안정, 재건 지연; 이란전 여파로 지역 긴장 고조", cat:"conflict" },
+  { name:"콩고민주공화국", lat:-4.0, lon:22.0, level:"confrontation", radius:12, desc:"FARDC vs M23, M23 루베로 일부 철수(3/23~24) 그러나 도하 휴전 위반 상호 비난; 남키부 50만+ 실향; 드론전·GPS 재밍 전술 확대", cat:"conflict" },
+  { name:"사헬 (부르키나·말리)", lat:12.0, lon:-1.5, level:"confrontation", radius:10, desc:"JNIM 동부·북부 부르키나 대규모 공세(2월~), 베냉까지 확전; 러시아 바그너 사헬 강화; 부르키나 GTI 2위", cat:"conflict" },
+  { name:"대만해협", lat:23.5, lon:121.0, level:"tension", radius:14, desc:"중국 디코이 전술 실험 — 가짜 신호로 대만·동맹 자원 낭비 유도; 국방비 7% 증액, 미중 군사 긴장 고조", cat:"conflict" },
+  { name:"남중국해", lat:12.0, lon:115.0, level:"tension", radius:16, desc:"중국-필리핀 영토분쟁; 호주 HMAS 투움바 황해 작전 중 중국 헬기 위험 접근(3/4)", cat:"conflict" },
+  { name:"한반도", lat:38.5, lon:127.0, level:"tension", radius:10, desc:"북 순항미사일 발사(3/4·3/10), 김여정 한미 프리덤실드 비난(3/10); 김정은 '두 적대국' 정책 재확인(3/22); 핵실험 우려 지속", cat:"conflict" },
   { name:"중일 외교위기", lat:30.0, lon:130.0, level:"tension", radius:8, desc:"일본 방어강화, 중국 반발", cat:"conflict" },
-  { name:"콜롬비아", lat:4.5, lon:-74.0, level:"caution", radius:10, desc:"무장단체 충돌 증가", cat:"conflict" },
-  { name:"아이티", lat:18.9, lon:-72.3, level:"caution", radius:8, desc:"갱단 포르토프랭스 90% 장악, 140만 실향, 국제안정화 실패", cat:"conflict" },
-  { name:"베네수엘라", lat:10.5, lon:-67.0, level:"caution", radius:10, desc:"미국 마약소탕 공습", cat:"conflict" },
+  { name:"콜롬비아", lat:4.5, lon:-74.0, level:"caution", radius:10, desc:"무장단체 충돌 증가, 카르텔 전쟁 에콰도르·멕시코 연계", cat:"conflict" },
+  { name:"아이티", lat:18.9, lon:-72.3, level:"caution", radius:8, desc:"갱단 포르토프랭스 90% 장악, 140만 실향, 국제안정화 실패; 향후 12개월 악화 전망", cat:"conflict" },
+  { name:"베네수엘라", lat:10.5, lon:-67.0, level:"caution", radius:10, desc:"미국 마약소탕 공습 지속", cat:"conflict" },
   { name:"모잠비크", lat:-18.0, lon:35.0, level:"protest", radius:8, desc:"북부 불안정 지속", cat:"conflict" },
 ];
 
@@ -1808,17 +1966,11 @@ function render() {
 }
 
 // ========== INTERACTION ==========
-canvas.addEventListener('mousedown', e => { dragging = true; lx = e.clientX; ly = e.clientY; });
-canvas.addEventListener('mousemove', e => {
-  if (dragging) {
-    tgtRotY -= (e.clientX - lx) * 0.005;
-    tgtRotX -= (e.clientY - ly) * 0.005;
-    tgtRotX = Math.max(-1.4, Math.min(1.4, tgtRotX));
-    lx = e.clientX; ly = e.clientY;
-  }
-  // Tooltip
+canvas.addEventListener('mousedown', e => { dragging = true; lx = e.clientX; ly = e.clientY; dragDistance = 0; });
+// Helper: find marker under mouse position
+function findMarkerAt(clientX, clientY) {
   const rect = canvas.getBoundingClientRect();
-  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  const mx = clientX - rect.left, my = clientY - rect.top;
   let found = null;
   const visible = allPoints.filter(c => {
     if (currentView === 'conflict' && c.cat !== 'conflict') return false;
@@ -1830,25 +1982,37 @@ canvas.addEventListener('mousemove', e => {
     const p = proj(rot(ll2xyz(c.lat, c.lon)));
     if (p.z < 0) return;
     const d = Math.hypot(p.x - mx, p.y - my);
-    if (d < c.radius * 2.5 * (R / 250)) found = { ...c, sx: e.clientX, sy: e.clientY };
+    if (d < c.radius * 2.5 * (R / 250)) found = { ...c };
   });
-  const tt = document.getElementById('tooltip');
+  return found;
+}
+
+let dragDistance = 0;
+canvas.addEventListener('mousemove', e => {
+  if (dragging) {
+    const dx = e.clientX - lx, dy = e.clientY - ly;
+    dragDistance += Math.abs(dx) + Math.abs(dy);
+    tgtRotY -= dx * 0.005;
+    tgtRotX -= dy * 0.005;
+    tgtRotX = Math.max(-1.4, Math.min(1.4, tgtRotX));
+    lx = e.clientX; ly = e.clientY;
+  }
+  // Hover cursor
+  const found = findMarkerAt(e.clientX, e.clientY);
+  canvas.style.cursor = found ? 'pointer' : (dragging ? 'grabbing' : 'grab');
+});
+// Click → open modal
+canvas.addEventListener('click', e => {
+  if (dragDistance > 5) return; // was a drag, not a click
+  const found = findMarkerAt(e.clientX, e.clientY);
   if (found) {
-    tt.style.display = 'block';
-    tt.style.left = (found.sx + 15) + 'px';
-    tt.style.top = (found.sy + 15) + 'px';
-    tt.querySelector('.tt-title').textContent = (found.cat === 'disaster' ? (disasterIcons[found.level] || '') + ' ' : '⚔ ') + found.name;
-    const col = levelColors[found.level];
-    tt.querySelector('.tt-type').innerHTML = `<span style="color:rgb(${col[0]},${col[1]},${col[2]})">${levelLabels[found.level] || found.level}</span> · ${found.cat === 'disaster' ? '자연재해' : '분쟁'}`;
-    tt.querySelector('.tt-desc').textContent = found.desc;
-    canvas.style.cursor = 'pointer';
-  } else {
-    tt.style.display = 'none';
-    canvas.style.cursor = dragging ? 'grabbing' : 'grab';
+    openModal(found);
+    // Also focus globe on this point
+    focusConflict(found.lat, found.lon);
   }
 });
-canvas.addEventListener('mouseup', () => dragging = false);
-canvas.addEventListener('mouseleave', () => { dragging = false; document.getElementById('tooltip').style.display = 'none'; });
+canvas.addEventListener('mouseup', () => { dragging = false; });
+canvas.addEventListener('mouseleave', () => { dragging = false; });
 canvas.addEventListener('wheel', e => {
   e.preventDefault();
   R *= e.deltaY > 0 ? 0.95 : 1.05;
@@ -1898,6 +2062,29 @@ function focusConflict(lat, lon) {
   tgtRotX = -lat * Math.PI / 180;
 }
 
+// ===== TOSS-STYLE NAVIGATION LOGIC =====
+let currentMainMenu = 'world';
+
+function switchMainMenu(menu) {
+  currentMainMenu = menu;
+  // Update main menu buttons
+  document.querySelectorAll('.main-menu-btn').forEach(b => b.classList.remove('active'));
+  if (menu === 'world') {
+    document.querySelectorAll('.main-menu-btn')[0].classList.add('active');
+  } else {
+    document.querySelectorAll('.main-menu-btn')[1].classList.add('active');
+  }
+  // Show/hide sub-menu groups
+  document.getElementById('sub-world').classList.toggle('visible', menu === 'world');
+  document.getElementById('sub-indicators').classList.toggle('visible', menu === 'indicators');
+  // Auto-select first sub-tab of the group
+  if (menu === 'world') {
+    setView('conflict');
+  } else {
+    setView('commodity');
+  }
+}
+
 function filterByLevel(level) {
   activeFilter = level;
   document.querySelectorAll('.legend-item').forEach(el => {
@@ -1918,14 +2105,42 @@ function setView(view) {
   currentView = view;
   activeFilter = 'all';
   document.querySelectorAll('.legend-item').forEach(el => el.classList.remove('dim'));
-  document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active','active-disaster','active-commodity','active-usstock'); });
-  const tabs = document.querySelectorAll('.tab-btn');
-  if (view === 'all') tabs[0].classList.add('active');
-  else if (view === 'conflict') tabs[1].classList.add('active');
-  else if (view === 'disaster') tabs[2].classList.add('active-disaster');
-  else if (view === 'commodity') tabs[3].classList.add('active-commodity');
-  else if (view === 'usstock') tabs[4].classList.add('active-usstock');
 
+  // Update sub-tab active states
+  const allSubTabs = document.querySelectorAll('.sub-tab');
+  allSubTabs.forEach(b => {
+    b.classList.remove('active-conflict','active-disaster','active-commodity','active-usstock');
+  });
+  // Find and activate the correct sub-tab
+  const activeGroup = currentMainMenu === 'world' ? '#sub-world' : '#sub-indicators';
+  const subTabs = document.querySelectorAll(activeGroup + ' .sub-tab');
+  if (view === 'conflict') subTabs[0].classList.add('active-conflict');
+  else if (view === 'disaster') subTabs[1].classList.add('active-disaster');
+  else if (view === 'commodity') subTabs[0].classList.add('active-commodity');
+  else if (view === 'usstock') subTabs[1].classList.add('active-usstock');
+
+  // Legend: show/hide based on view
+  const lc = document.getElementById('legend-conflict');
+  const ld = document.getElementById('legend-disaster');
+  const legend = document.getElementById('legend');
+  const divReset = document.getElementById('legend-divider-reset');
+
+  lc.style.display = 'none';
+  ld.style.display = 'none';
+
+  if (view === 'conflict') {
+    lc.style.display = 'contents';
+    legend.style.display = 'flex';
+    divReset.style.display = 'block';
+  } else if (view === 'disaster') {
+    ld.style.display = 'contents';
+    legend.style.display = 'flex';
+    divReset.style.display = 'block';
+  } else {
+    legend.style.display = 'none';
+  }
+
+  // Sidebar visibility
   const sc = document.getElementById('sidebar-conflict');
   const sd = document.getElementById('sidebar-disaster');
   const sm = document.getElementById('sidebar-commodity');
@@ -1935,13 +2150,58 @@ function setView(view) {
   sm.style.display = 'none';
   su.style.display = 'none';
 
-  if (view === 'all') { sc.style.display = 'block'; sd.style.display = 'block'; }
-  else if (view === 'conflict') { sc.style.display = 'block'; }
+  if (view === 'conflict') { sc.style.display = 'block'; }
   else if (view === 'disaster') { sd.style.display = 'block'; }
   else if (view === 'commodity') { sm.style.display = 'block'; }
   else if (view === 'usstock') { su.style.display = 'block'; initStockCharts(); }
 
   document.querySelectorAll('.conflict-card, .disaster-card').forEach(card => card.style.display = 'block');
+}
+
+// ===== TOSS-STYLE MODAL POPUP =====
+let modalOpen = false;
+
+function openModal(data) {
+  const overlay = document.getElementById('modal-overlay');
+  const col = levelColors[data.level];
+  const colStr = `rgb(${col[0]},${col[1]},${col[2]})`;
+  const bgStr = `rgba(${col[0]},${col[1]},${col[2]},0.15)`;
+
+  // Icon
+  const icon = data.cat === 'disaster'
+    ? (disasterIcons[data.level] || '🌊')
+    : '⚔️';
+  document.getElementById('modal-icon').textContent = icon;
+
+  // Title
+  document.getElementById('modal-title').textContent = data.name;
+
+  // Type badge
+  document.getElementById('modal-type').innerHTML =
+    `<span class="level-badge" style="background:${bgStr};color:${colStr}">${levelLabels[data.level] || data.level}</span>` +
+    `<span class="cat-label">${data.cat === 'disaster' ? '자연재해' : '분쟁'}</span>`;
+
+  // Description
+  document.getElementById('modal-desc').textContent = data.desc;
+
+  // Stats (from sidebar cards if available)
+  document.getElementById('modal-stats').innerHTML = '';
+
+  // Show with animation
+  overlay.style.display = 'flex';
+  requestAnimationFrame(() => {
+    overlay.classList.add('show');
+  });
+  modalOpen = true;
+}
+
+function closeModal(event, force) {
+  if (force || event.target === document.getElementById('modal-overlay')) {
+    const overlay = document.getElementById('modal-overlay');
+    overlay.classList.remove('show');
+    setTimeout(() => { overlay.style.display = 'none'; }, 300);
+    modalOpen = false;
+  }
 }
 
 // ========== US STOCK MARKET ==========
@@ -2053,6 +2313,30 @@ function toggleStockDetail(index) {
   panel.classList.toggle('open');
 }
 
+// ESC key to close modal
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && modalOpen) closeModal(null, true);
+});
+
+// Touch tap on markers → modal
+let touchStartPos = null;
+canvas.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) {
+    touchStartPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  }
+});
+canvas.addEventListener('touchend', e => {
+  if (touchStartPos && e.changedTouches.length === 1) {
+    const dx = e.changedTouches[0].clientX - touchStartPos.x;
+    const dy = e.changedTouches[0].clientY - touchStartPos.y;
+    if (Math.abs(dx) + Math.abs(dy) < 15) {
+      const found = findMarkerAt(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+      if (found) { openModal(found); focusConflict(found.lat, found.lon); }
+    }
+  }
+  touchStartPos = null;
+});
+
 // UPDATE TIMESTAMP
 function updateTimestamp() {
   const el = document.getElementById('update-timestamp');
@@ -2069,7 +2353,7 @@ setInterval(updateTimestamp, 1000);
 window.addEventListener('resize', resize);
 resize();
 render();
-setView('all');
+switchMainMenu('world');
 </script>
 </body>
 </html>
