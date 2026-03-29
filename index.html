@@ -34,26 +34,86 @@
     color: #667799;
     font-size: 0.85em;
   }
-  #tabs {
-    display: flex;
+  /* ===== TOSS-STYLE NAVIGATION ===== */
+  #nav-wrapper {
     background: #0a0f1e;
     border-bottom: 1px solid rgba(100,140,255,0.1);
   }
-  .tab-btn {
-    padding: 10px 20px;
-    background: none;
-    border: none;
-    color: #556688;
-    cursor: pointer;
-    font-size: 0.85em;
-    border-bottom: 2px solid transparent;
-    transition: all 0.3s;
-    font-family: inherit;
+  /* 1단계: 메인 메뉴 (세계이슈 / 주요지표) */
+  #main-menu {
+    display: flex;
+    padding: 6px 16px;
+    gap: 8px;
   }
-  .tab-btn:hover { color: #aabbdd; }
-  .tab-btn.active { color: #fff; border-bottom-color: #ff5555; }
-  .tab-btn.active-disaster { color: #fff; border-bottom-color: #ffaa33; }
-  .tab-btn.active-commodity { color: #fff; border-bottom-color: #44ddaa; }
+  .main-menu-btn {
+    flex: 1;
+    position: relative;
+    padding: 10px 0;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    color: #667799;
+    cursor: pointer;
+    font-size: 0.88em;
+    font-family: inherit;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+  .main-menu-btn:hover { background: rgba(255,255,255,0.06); color: #aabbdd; }
+  .main-menu-btn.active {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border-color: rgba(255,255,255,0.15);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  .main-menu-btn .menu-icon { font-size: 1.1em; margin-right: 6px; }
+  /* 2단계: 서브 메뉴 */
+  #sub-menu {
+    display: flex;
+    padding: 6px 16px 8px;
+    gap: 6px;
+  }
+  .sub-menu-group { display: none; gap: 6px; }
+  .sub-menu-group.visible { display: flex; }
+  #sub-world.visible { justify-content: flex-start; }
+  #sub-indicators.visible { justify-content: flex-end; margin-left: auto; }
+  .sub-tab {
+    position: relative;
+    padding: 7px 20px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 20px;
+    color: #667799;
+    cursor: pointer;
+    font-size: 0.8em;
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    white-space: nowrap;
+  }
+  .sub-tab:hover { background: rgba(255,255,255,0.07); color: #aabbdd; }
+  .sub-tab.active-conflict {
+    background: rgba(255,85,85,0.15);
+    color: #ff6b6b;
+    border-color: rgba(255,85,85,0.3);
+  }
+  .sub-tab.active-disaster {
+    background: rgba(255,170,51,0.15);
+    color: #ffaa33;
+    border-color: rgba(255,170,51,0.3);
+  }
+  .sub-tab.active-commodity {
+    background: rgba(68,221,170,0.15);
+    color: #44ddaa;
+    border-color: rgba(68,221,170,0.3);
+  }
+  .sub-tab.active-usstock {
+    background: rgba(102,153,255,0.15);
+    color: #6699ff;
+    border-color: rgba(102,153,255,0.3);
+  }
   #legend {
     display: flex;
     gap: 8px;
@@ -63,6 +123,14 @@
     flex-wrap: wrap;
     align-items: center;
     font-size: 13px;
+  }
+  #legend-conflict, #legend-disaster {
+    display: none;
+    gap: 8px;
+    align-items: center;
+  }
+  #legend-conflict[style*="contents"], #legend-disaster[style*="contents"] {
+    gap: 8px;
   }
   #legend .title { color: #556688; font-size: 0.78em; margin-right: 6px; }
   .legend-item {
@@ -231,22 +299,85 @@
   .econ-impact .label { color: #556677; font-size: 0.78em; }
   .econ-impact .value { color: #ff6b6b; font-size: 1.15em; font-weight: 700; margin-top: 2px; }
   .econ-impact .detail { color: #667788; font-size: 0.78em; margin-top: 3px; }
-  #tooltip {
+  /* ===== TOSS-STYLE CENTER MODAL ===== */
+  #modal-overlay {
     position: fixed;
-    background: rgba(10,15,30,0.96);
-    border: 1px solid rgba(100,140,255,0.2);
-    border-radius: 10px;
-    padding: 14px 18px;
-    pointer-events: none;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 999;
     display: none;
-    z-index: 1000;
-    max-width: 320px;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.4,0,0.2,1);
   }
-  #tooltip .tt-title { font-weight: 700; color: #fff; margin-bottom: 4px; font-size: 0.95em; }
-  #tooltip .tt-type { font-size: 0.72em; margin-bottom: 4px; }
-  #tooltip .tt-desc { font-size: 0.8em; color: #8899aa; line-height: 1.4; }
+  #modal-overlay.show { display: flex; opacity: 1; }
+  #modal-popup {
+    background: rgba(15,20,40,0.97);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 24px 28px;
+    max-width: 420px;
+    width: 90%;
+    backdrop-filter: blur(24px);
+    box-shadow: 0 24px 48px rgba(0,0,0,0.5);
+    transform: scale(0.95) translateY(10px);
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    position: relative;
+  }
+  #modal-overlay.show #modal-popup {
+    transform: scale(1) translateY(0);
+  }
+  .modal-close {
+    position: absolute;
+    top: 12px; right: 14px;
+    background: rgba(255,255,255,0.06);
+    border: none;
+    color: #667;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .modal-close:hover { background: rgba(255,255,255,0.12); color: #aab; }
+  .modal-icon { font-size: 2em; margin-bottom: 12px; }
+  .modal-title { font-weight: 700; color: #fff; font-size: 1.15em; margin-bottom: 6px; }
+  .modal-type {
+    font-size: 0.78em;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .modal-type .level-badge {
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.88em;
+  }
+  .modal-type .cat-label { color: #667; }
+  .modal-desc {
+    font-size: 0.88em;
+    color: #99aabb;
+    line-height: 1.65;
+    padding: 14px 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .modal-stats {
+    display: flex;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    font-size: 0.78em;
+  }
+  .modal-stats .stat-item { color: #556677; }
+  .modal-stats .stat-item strong { color: #aabbcc; }
+  /* Legacy tooltip hidden */
+  #tooltip { display: none !important; }
   #controls {
     position: absolute;
     bottom: 16px;
@@ -415,7 +546,7 @@
   .comm-summary-item .s-value { font-size: 1.0em; font-weight: 700; margin-top: 2px; }
   .comm-summary-item .s-sub { font-size: 0.62em; margin-top: 1px; }
   /* US STOCK MARKET STYLES */
-  .tab-btn.active-usstock { color: #fff; border-bottom-color: #6699ff; }
+  /* legacy removed - now using nav-wrapper */
   .stock-index-card {
     background: rgba(20,28,55,0.6);
     border-radius: 10px;
@@ -512,41 +643,8 @@
     #sidebar { width: 100%; }
     #globe-container { min-height: 450px; }
   }
-  /* ===== ECONOMIC IMPACT MODAL ===== */
-  #econ-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:900; backdrop-filter:blur(4px); }
-  #econ-modal {
-    display:none; position:fixed; top:50%; left:50%;
-    transform:translate(-50%,-50%);
-    z-index:901; background:#09111f;
-    border:1px solid rgba(100,140,255,0.25); border-radius:16px;
-    padding:22px 26px; width:min(680px,96vw); max-height:88vh; overflow-y:auto;
-    box-shadow:0 24px 80px rgba(0,0,0,0.9);
-    animation:econIn 0.22s ease;
-  }
-  @keyframes econIn { from{opacity:0;transform:translate(-50%,-46%)} to{opacity:1;transform:translate(-50%,-50%)} }
-  #econ-modal::-webkit-scrollbar{width:4px}
-  #econ-modal::-webkit-scrollbar-thumb{background:rgba(100,140,255,0.2);border-radius:4px}
-  .econ-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
-  .econ-title{font-size:1.15em;font-weight:700;color:#eef}
-  .econ-meta{display:flex;gap:10px;align-items:center;margin-top:5px;flex-wrap:wrap}
-  .econ-badge{font-size:0.7em;padding:2px 9px;border-radius:10px;font-weight:700;letter-spacing:0.3px}
-  .econ-date{font-size:0.72em;color:#556677}
-  .econ-close{background:none;border:1px solid rgba(100,140,255,0.2);color:#8899bb;border-radius:8px;font-size:1em;cursor:pointer;padding:3px 11px;transition:all 0.2s}
-  .econ-close:hover{color:#fff;border-color:rgba(100,140,255,0.5);background:rgba(100,140,255,0.1)}
-  .econ-summary{background:rgba(255,170,40,0.07);border-left:3px solid #ffaa33;border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:18px;font-size:0.8em;color:#ffcc88;line-height:1.65}
-  .econ-chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
-  .econ-chart-box{background:rgba(6,12,28,0.9);border-radius:10px;padding:12px 14px;border:1px solid rgba(100,140,255,0.1)}
-  .ecb-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-  .ecb-label{font-size:0.7em;color:#8899bb;font-weight:600;letter-spacing:0.4px}
-  .ecb-delta{font-size:0.88em;font-weight:700}
-  .ecb-delta.pos{color:#ff5555}
-  .ecb-delta.neg{color:#44dd88}
-  .ecb-delta.pos-good{color:#44dd88}
-  .ecb-delta.neg-bad{color:#ff5555}
-  .econ-footer{margin-top:13px;font-size:0.7em;color:#334455;text-align:center;border-top:1px solid rgba(100,140,255,0.07);padding-top:10px}
-  .econ-click-hint{text-align:center;font-size:0.7em;color:#334455;margin-top:3px}
-  @media(max-width:600px){.econ-chart-grid{grid-template-columns:1fr}}
 </style>
+</head>
 <body>
 
 <div id="header">
@@ -554,31 +652,62 @@
   <div class="date">2026.03.29 기준 | 분쟁 21개 · 자연재해 17개 추적중</div>
 </div>
 
-<div id="tabs">
-  <button class="tab-btn active" onclick="setView('all')">🌐 전체보기</button>
-  <button class="tab-btn" onclick="setView('conflict')">⚔️ 분쟁지역</button>
-  <button class="tab-btn" onclick="setView('disaster')">🌊 자연재해</button>
-  <button class="tab-btn" onclick="setView('commodity')">📈 원자재</button>
-  <button class="tab-btn" onclick="setView('usstock')">🇺🇸 미국증시</button>
+<div id="nav-wrapper">
+  <!-- 1단계: 메인 메뉴 -->
+  <div id="main-menu">
+    <button class="main-menu-btn active" onclick="switchMainMenu('world')">
+      <span class="menu-icon">🌍</span>세계이슈
+    </button>
+    <button class="main-menu-btn" onclick="switchMainMenu('indicators')">
+      <span class="menu-icon">📊</span>주요지표
+    </button>
+  </div>
+  <!-- 2단계: 서브 메뉴 -->
+  <div id="sub-menu">
+    <div class="sub-menu-group visible" id="sub-world">
+      <button class="sub-tab active-conflict" onclick="setView('conflict')">⚔️ 분쟁지역</button>
+      <button class="sub-tab" onclick="setView('disaster')">🌊 자연재해</button>
+    </div>
+    <div class="sub-menu-group" id="sub-indicators">
+      <button class="sub-tab" onclick="setView('commodity')">📈 원자재</button>
+      <button class="sub-tab" onclick="setView('usstock')">🇺🇸 미국증시</button>
+    </div>
+  </div>
 </div>
 
+<!-- 3단계: 범례 필터 (동적) -->
 <div id="legend">
-  <span class="title">분쟁:</span>
-  <div class="legend-item" onclick="filterByLevel('war')"><span class="legend-dot" style="background:#ff2020;color:#ff2020"></span> 전쟁 <span class="legend-index">Lv.5</span></div>
-  <div class="legend-item" onclick="filterByLevel('confrontation')"><span class="legend-dot" style="background:#ff6600;color:#ff6600"></span> 대치 <span class="legend-index">Lv.4</span></div>
-  <div class="legend-item" onclick="filterByLevel('tension')"><span class="legend-dot" style="background:#ffcc00;color:#ffcc00"></span> 긴장 <span class="legend-index">Lv.3</span></div>
-  <div class="legend-item" onclick="filterByLevel('caution')"><span class="legend-dot" style="background:#00aaff;color:#00aaff"></span> 주의 <span class="legend-index">Lv.2</span></div>
-  <div class="legend-item" onclick="filterByLevel('protest')"><span class="legend-dot" style="background:#cc44ff;color:#cc44ff"></span> 시위 <span class="legend-index">Lv.1</span></div>
-  <div class="legend-divider"></div>
-  <span class="title">재해:</span>
-  <div class="legend-item" onclick="filterByLevel('flood')"><span class="legend-dot" style="background:#00bbff;color:#00bbff"></span> 홍수 <span class="legend-index">FLOOD</span></div>
-  <div class="legend-item" onclick="filterByLevel('earthquake')"><span class="legend-dot" style="background:#ff8800;color:#ff8800"></span> 지진 <span class="legend-index">QUAKE</span></div>
-  <div class="legend-item" onclick="filterByLevel('drought')"><span class="legend-dot" style="background:#cc8833;color:#cc8833"></span> 가뭄 <span class="legend-index">DROUGHT</span></div>
-  <div class="legend-item" onclick="filterByLevel('snow')"><span class="legend-dot" style="background:#aaccff;color:#aaccff"></span> 폭설 <span class="legend-index">SNOW</span></div>
-  <div class="legend-item" onclick="filterByLevel('fire')"><span class="legend-dot" style="background:#ff3300;color:#ff3300"></span> 화재 <span class="legend-index">FIRE</span></div>
-  <div class="legend-divider"></div>
+  <div id="legend-conflict">
+    <span class="title">분쟁:</span>
+    <div class="legend-item" onclick="filterByLevel('war')"><span class="legend-dot" style="background:#ff2020;color:#ff2020"></span> 전쟁 <span class="legend-index">Lv.5</span></div>
+    <div class="legend-item" onclick="filterByLevel('confrontation')"><span class="legend-dot" style="background:#ff6600;color:#ff6600"></span> 대치 <span class="legend-index">Lv.4</span></div>
+    <div class="legend-item" onclick="filterByLevel('tension')"><span class="legend-dot" style="background:#ffcc00;color:#ffcc00"></span> 긴장 <span class="legend-index">Lv.3</span></div>
+    <div class="legend-item" onclick="filterByLevel('caution')"><span class="legend-dot" style="background:#00aaff;color:#00aaff"></span> 주의 <span class="legend-index">Lv.2</span></div>
+    <div class="legend-item" onclick="filterByLevel('protest')"><span class="legend-dot" style="background:#cc44ff;color:#cc44ff"></span> 시위 <span class="legend-index">Lv.1</span></div>
+  </div>
+  <div id="legend-disaster" style="display:none;">
+    <span class="title">재해:</span>
+    <div class="legend-item" onclick="filterByLevel('flood')"><span class="legend-dot" style="background:#00bbff;color:#00bbff"></span> 홍수 <span class="legend-index">FLOOD</span></div>
+    <div class="legend-item" onclick="filterByLevel('earthquake')"><span class="legend-dot" style="background:#ff8800;color:#ff8800"></span> 지진 <span class="legend-index">QUAKE</span></div>
+    <div class="legend-item" onclick="filterByLevel('drought')"><span class="legend-dot" style="background:#cc8833;color:#cc8833"></span> 가뭄 <span class="legend-index">DROUGHT</span></div>
+    <div class="legend-item" onclick="filterByLevel('snow')"><span class="legend-dot" style="background:#aaccff;color:#aaccff"></span> 폭설 <span class="legend-index">SNOW</span></div>
+    <div class="legend-item" onclick="filterByLevel('fire')"><span class="legend-dot" style="background:#ff3300;color:#ff3300"></span> 화재 <span class="legend-index">FIRE</span></div>
+  </div>
+  <div class="legend-divider" id="legend-divider-reset"></div>
   <div class="legend-item" onclick="filterByLevel('all')" style="color:#aab;font-weight:600;">전체</div>
   <span id="update-timestamp"></span>
+</div>
+
+<!-- 중앙 모달 팝업 (토스 Alert 스타일) -->
+<div id="modal-overlay" onclick="closeModal(event)">
+  <div id="modal-popup">
+    <button class="modal-close" onclick="closeModal(event, true)">✕</button>
+    <div class="modal-icon" id="modal-icon"></div>
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-type" id="modal-type"></div>
+    <div class="modal-desc" id="modal-desc"></div>
+    <div class="modal-stats" id="modal-stats"></div>
+  </div>
 </div>
 
 <div id="main">
@@ -1345,11 +1474,7 @@
   </div>
 </div>
 
-<div id="tooltip">
-  <div class="tt-title"></div>
-  <div class="tt-type"></div>
-  <div class="tt-desc"></div>
-</div>
+<!-- tooltip replaced by modal-overlay above -->
 
 <script>
 // ========== DATA ==========
@@ -1841,17 +1966,11 @@ function render() {
 }
 
 // ========== INTERACTION ==========
-canvas.addEventListener('mousedown', e => { dragging = true; lx = e.clientX; ly = e.clientY; });
-canvas.addEventListener('mousemove', e => {
-  if (dragging) {
-    tgtRotY -= (e.clientX - lx) * 0.005;
-    tgtRotX -= (e.clientY - ly) * 0.005;
-    tgtRotX = Math.max(-1.4, Math.min(1.4, tgtRotX));
-    lx = e.clientX; ly = e.clientY;
-  }
-  // Tooltip
+canvas.addEventListener('mousedown', e => { dragging = true; lx = e.clientX; ly = e.clientY; dragDistance = 0; });
+// Helper: find marker under mouse position
+function findMarkerAt(clientX, clientY) {
   const rect = canvas.getBoundingClientRect();
-  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  const mx = clientX - rect.left, my = clientY - rect.top;
   let found = null;
   const visible = allPoints.filter(c => {
     if (currentView === 'conflict' && c.cat !== 'conflict') return false;
@@ -1863,25 +1982,37 @@ canvas.addEventListener('mousemove', e => {
     const p = proj(rot(ll2xyz(c.lat, c.lon)));
     if (p.z < 0) return;
     const d = Math.hypot(p.x - mx, p.y - my);
-    if (d < c.radius * 2.5 * (R / 250)) found = { ...c, sx: e.clientX, sy: e.clientY };
+    if (d < c.radius * 2.5 * (R / 250)) found = { ...c };
   });
-  const tt = document.getElementById('tooltip');
+  return found;
+}
+
+let dragDistance = 0;
+canvas.addEventListener('mousemove', e => {
+  if (dragging) {
+    const dx = e.clientX - lx, dy = e.clientY - ly;
+    dragDistance += Math.abs(dx) + Math.abs(dy);
+    tgtRotY -= dx * 0.005;
+    tgtRotX -= dy * 0.005;
+    tgtRotX = Math.max(-1.4, Math.min(1.4, tgtRotX));
+    lx = e.clientX; ly = e.clientY;
+  }
+  // Hover cursor
+  const found = findMarkerAt(e.clientX, e.clientY);
+  canvas.style.cursor = found ? 'pointer' : (dragging ? 'grabbing' : 'grab');
+});
+// Click → open modal
+canvas.addEventListener('click', e => {
+  if (dragDistance > 5) return; // was a drag, not a click
+  const found = findMarkerAt(e.clientX, e.clientY);
   if (found) {
-    tt.style.display = 'block';
-    tt.style.left = (found.sx + 15) + 'px';
-    tt.style.top = (found.sy + 15) + 'px';
-    tt.querySelector('.tt-title').textContent = (found.cat === 'disaster' ? (disasterIcons[found.level] || '') + ' ' : '⚔ ') + found.name;
-    const col = levelColors[found.level];
-    tt.querySelector('.tt-type').innerHTML = `<span style="color:rgb(${col[0]},${col[1]},${col[2]})">${levelLabels[found.level] || found.level}</span> · ${found.cat === 'disaster' ? '자연재해' : '분쟁'}`;
-    tt.querySelector('.tt-desc').textContent = found.desc;
-    canvas.style.cursor = 'pointer';
-  } else {
-    tt.style.display = 'none';
-    canvas.style.cursor = dragging ? 'grabbing' : 'grab';
+    openModal(found);
+    // Also focus globe on this point
+    focusConflict(found.lat, found.lon);
   }
 });
-canvas.addEventListener('mouseup', () => dragging = false);
-canvas.addEventListener('mouseleave', () => { dragging = false; document.getElementById('tooltip').style.display = 'none'; });
+canvas.addEventListener('mouseup', () => { dragging = false; });
+canvas.addEventListener('mouseleave', () => { dragging = false; });
 canvas.addEventListener('wheel', e => {
   e.preventDefault();
   R *= e.deltaY > 0 ? 0.95 : 1.05;
@@ -1931,6 +2062,29 @@ function focusConflict(lat, lon) {
   tgtRotX = -lat * Math.PI / 180;
 }
 
+// ===== TOSS-STYLE NAVIGATION LOGIC =====
+let currentMainMenu = 'world';
+
+function switchMainMenu(menu) {
+  currentMainMenu = menu;
+  // Update main menu buttons
+  document.querySelectorAll('.main-menu-btn').forEach(b => b.classList.remove('active'));
+  if (menu === 'world') {
+    document.querySelectorAll('.main-menu-btn')[0].classList.add('active');
+  } else {
+    document.querySelectorAll('.main-menu-btn')[1].classList.add('active');
+  }
+  // Show/hide sub-menu groups
+  document.getElementById('sub-world').classList.toggle('visible', menu === 'world');
+  document.getElementById('sub-indicators').classList.toggle('visible', menu === 'indicators');
+  // Auto-select first sub-tab of the group
+  if (menu === 'world') {
+    setView('conflict');
+  } else {
+    setView('commodity');
+  }
+}
+
 function filterByLevel(level) {
   activeFilter = level;
   document.querySelectorAll('.legend-item').forEach(el => {
@@ -1951,14 +2105,42 @@ function setView(view) {
   currentView = view;
   activeFilter = 'all';
   document.querySelectorAll('.legend-item').forEach(el => el.classList.remove('dim'));
-  document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active','active-disaster','active-commodity','active-usstock'); });
-  const tabs = document.querySelectorAll('.tab-btn');
-  if (view === 'all') tabs[0].classList.add('active');
-  else if (view === 'conflict') tabs[1].classList.add('active');
-  else if (view === 'disaster') tabs[2].classList.add('active-disaster');
-  else if (view === 'commodity') tabs[3].classList.add('active-commodity');
-  else if (view === 'usstock') tabs[4].classList.add('active-usstock');
 
+  // Update sub-tab active states
+  const allSubTabs = document.querySelectorAll('.sub-tab');
+  allSubTabs.forEach(b => {
+    b.classList.remove('active-conflict','active-disaster','active-commodity','active-usstock');
+  });
+  // Find and activate the correct sub-tab
+  const activeGroup = currentMainMenu === 'world' ? '#sub-world' : '#sub-indicators';
+  const subTabs = document.querySelectorAll(activeGroup + ' .sub-tab');
+  if (view === 'conflict') subTabs[0].classList.add('active-conflict');
+  else if (view === 'disaster') subTabs[1].classList.add('active-disaster');
+  else if (view === 'commodity') subTabs[0].classList.add('active-commodity');
+  else if (view === 'usstock') subTabs[1].classList.add('active-usstock');
+
+  // Legend: show/hide based on view
+  const lc = document.getElementById('legend-conflict');
+  const ld = document.getElementById('legend-disaster');
+  const legend = document.getElementById('legend');
+  const divReset = document.getElementById('legend-divider-reset');
+
+  lc.style.display = 'none';
+  ld.style.display = 'none';
+
+  if (view === 'conflict') {
+    lc.style.display = 'contents';
+    legend.style.display = 'flex';
+    divReset.style.display = 'block';
+  } else if (view === 'disaster') {
+    ld.style.display = 'contents';
+    legend.style.display = 'flex';
+    divReset.style.display = 'block';
+  } else {
+    legend.style.display = 'none';
+  }
+
+  // Sidebar visibility
   const sc = document.getElementById('sidebar-conflict');
   const sd = document.getElementById('sidebar-disaster');
   const sm = document.getElementById('sidebar-commodity');
@@ -1968,13 +2150,58 @@ function setView(view) {
   sm.style.display = 'none';
   su.style.display = 'none';
 
-  if (view === 'all') { sc.style.display = 'block'; sd.style.display = 'block'; }
-  else if (view === 'conflict') { sc.style.display = 'block'; }
+  if (view === 'conflict') { sc.style.display = 'block'; }
   else if (view === 'disaster') { sd.style.display = 'block'; }
   else if (view === 'commodity') { sm.style.display = 'block'; }
   else if (view === 'usstock') { su.style.display = 'block'; initStockCharts(); }
 
   document.querySelectorAll('.conflict-card, .disaster-card').forEach(card => card.style.display = 'block');
+}
+
+// ===== TOSS-STYLE MODAL POPUP =====
+let modalOpen = false;
+
+function openModal(data) {
+  const overlay = document.getElementById('modal-overlay');
+  const col = levelColors[data.level];
+  const colStr = `rgb(${col[0]},${col[1]},${col[2]})`;
+  const bgStr = `rgba(${col[0]},${col[1]},${col[2]},0.15)`;
+
+  // Icon
+  const icon = data.cat === 'disaster'
+    ? (disasterIcons[data.level] || '🌊')
+    : '⚔️';
+  document.getElementById('modal-icon').textContent = icon;
+
+  // Title
+  document.getElementById('modal-title').textContent = data.name;
+
+  // Type badge
+  document.getElementById('modal-type').innerHTML =
+    `<span class="level-badge" style="background:${bgStr};color:${colStr}">${levelLabels[data.level] || data.level}</span>` +
+    `<span class="cat-label">${data.cat === 'disaster' ? '자연재해' : '분쟁'}</span>`;
+
+  // Description
+  document.getElementById('modal-desc').textContent = data.desc;
+
+  // Stats (from sidebar cards if available)
+  document.getElementById('modal-stats').innerHTML = '';
+
+  // Show with animation
+  overlay.style.display = 'flex';
+  requestAnimationFrame(() => {
+    overlay.classList.add('show');
+  });
+  modalOpen = true;
+}
+
+function closeModal(event, force) {
+  if (force || event.target === document.getElementById('modal-overlay')) {
+    const overlay = document.getElementById('modal-overlay');
+    overlay.classList.remove('show');
+    setTimeout(() => { overlay.style.display = 'none'; }, 300);
+    modalOpen = false;
+  }
 }
 
 // ========== US STOCK MARKET ==========
@@ -2086,6 +2313,30 @@ function toggleStockDetail(index) {
   panel.classList.toggle('open');
 }
 
+// ESC key to close modal
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && modalOpen) closeModal(null, true);
+});
+
+// Touch tap on markers → modal
+let touchStartPos = null;
+canvas.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) {
+    touchStartPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  }
+});
+canvas.addEventListener('touchend', e => {
+  if (touchStartPos && e.changedTouches.length === 1) {
+    const dx = e.changedTouches[0].clientX - touchStartPos.x;
+    const dy = e.changedTouches[0].clientY - touchStartPos.y;
+    if (Math.abs(dx) + Math.abs(dy) < 15) {
+      const found = findMarkerAt(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+      if (found) { openModal(found); focusConflict(found.lat, found.lon); }
+    }
+  }
+  touchStartPos = null;
+});
+
 // UPDATE TIMESTAMP
 function updateTimestamp() {
   const el = document.getElementById('update-timestamp');
@@ -2102,7 +2353,7 @@ setInterval(updateTimestamp, 1000);
 window.addEventListener('resize', resize);
 resize();
 render();
-setView('all');
+switchMainMenu('world');
 </script>
 </body>
 </html>
