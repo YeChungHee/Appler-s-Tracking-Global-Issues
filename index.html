@@ -731,7 +731,7 @@
 
 <div id="header">
   <h1>🌍 Global <span class="accent1">Conflict</span> & <span class="accent2">Disaster</span> Monitor</h1>
-  <div class="date">2026.04.24 기준 | 분쟁 21개 · 자연재해 21개 추적중</div>
+  <div class="date">2026.04.24 기준 | 분쟁 21개 · 자연재해 20개 추적중</div>
 </div>
 
 <div id="nav-wrapper">
@@ -798,7 +798,7 @@
     <div id="loading-indicator"><div class="loading-spinner"></div>지도 데이터 로딩중...</div>
     <div id="info-panel">
       <div style="margin-bottom:6px;">활성 모니터링</div>
-      <div class="count"><span class="c-red">21</span> + <span class="c-orange">17</span></div>
+      <div class="count"><span class="c-red">21</span> + <span class="c-orange">20</span></div>
       <div style="margin-top:4px;">분쟁 · 재해</div>
     </div>
     <div id="zoom-info">마우스 드래그: 회전 | 스크롤: 줌</div>
@@ -1035,15 +1035,10 @@
 
       <div class="sidebar-section">
         <h3>🔥 대형화재 (Wildfire)</h3>
-        <div class="disaster-card fire" onclick="focusConflict(41.8,-103.0)">
-          <div class="card-header"><span class="card-title">🇺🇸 네브래스카 역대 최대 산불</span><span class="card-badge badge-fire">화재</span></div>
-          <div class="card-desc">모릴 화재 460,000에이커(주 역사상 최대). 총 600,000+에이커 소실. 1명 사망, 주지사 비상사태 선포·주방위군 동원(3/14)</div>
-          <div class="card-stats"><span class="stat">사망: <strong>1</strong></span><span class="stat">면적: <strong>600,000+에이커</strong></span></div>
-        </div>
-        <div class="disaster-card fire" onclick="focusConflict(35.0,-97.5)">
-          <div class="card-header"><span class="card-title">🇺🇸 오클라호마·텍사스 산불</span><span class="card-badge badge-fire">화재</span></div>
-          <div class="card-desc">FEMA 다수 화재 관리 지원 선언. 디블크릭·점핑주니퍼·코너포켓 화재 등 다발성 산불(3/15~22)</div>
-          <div class="card-stats"><span class="stat">시기: <strong>2026.3.15~22</strong></span></div>
+        <div class="disaster-card fire" onclick="focusConflict(37.0,-100.0)">
+          <div class="card-header"><span class="card-title">🇺🇸 미국 대평원 산불 위험 지속</span><span class="card-badge badge-fire">화재</span></div>
+          <div class="card-desc">네브래스카 Morrill Fire(643,000에이커, 미국 역사상 최대급) 3/25 완전 진화. 오클라호마·텍사스 개별 화재도 진화 완료. 4월 현재 남부 대평원 가뭄·강풍(60mph) 조건 지속으로 재발화 위험 초고수준 유지(NIFC 4/22)</div>
+          <div class="card-stats"><span class="stat">상태: <strong>진화 완료·재위험 경계</strong></span><span class="stat">면적: <strong>110만+에이커 (3월 누계)</strong></span></div>
         </div>
         <div class="disaster-card fire" onclick="focusConflict(32.8,-86.8)">
           <div class="card-header"><span class="card-title">🇺🇸 알라바마·남부 산불</span><span class="card-badge badge-fire">화재</span></div>
@@ -1056,27 +1051,27 @@
         <h3>🏜️ 가뭄 (Drought)</h3>
         <div class="disaster-card drought" onclick="focusConflict(5.0,46.0)">
           <div class="card-header"><span class="card-title">🇸🇴🇪🇹 동아프리카 가뭄</span><span class="card-badge badge-drought">가뭄</span></div>
-          <div class="card-desc">소말리아 작물 생산 장기 평균 대비 83% 감소. 남부 에티오피아 목초지 황폐화, 가축 폐사</div>
-          <div class="card-stats"><span class="stat">피해: <strong>극심</strong></span><span class="stat">식량위기: <strong>진행중</strong></span></div>
+          <div class="card-desc">IGAD 6개국 3,800만명 식량위기(IPC3+). 소말리아 작물 83% 감소·650만명 기아 위협. 2026 인도지원 예산 13.4%만 확보. 4~6월 강우 소폭 기대되나 완전 회복 수년 소요(EU JRC 2026.3)</div>
+          <div class="card-stats"><span class="stat">피해인구: <strong>3,800만</strong></span><span class="stat">식량위기: <strong>IPC 3단계+</strong></span></div>
         </div>
         <div class="disaster-card drought" onclick="focusConflict(33.0,65.0)">
-          <div class="card-header"><span class="card-title">🇦🇫 아프가니스탄 동계 가뭄</span><span class="card-badge badge-drought">가뭄</span></div>
-          <div class="card-desc">1,740만 명(인구 1/3+) 급성 식량 불안정. 겨울 가뭄으로 밀·보리 생장 지연</div>
-          <div class="card-stats"><span class="stat">피해인구: <strong>1,740만</strong></span></div>
+          <div class="card-header"><span class="card-title">🇦🇫 아프가니스탄 가뭄</span><span class="card-badge badge-drought">가뭄</span></div>
+          <div class="card-desc">5년 연속 가뭄. 1,740만명(36%) 식량위기, 470만명 긴급(IPC4). 4~9월 수확기 1,380만명으로 소폭 완화 전망. 2026 식량지원 예산 미확정(IPC 2026.3)</div>
+          <div class="card-stats"><span class="stat">피해인구: <strong>1,740만</strong></span><span class="stat">연속: <strong>5년째</strong></span></div>
         </div>
-        <div class="disaster-card drought" onclick="focusConflict(32.0,3.0)">
-          <div class="card-header"><span class="card-title">🇩🇿🇲🇦🇹🇳 북아프리카 가뭄</span><span class="card-badge badge-drought">가뭄</span></div>
-          <div class="card-desc">알제리·모로코·튀니지 전역 작물 생장 지연. 곡물 수입 의존도 급증</div>
-          <div class="card-stats"><span class="stat">범위: <strong>북아프리카 3국</strong></span></div>
+        <div class="disaster-card drought" onclick="focusConflict(28.0,2.5)">
+          <div class="card-header"><span class="card-title">🇩🇿 알제리 수자원 위기</span><span class="card-badge badge-drought">가뭄</span></div>
+          <div class="card-desc">모로코는 2026년 1~2월 기록적 겨울 강우로 7년 가뭄 종료(저수지 46% 회복). 알제리는 강수 40~50% 부족 지속, 58개 주 중 20개 식수 심각 부족. '위기 국가' 공식 선언(2026.4)</div>
+          <div class="card-stats"><span class="stat">모로코: <strong>가뭄 종료</strong></span><span class="stat">알제리: <strong>위기 지속</strong></span></div>
         </div>
       </div>
 
       <div class="sidebar-section">
         <h3>❄️ 폭설 (Heavy Snow)</h3>
-        <div class="disaster-card snow" onclick="focusConflict(52.3,4.8)">
-          <div class="card-header"><span class="card-title">🇳🇱 네덜란드 한파·폭설</span><span class="card-badge badge-snow">폭설</span></div>
-          <div class="card-desc">강추위·폭설로 항공편 대거 취소, 암스테르담 인근 열차 운행 전면 중단</div>
-          <div class="card-stats"><span class="stat">시기: <strong>2026.1~2월</strong></span></div>
+        <div class="disaster-card snow" onclick="focusConflict(54.0,-6.0)">
+          <div class="card-header"><span class="card-title">🌊 유럽 대서양 폭풍 시즌</span><span class="card-badge badge-snow">폭설</span></div>
+          <div class="card-desc">2025-26 폭풍 시즌 지속. 2월 Kristin·Leonardo·Marta 등 5개 연속 폭풍 35명+ 사망(포·스·프). 4월 폭풍 Dave가 영국·아일랜드 강타, 허리케인급 강풍. 연속 폭풍으로 토양 포화·홍수 위험 누적</div>
+          <div class="card-stats"><span class="stat">시기: <strong>2026.1~4월 진행중</strong></span><span class="stat">사망: <strong>35+명 (2월 누계)</strong></span></div>
         </div>
       </div>
     </div>
@@ -1854,13 +1849,11 @@ const disasters = [
   { name:"인도네시아 말루쿠 지진", lat:0.5, lon:126.5, level:"earthquake", radius:14, desc:"M7.4 강진, 테르나테 서북서 126km 해역, 여진 18회(M4.4~6.2), 1명 사망 (2026.4.1)", cat:"disaster" },
   { name:"시마네 지진", lat:35.3, lon:132.8, level:"earthquake", radius:12, desc:"M6.4, 진도 5강, 후속 21회 (2026.1)", cat:"disaster" },
   { name:"파키스탄 지진", lat:35.5, lon:76.0, level:"earthquake", radius:10, desc:"M3.9, 레-라다크 인근 (2026.3.27)", cat:"disaster" },
-  { name:"네브래스카 산불", lat:41.8, lon:-103.0, level:"fire", radius:16, desc:"주 역사상 최대, 600,000+에이커 소실 (2026.3)", cat:"disaster" },
-  { name:"오클라호마 산불 (다발)", lat:35.0, lon:-97.5, level:"fire", radius:14, desc:"Dibble Creek·Jumping Juniper·Buck Horn 등 5건+ FEMA 선언 (3/15~)", cat:"disaster" },
-  { name:"텍사스 산불", lat:31.5, lon:-100.0, level:"fire", radius:12, desc:"Corner Pocket Fire, FEMA 지원 선언 (2026.3.15~)", cat:"disaster" },
-  { name:"동아프리카 가뭄", lat:5.0, lon:46.0, level:"drought", radius:18, desc:"소말리아 작물 83% 감소, 식량 위기", cat:"disaster" },
-  { name:"아프간 가뭄", lat:33.0, lon:65.0, level:"drought", radius:14, desc:"1,740만 명 식량 불안정", cat:"disaster" },
-  { name:"유럽 폭풍", lat:52.3, lon:4.8, level:"snow", radius:10, desc:"2025-26 유럽 폭풍 시즌, 열차 중단·항공 취소", cat:"disaster" },
-  { name:"북아프리카 가뭄", lat:32.0, lon:3.0, level:"drought", radius:14, desc:"알제리·모로코·튀니지 작물 생장 지연", cat:"disaster" },
+  { name:"미국 대평원 산불 위험", lat:37.0, lon:-100.0, level:"fire", radius:16, desc:"네브래스카 Morrill Fire(643,000에이커, 미 역사상 최대급) 3/25 완전 진화. 오클라호마·텍사스 개별 화재도 진화 완료. 단, 4월 현재 남부 대평원 가뭄·강풍 조건으로 초고위험 상태 유지. 미 고원지대 60mph 강풍 예보, 재발화 경계 중 (NIFC 2026.4)", cat:"disaster" },
+  { name:"동아프리카 가뭄", lat:5.0, lon:46.0, level:"drought", radius:18, desc:"IGAD 6개국 3,800만명 식량위기(IPC 3단계+). 소말리아 작물 83% 감소·650만명 기아 위협. 2026 인도지원 예산 13.4%만 확보. 2025-26 건기 강수량 평년 50% 이하. 4~6월 일부 강우 전망이나 완전 회복 수년 소요 예상 (2026.3 EU JRC)", cat:"disaster" },
+  { name:"아프간 가뭄", lat:33.0, lon:65.0, level:"drought", radius:14, desc:"5년 연속 가뭄 지속. 1,740만명(인구 36%) 식량위기(IPC 3단계+), 이 중 470만명 긴급(4단계). 4~9월 수확기에 1,380만명으로 소폭 완화 전망. 목초지 고갈·가축 생산성 저하 장기화. 2026 식량지원 예산 미확정 (IPC 2026.3)", cat:"disaster" },
+  { name:"유럽 대서양 폭풍", lat:52.3, lon:4.8, level:"snow", radius:10, desc:"2025-26 유럽 폭풍 시즌 지속. 2월 Kristin·Leonardo·Marta·Nils·Pedro 5개 연속 폭풍으로 35명+ 사망(포르투갈·스페인·프랑스). 4월 폭풍 Dave가 영국·아일랜드 강타, 허리케인급 강풍·누적 토양 포화로 홍수 위험 고조.", cat:"disaster" },
+  { name:"알제리 수자원 위기", lat:28.0, lon:2.5, level:"drought", radius:12, desc:"모로코 7년 가뭄은 2026년 1~2월 기록적 겨울 강우로 종료(저수지 평균 46% 회복). 단, 알제리는 40~50% 강수 부족 지속, 58개 주 중 20개 주 식수 심각 부족. 튀니지도 수자원 압박 계속. 알제리 물 부족 '위기 국가' 공식 선언 (2026.4)", cat:"disaster" },
   { name:"이탈리아 폭풍·홍수", lat:41.5, lon:14.5, level:"flood", radius:12, desc:"중남부 아브루초·몰리세·풀리아·바실리카타·칼라브리아 경보 3/3 발령(최고 수준); 유럽 전역 홍수 주의보 — 보스니아·불가리아·크로아티아·그리스·폴란드 동시 발령 (2026.3.31~4.5)", cat:"disaster" },
   { name:"페루 산사태", lat:-14.0, lon:-70.2, level:"flood", radius:10, desc:"카라바야 주(푸노 지역) 무쿠이마요강 범람·산사태, 2명 사망, 90가구 피해, 도로 2개 유실 (2026.4 초)", cat:"disaster" },
   { name:"브라질 북부 홍수", lat:-1.5, lon:-48.5, level:"flood", radius:14, desc:"파라주 벨렝 등 북부 브라질 집중호우, 상파울루 남부도 침수 피해. 주민 다수 대피 (2026.4.20~)", cat:"disaster" },
