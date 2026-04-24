@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🌍 Global Conflict & Disaster Monitor - 2026년 3월</title>
+<title>🌍 Global Conflict & Disaster Monitor - 2026년 4월 24일</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -34,26 +34,86 @@
     color: #667799;
     font-size: 0.85em;
   }
-  #tabs {
-    display: flex;
+  /* ===== TOSS-STYLE NAVIGATION ===== */
+  #nav-wrapper {
     background: #0a0f1e;
     border-bottom: 1px solid rgba(100,140,255,0.1);
   }
-  .tab-btn {
-    padding: 10px 20px;
-    background: none;
-    border: none;
-    color: #556688;
-    cursor: pointer;
-    font-size: 0.85em;
-    border-bottom: 2px solid transparent;
-    transition: all 0.3s;
-    font-family: inherit;
+  /* 1단계: 메인 메뉴 (세계이슈 / 주요지표) */
+  #main-menu {
+    display: flex;
+    padding: 6px 16px;
+    gap: 8px;
   }
-  .tab-btn:hover { color: #aabbdd; }
-  .tab-btn.active { color: #fff; border-bottom-color: #ff5555; }
-  .tab-btn.active-disaster { color: #fff; border-bottom-color: #ffaa33; }
-  .tab-btn.active-commodity { color: #fff; border-bottom-color: #44ddaa; }
+  .main-menu-btn {
+    flex: 1;
+    position: relative;
+    padding: 10px 0;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    color: #667799;
+    cursor: pointer;
+    font-size: 0.88em;
+    font-family: inherit;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+  .main-menu-btn:hover { background: rgba(255,255,255,0.06); color: #aabbdd; }
+  .main-menu-btn.active {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border-color: rgba(255,255,255,0.15);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  .main-menu-btn .menu-icon { font-size: 1.1em; margin-right: 6px; }
+  /* 2단계: 서브 메뉴 */
+  #sub-menu {
+    display: flex;
+    padding: 6px 16px 8px;
+    gap: 6px;
+  }
+  .sub-menu-group { display: none; gap: 6px; }
+  .sub-menu-group.visible { display: flex; }
+  #sub-world.visible { justify-content: flex-start; }
+  #sub-indicators.visible { justify-content: flex-end; margin-left: auto; }
+  .sub-tab {
+    position: relative;
+    padding: 7px 20px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 20px;
+    color: #667799;
+    cursor: pointer;
+    font-size: 0.8em;
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    white-space: nowrap;
+  }
+  .sub-tab:hover { background: rgba(255,255,255,0.07); color: #aabbdd; }
+  .sub-tab.active-conflict {
+    background: rgba(255,85,85,0.15);
+    color: #ff6b6b;
+    border-color: rgba(255,85,85,0.3);
+  }
+  .sub-tab.active-disaster {
+    background: rgba(255,170,51,0.15);
+    color: #ffaa33;
+    border-color: rgba(255,170,51,0.3);
+  }
+  .sub-tab.active-commodity {
+    background: rgba(68,221,170,0.15);
+    color: #44ddaa;
+    border-color: rgba(68,221,170,0.3);
+  }
+  .sub-tab.active-usstock {
+    background: rgba(102,153,255,0.15);
+    color: #6699ff;
+    border-color: rgba(102,153,255,0.3);
+  }
   #legend {
     display: flex;
     gap: 8px;
@@ -63,6 +123,14 @@
     flex-wrap: wrap;
     align-items: center;
     font-size: 13px;
+  }
+  #legend-conflict, #legend-disaster {
+    display: none;
+    gap: 8px;
+    align-items: center;
+  }
+  #legend-conflict[style*="contents"], #legend-disaster[style*="contents"] {
+    gap: 8px;
   }
   #legend .title { color: #556688; font-size: 0.78em; margin-right: 6px; }
   .legend-item {
@@ -231,22 +299,85 @@
   .econ-impact .label { color: #556677; font-size: 0.78em; }
   .econ-impact .value { color: #ff6b6b; font-size: 1.15em; font-weight: 700; margin-top: 2px; }
   .econ-impact .detail { color: #667788; font-size: 0.78em; margin-top: 3px; }
-  #tooltip {
+  /* ===== TOSS-STYLE CENTER MODAL ===== */
+  #modal-overlay {
     position: fixed;
-    background: rgba(10,15,30,0.96);
-    border: 1px solid rgba(100,140,255,0.2);
-    border-radius: 10px;
-    padding: 14px 18px;
-    pointer-events: none;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 999;
     display: none;
-    z-index: 1000;
-    max-width: 320px;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.4,0,0.2,1);
   }
-  #tooltip .tt-title { font-weight: 700; color: #fff; margin-bottom: 4px; font-size: 0.95em; }
-  #tooltip .tt-type { font-size: 0.72em; margin-bottom: 4px; }
-  #tooltip .tt-desc { font-size: 0.8em; color: #8899aa; line-height: 1.4; }
+  #modal-overlay.show { display: flex; opacity: 1; }
+  #modal-popup {
+    background: rgba(15,20,40,0.97);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 24px 28px;
+    max-width: 420px;
+    width: 90%;
+    backdrop-filter: blur(24px);
+    box-shadow: 0 24px 48px rgba(0,0,0,0.5);
+    transform: scale(0.95) translateY(10px);
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    position: relative;
+  }
+  #modal-overlay.show #modal-popup {
+    transform: scale(1) translateY(0);
+  }
+  .modal-close {
+    position: absolute;
+    top: 12px; right: 14px;
+    background: rgba(255,255,255,0.06);
+    border: none;
+    color: #667;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .modal-close:hover { background: rgba(255,255,255,0.12); color: #aab; }
+  .modal-icon { font-size: 2em; margin-bottom: 12px; }
+  .modal-title { font-weight: 700; color: #fff; font-size: 1.15em; margin-bottom: 6px; }
+  .modal-type {
+    font-size: 0.78em;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .modal-type .level-badge {
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.88em;
+  }
+  .modal-type .cat-label { color: #667; }
+  .modal-desc {
+    font-size: 0.88em;
+    color: #99aabb;
+    line-height: 1.65;
+    padding: 14px 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .modal-stats {
+    display: flex;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    font-size: 0.78em;
+  }
+  .modal-stats .stat-item { color: #556677; }
+  .modal-stats .stat-item strong { color: #aabbcc; }
+  /* Legacy tooltip hidden */
+  #tooltip { display: none !important; }
   #controls {
     position: absolute;
     bottom: 16px;
@@ -389,6 +520,88 @@
     border-top: 1px solid rgba(100,140,255,0.06);
   }
   .comm-impact strong { color: #aabbcc; }
+  /* ===== COMMODITY GLOBAL/DOMESTIC TOGGLE ===== */
+  .fx-banner {
+    display: flex;
+    gap: 6px;
+    padding: 8px 12px;
+    background: rgba(68,221,170,0.05);
+    border: 1px solid rgba(68,221,170,0.15);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .fx-title { font-size: 0.68em; color: #44ddaa; font-weight: 700; margin-right: 2px; white-space: nowrap; }
+  .fx-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.72em;
+    background: rgba(255,255,255,0.04);
+    border-radius: 6px;
+    padding: 3px 8px;
+  }
+  .fx-pair { color: #778899; }
+  .fx-rate { color: #ccddf0; font-weight: 700; }
+  .fx-change.up { color: #ff5566; font-size: 0.85em; }
+  .fx-change.down { color: #44aaff; font-size: 0.85em; }
+  .fx-date { font-size: 0.62em; color: #445566; margin-left: auto; white-space: nowrap; }
+  .comm-toggle-wrap {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+  .comm-toggle-btn {
+    flex: 1;
+    padding: 5px 0;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 6px;
+    color: #556677;
+    cursor: pointer;
+    font-size: 0.72em;
+    font-family: inherit;
+    font-weight: 600;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .comm-toggle-btn:hover { background: rgba(255,255,255,0.07); color: #aabbdd; }
+  .comm-toggle-btn.active-global {
+    background: rgba(68,170,255,0.1);
+    color: #44aaff;
+    border-color: rgba(68,170,255,0.25);
+  }
+  .comm-toggle-btn.active-domestic {
+    background: rgba(68,221,170,0.1);
+    color: #44ddaa;
+    border-color: rgba(68,221,170,0.25);
+  }
+  .comm-view { display: none; }
+  .comm-view.active { display: block; }
+  .krw-price { font-size: 1.05em; font-weight: 700; color: #44ddaa; }
+  .krw-change {
+    font-size: 0.72em;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 6px;
+    margin-left: 6px;
+    background: rgba(68,221,170,0.12);
+    color: #44ddaa;
+  }
+  .krw-basis {
+    font-size: 0.72em;
+    color: #667788;
+    line-height: 1.45;
+    margin-top: 5px;
+  }
+  .krw-source {
+    font-size: 0.65em;
+    color: rgba(68,221,170,0.45);
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(68,221,170,0.08);
+  }
   .comm-category-title {
     font-size: 0.78em;
     color: #44ddaa;
@@ -415,7 +628,7 @@
   .comm-summary-item .s-value { font-size: 1.0em; font-weight: 700; margin-top: 2px; }
   .comm-summary-item .s-sub { font-size: 0.62em; margin-top: 1px; }
   /* US STOCK MARKET STYLES */
-  .tab-btn.active-usstock { color: #fff; border-bottom-color: #6699ff; }
+  /* legacy removed - now using nav-wrapper */
   .stock-index-card {
     background: rgba(20,28,55,0.6);
     border-radius: 10px;
@@ -518,34 +731,65 @@
 
 <div id="header">
   <h1>🌍 Global <span class="accent1">Conflict</span> & <span class="accent2">Disaster</span> Monitor</h1>
-  <div class="date">2026.03.24 기준 | 분쟁 20개 · 자연재해 15개 추적중</div>
+  <div class="date">2026.04.24 기준 | 분쟁 21개 · 자연재해 21개 추적중</div>
 </div>
 
-<div id="tabs">
-  <button class="tab-btn active" onclick="setView('all')">🌐 전체보기</button>
-  <button class="tab-btn" onclick="setView('conflict')">⚔️ 분쟁지역</button>
-  <button class="tab-btn" onclick="setView('disaster')">🌊 자연재해</button>
-  <button class="tab-btn" onclick="setView('commodity')">📈 원자재</button>
-  <button class="tab-btn" onclick="setView('usstock')">🇺🇸 미국증시</button>
+<div id="nav-wrapper">
+  <!-- 1단계: 메인 메뉴 -->
+  <div id="main-menu">
+    <button class="main-menu-btn active" onclick="switchMainMenu('world')">
+      <span class="menu-icon">🌍</span>세계이슈
+    </button>
+    <button class="main-menu-btn" onclick="switchMainMenu('indicators')">
+      <span class="menu-icon">📊</span>주요지표
+    </button>
+  </div>
+  <!-- 2단계: 서브 메뉴 -->
+  <div id="sub-menu">
+    <div class="sub-menu-group visible" id="sub-world">
+      <button class="sub-tab active-conflict" onclick="setView('conflict')">⚔️ 분쟁지역</button>
+      <button class="sub-tab" onclick="setView('disaster')">🌊 자연재해</button>
+    </div>
+    <div class="sub-menu-group" id="sub-indicators">
+      <button class="sub-tab" onclick="setView('commodity')">📈 원자재</button>
+      <button class="sub-tab" onclick="setView('usstock')">🇺🇸 미국증시</button>
+    </div>
+  </div>
 </div>
 
+<!-- 3단계: 범례 필터 (동적) -->
 <div id="legend">
-  <span class="title">분쟁:</span>
-  <div class="legend-item" onclick="filterByLevel('war')"><span class="legend-dot" style="background:#ff2020;color:#ff2020"></span> 전쟁 <span class="legend-index">Lv.5</span></div>
-  <div class="legend-item" onclick="filterByLevel('confrontation')"><span class="legend-dot" style="background:#ff6600;color:#ff6600"></span> 대치 <span class="legend-index">Lv.4</span></div>
-  <div class="legend-item" onclick="filterByLevel('tension')"><span class="legend-dot" style="background:#ffcc00;color:#ffcc00"></span> 긴장 <span class="legend-index">Lv.3</span></div>
-  <div class="legend-item" onclick="filterByLevel('caution')"><span class="legend-dot" style="background:#00aaff;color:#00aaff"></span> 주의 <span class="legend-index">Lv.2</span></div>
-  <div class="legend-item" onclick="filterByLevel('protest')"><span class="legend-dot" style="background:#cc44ff;color:#cc44ff"></span> 시위 <span class="legend-index">Lv.1</span></div>
-  <div class="legend-divider"></div>
-  <span class="title">재해:</span>
-  <div class="legend-item" onclick="filterByLevel('flood')"><span class="legend-dot" style="background:#00bbff;color:#00bbff"></span> 홍수 <span class="legend-index">FLOOD</span></div>
-  <div class="legend-item" onclick="filterByLevel('earthquake')"><span class="legend-dot" style="background:#ff8800;color:#ff8800"></span> 지진 <span class="legend-index">QUAKE</span></div>
-  <div class="legend-item" onclick="filterByLevel('drought')"><span class="legend-dot" style="background:#cc8833;color:#cc8833"></span> 가뭄 <span class="legend-index">DROUGHT</span></div>
-  <div class="legend-item" onclick="filterByLevel('snow')"><span class="legend-dot" style="background:#aaccff;color:#aaccff"></span> 폭설 <span class="legend-index">SNOW</span></div>
-  <div class="legend-item" onclick="filterByLevel('fire')"><span class="legend-dot" style="background:#ff3300;color:#ff3300"></span> 화재 <span class="legend-index">FIRE</span></div>
-  <div class="legend-divider"></div>
+  <div id="legend-conflict">
+    <span class="title">분쟁:</span>
+    <div class="legend-item" onclick="filterByLevel('war')"><span class="legend-dot" style="background:#ff2020;color:#ff2020"></span> 전쟁 <span class="legend-index">Lv.5</span></div>
+    <div class="legend-item" onclick="filterByLevel('confrontation')"><span class="legend-dot" style="background:#ff6600;color:#ff6600"></span> 대치 <span class="legend-index">Lv.4</span></div>
+    <div class="legend-item" onclick="filterByLevel('tension')"><span class="legend-dot" style="background:#ffcc00;color:#ffcc00"></span> 긴장 <span class="legend-index">Lv.3</span></div>
+    <div class="legend-item" onclick="filterByLevel('caution')"><span class="legend-dot" style="background:#00aaff;color:#00aaff"></span> 주의 <span class="legend-index">Lv.2</span></div>
+    <div class="legend-item" onclick="filterByLevel('protest')"><span class="legend-dot" style="background:#cc44ff;color:#cc44ff"></span> 시위 <span class="legend-index">Lv.1</span></div>
+  </div>
+  <div id="legend-disaster" style="display:none;">
+    <span class="title">재해:</span>
+    <div class="legend-item" onclick="filterByLevel('flood')"><span class="legend-dot" style="background:#00bbff;color:#00bbff"></span> 홍수 <span class="legend-index">FLOOD</span></div>
+    <div class="legend-item" onclick="filterByLevel('earthquake')"><span class="legend-dot" style="background:#ff8800;color:#ff8800"></span> 지진 <span class="legend-index">QUAKE</span></div>
+    <div class="legend-item" onclick="filterByLevel('drought')"><span class="legend-dot" style="background:#cc8833;color:#cc8833"></span> 가뭄 <span class="legend-index">DROUGHT</span></div>
+    <div class="legend-item" onclick="filterByLevel('snow')"><span class="legend-dot" style="background:#aaccff;color:#aaccff"></span> 폭설 <span class="legend-index">SNOW</span></div>
+    <div class="legend-item" onclick="filterByLevel('fire')"><span class="legend-dot" style="background:#ff3300;color:#ff3300"></span> 화재 <span class="legend-index">FIRE</span></div>
+  </div>
+  <div class="legend-divider" id="legend-divider-reset"></div>
   <div class="legend-item" onclick="filterByLevel('all')" style="color:#aab;font-weight:600;">전체</div>
   <span id="update-timestamp"></span>
+</div>
+
+<!-- 중앙 모달 팝업 (토스 Alert 스타일) -->
+<div id="modal-overlay" onclick="closeModal(event)">
+  <div id="modal-popup">
+    <button class="modal-close" onclick="closeModal(event, true)">✕</button>
+    <div class="modal-icon" id="modal-icon"></div>
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-type" id="modal-type"></div>
+    <div class="modal-desc" id="modal-desc"></div>
+    <div class="modal-stats" id="modal-stats"></div>
+  </div>
 </div>
 
 <div id="main">
@@ -554,7 +798,7 @@
     <div id="loading-indicator"><div class="loading-spinner"></div>지도 데이터 로딩중...</div>
     <div id="info-panel">
       <div style="margin-bottom:6px;">활성 모니터링</div>
-      <div class="count"><span class="c-red">20</span> + <span class="c-orange">15</span></div>
+      <div class="count"><span class="c-red">21</span> + <span class="c-orange">17</span></div>
       <div style="margin-top:4px;">분쟁 · 재해</div>
     </div>
     <div id="zoom-info">마우스 드래그: 회전 | 스크롤: 줌</div>
@@ -577,73 +821,90 @@
         <h3>📊 경제 파급효과 핵심 지표</h3>
         <div class="econ-impact">
           <div class="label">브렌트유 가격</div>
-          <div class="value">$126/배럴 <span style="font-size:0.55em;color:#ff4444">▲ +57%</span></div>
-          <div class="detail">호르무즈 해협 봉쇄로 글로벌 석유공급 20% 차단</div>
+          <div class="value">$103.67/배럴 <span style="font-size:0.55em;color:#ff4444">급등세 지속 (WTI $94/배럴)</span></div>
+          <div class="detail">2026년 4월 23일 기준 브렌트유는 $103.67, WTI는 $94 수준입니다. 트럼프가 휴전을 연장했지만 호르무즈 해협 봉쇄가 계속되며 상업 선박 피격 사건이 이어져 유가 압박이 심화되고 있습니다.</div>
         </div>
         <div class="econ-impact">
-          <div class="label">글로벌 GDP 영향</div>
-          <div class="value">-2.9%p <span style="font-size:0.55em;color:#ff4444">Q2 2026 연율</span></div>
-          <div class="detail">역사상 최대 규모의 석유 공급 차질</div>
+          <div class="label">미국 증시</div>
+          <div class="value">S&amp;P 7,108.40 <span style="font-size:0.55em;color:#ff9944">다우 49,310.32 · 나스닥 24,438.50</span></div>
+          <div class="detail">4월 23일 뉴욕증시는 소프트웨어 섹터 하락과 유가 상승 속에 하락 마감했습니다. S&amp;P500 -0.41%, 다우 -0.36%, 나스닥 -0.89%로 이란 전쟁 불확실성이 주가에 지속 반영 중입니다.</div>
         </div>
         <div class="econ-impact">
-          <div class="label">미국 소비자물가 전망</div>
-          <div class="value">3.0% <span style="font-size:0.55em;color:#ff4444">▲ +0.6%p</span></div>
-          <div class="detail">골드만삭스 연말 전망치 (1월 2.4% → 3.0%)</div>
+          <div class="label">원/달러 변동성</div>
+          <div class="value">상승 압력 <span style="font-size:0.55em;color:#ff4444">유가-달러 동반 부담</span></div>
+          <div class="detail">4월 24일 기준 USD/KRW 1,480원으로 상승했습니다. 브렌트유 $103 돌파와 이란 전쟁 장기화가 에너지 수입국인 한국의 원화 약세 압력을 가중시키고 있습니다.</div>
         </div>
         <div class="econ-impact">
-          <div class="label">GCC 식량수입 차질</div>
-          <div class="value">70% <span style="font-size:0.55em;color:#ff4444">차단</span></div>
-          <div class="detail">걸프 국가 칼로리 섭취의 80% 해상 의존</div>
+          <div class="label">공급망 핵심 위험</div>
+          <div class="value">호르무즈 통항 불안 <span style="font-size:0.55em;color:#ff4444">보험료·원가 압박</span></div>
+          <div class="detail">전 세계 해상 원유의 약 5분의 1이 지나가는 길목이 계속 불안정합니다. 원유·LNG·석유화학 원료 운송과 해상보험료, 아시아 제조업 원가가 동시에 흔들릴 수 있는 구간입니다.</div>
         </div>
       </div>
 
       <div class="sidebar-section">
         <h3>🔴 전쟁 (War)</h3>
         <div class="conflict-card war" onclick="focusConflict(32.0,53.0)">
-          <div class="card-header"><span class="card-title">🇮🇷 이란 전쟁</span><span class="card-badge badge-war">전쟁</span></div>
-          <div class="card-desc">미국·이스라엘의 이란 공습(2/28) → 하메네이 사망 → 이란 보복 미사일 수백 발. 호르무즈 해협 봉쇄(3/4)로 글로벌 에너지 위기</div>
-          <div class="card-stats"><span class="stat">유형: <strong>국제전쟁</strong></span><span class="stat">개시: <strong>2026.2.28</strong></span></div>
+          <div class="card-header"><span class="card-title">🇮🇷 이란/중동</span><span class="card-badge badge-war">전쟁</span></div>
+          <div class="card-desc">트럼프 대통령이 휴전을 다시 연장하고 '서두르지 않겠다'고 발언. 이란 내부 분열로 협상 교착. 호르무즈 봉쇄 지속·민간선박 피격으로 브렌트유 $103.67 급등. 전쟁 55일차.</div>
+          <div class="card-stats"><span class="stat">상태: <strong>휴전 연장·교착</strong></span><span class="stat">핵심: <strong>호르무즈 봉쇄</strong></span></div>
         </div>
         <div class="conflict-card war" onclick="focusConflict(33.8,35.8)">
           <div class="card-header"><span class="card-title">🇱🇧 레바논 전쟁</span><span class="card-badge badge-war">전쟁</span></div>
-          <div class="card-desc">3/2 헤즈볼라 이스라엘 공격으로 휴전 붕괴. 사망자 1,039명, 100만 명 실향(인구 19%)</div>
-          <div class="card-stats"><span class="stat">사망: <strong>1,039+</strong></span><span class="stat">실향: <strong>100만+</strong></span></div>
+          <div class="card-desc">3/2 이후 53일차. 사망 2,000명+·120만명+ 실향. 4/16 트럼프 10일 휴전 발표 후 3주 추가 연장 합의. 이스라엘, 남레바논 '황색선' 안보지대 확대 추진.</div>
+          <div class="card-stats"><span class="stat">사망: <strong>2,000+</strong></span><span class="stat">실향: <strong>120만+</strong></span></div>
         </div>
         <div class="conflict-card war" onclick="focusConflict(48.5,35.0)">
           <div class="card-header"><span class="card-title">🇺🇦 러시아-우크라이나</span><span class="card-badge badge-war">전쟁</span></div>
-          <div class="card-desc">러시아 춘계 대공세 개시. 러시아 사상자 100만 명, 우크라이나 25~30만 명. 영토 20% 점령</div>
-          <div class="card-stats"><span class="stat">기간: <strong>4년차</strong></span><span class="stat">에너지: <strong>2/3 파괴</strong></span></div>
+          <div class="card-desc">3월 러시아 드론 230발+ 공격(전쟁 최대) → 우크라이나 92% 격추. 우크라이나, 러시아 원유 터미널 타격(프리모르스크 40%, 우스트루가 30% 파괴). 독일 3억유로 장거리 타격 지원 합의.</div>
+          <div class="card-stats"><span class="stat">상태: <strong>고강도 교전 지속</strong></span><span class="stat">기간: <strong>4년차</strong></span></div>
         </div>
         <div class="conflict-card war" onclick="focusConflict(15.5,32.5)">
           <div class="card-header"><span class="card-title">🇸🇩 수단 내전</span><span class="card-badge badge-war">전쟁</span></div>
-          <div class="card-desc">SAF vs RSF 내전 지속. RSF 민간인 4,471명 사망. 코르도판 전투 격화</div>
-          <div class="card-stats"><span class="stat">사망: <strong>20,373+</strong></span><span class="stat">유형: <strong>내전</strong></span></div>
+          <div class="card-desc">RSF 다르푸르 지역 고위 지휘관이 정부군 측으로 이탈했지만 전황 완화 신호로 보긴 어렵습니다. 상징적 균열은 생겼지만 대규모 인도주의 재난과 전쟁 구조는 그대로입니다.</div>
+          <div class="card-stats"><span class="stat">상태: <strong>부분 전황 변화</strong></span><span class="stat">유형: <strong>내전</strong></span></div>
         </div>
-        <div class="conflict-card war" onclick="focusConflict(31.5,34.5)">
-          <div class="card-header"><span class="card-title">🇵🇸 가자지구</span><span class="card-badge badge-war">전쟁</span></div>
-          <div class="card-desc">이스라엘-하마스 교전 지속. 21,417명 사망. 인도적 위기 심화</div>
-          <div class="card-stats"><span class="stat">사망: <strong>21,417+</strong></span></div>
-        </div>
-        <div class="conflict-card war" onclick="focusConflict(19.7,96.2)">
-          <div class="card-header"><span class="card-title">🇲🇲 미얀마 내전</span><span class="card-badge badge-war">전쟁</span></div>
-          <div class="card-desc">군부 vs 반군 내전 5년차. 중국 군부 지원으로 정세 역전</div>
-          <div class="card-stats"><span class="stat">기간: <strong>5년차</strong></span></div>
+        <div class="conflict-card war" onclick="focusConflict(33.5,69.5)">
+          <div class="card-header"><span class="card-title">🇵🇰🇦🇫 파키스탄-아프간 전쟁</span><span class="card-badge badge-war">전쟁</span></div>
+          <div class="card-desc">파키스탄 3/2 "공개전쟁" 선언. 카불 병원 폭격 143명+ 사망(3/16). 이드 알피트르 임시 휴전(사우디·터키·카타르 중재)</div>
+          <div class="card-stats"><span class="stat">사망: <strong>400+</strong></span><span class="stat">실향: <strong>11.5만+</strong></span></div>
         </div>
       </div>
 
       <div class="sidebar-section">
         <h3>🟠 대치 (Confrontation)</h3>
+        <div class="conflict-card confrontation" onclick="focusConflict(31.5,34.5)">
+          <div class="card-header"><span class="card-title">🇵🇸 가자지구</span><span class="card-badge badge-confrontation">대치</span></div>
+          <div class="card-desc">대규모 신규 타결 없이 인도주의 위기와 간헐적 공격이 이어지고 있습니다. OCHA와 OHCHR 모두 강제이주, 보건 접근 악화, 민간인 보호 실패를 경고하고 있습니다.</div>
+          <div class="card-stats"><span class="stat">상태: <strong>장기 소모전</strong></span><span class="stat">핵심: <strong>인도주의 악화</strong></span></div>
+        </div>
+        <div class="conflict-card confrontation" onclick="focusConflict(19.7,96.2)">
+          <div class="card-header"><span class="card-title">🇲🇲 미얀마</span><span class="card-badge badge-confrontation">대치</span></div>
+          <div class="card-desc">군정 주도 사면으로 윈 민 전 대통령이 석방됐지만, 반군-군정 충돌과 민간 피해는 계속되고 있습니다. 제한적 유화 신호는 있으나 분쟁 구조 변화는 아닙니다.</div>
+          <div class="card-stats"><span class="stat">상태: <strong>제한적 유화</strong></span><span class="stat">핵심: <strong>충돌 지속</strong></span></div>
+        </div>
         <div class="conflict-card confrontation" onclick="focusConflict(9.0,7.5)">
           <div class="card-header"><span class="card-title">🇳🇬 나이지리아</span><span class="card-badge badge-confrontation">대치</span></div>
           <div class="card-desc">풀라니 무장세력 기독교 공동체 공격. 벤웨주 옐와타 학살(258명 사망)</div>
         </div>
         <div class="conflict-card confrontation" onclick="focusConflict(9.0,38.7)">
           <div class="card-header"><span class="card-title">🇪🇹/🇪🇷 에티오피아-에리트레아</span><span class="card-badge badge-confrontation">대치</span></div>
-          <div class="card-desc">"지역 초대형 전쟁" 경고. 수단 내전과 연쇄 효과로 아프리카의 뿔 전역 위험</div>
+          <div class="card-desc">ENDF 티그레이 병력 집결(2/7~), 에리트레아 철군 요구. 파노 민병대 데브레 타보르 진입 → 드론 보복. 암하라·오로미아 전역 불안정 심화</div>
         </div>
         <div class="conflict-card confrontation" onclick="focusConflict(15.5,48.5)">
           <div class="card-header"><span class="card-title">🇾🇪 예멘</span><span class="card-badge badge-confrontation">대치</span></div>
-          <div class="card-desc">후티 반군 홍해 선박 공격 지속. 이란 전쟁과 연계된 지역 불안정</div>
+          <div class="card-desc">후티 지도자 이란 지지 선언(3/5). 홍해 선박 공격 지속. 이란 전쟁 연계 확전 위험</div>
+        </div>
+        <div class="conflict-card confrontation" onclick="focusConflict(35.0,38.0)">
+          <div class="card-header"><span class="card-title">🇸🇾 시리아</span><span class="card-badge badge-confrontation">대치</span></div>
+          <div class="card-desc">이란 전쟁 확산에 따른 시리아 내 잔여 불안정. 이스라엘·미국 공습 빈도 증가</div>
+        </div>
+        <div class="conflict-card confrontation" onclick="focusConflict(-4.0,22.0)">
+          <div class="card-header"><span class="card-title">🇨🇩 콩고민주공화국</span><span class="card-badge badge-confrontation">대치</span></div>
+          <div class="card-desc">FARDC 드론으로 M23 대변인 사살(2/24). M23 키상가니 카미카제 드론 반격(1/31~). 사상 최대 월간 공습·드론 교전. 르완다 철군 합의 불이행</div>
+        </div>
+        <div class="conflict-card confrontation" onclick="focusConflict(12.0,-1.5)">
+          <div class="card-header"><span class="card-title">🇧🇫 부르키나파소/사헬</span><span class="card-badge badge-confrontation">대치</span></div>
+          <div class="card-desc">JNIM 바마코 봉쇄 선언(9월~). 니제르 수도 공항 ISSP 공격(2월). 부르키나 국토 절반 이상 JNIM 지배. 전 세계 테러 사망 51%가 사헬. 러 아프리카군단 대체</div>
         </div>
       </div>
 
@@ -651,7 +912,7 @@
         <h3>🟡 긴장 (Tension)</h3>
         <div class="conflict-card tension" onclick="focusConflict(23.5,121.0)">
           <div class="card-header"><span class="card-title">🇹🇼 대만해협</span><span class="card-badge badge-tension">긴장</span></div>
-          <div class="card-desc">중국 해상봉쇄 시뮬레이션 훈련. 2026 최대 지정학적 위험 1위</div>
+          <div class="card-desc">PLA ADIZ 침범 2월 147회(라이 취임 후 최저). 중국 국방비 7% 증액($2,780억). ODNI "2027 침공 가능성 낮음" 판단. 3해역 연쇄위기 경고(베이징 싱크탱크)</div>
         </div>
         <div class="conflict-card tension" onclick="focusConflict(12.0,115.0)">
           <div class="card-header"><span class="card-title">🇨🇳🇵🇭 남중국해</span><span class="card-badge badge-tension">긴장</span></div>
@@ -659,11 +920,11 @@
         </div>
         <div class="conflict-card tension" onclick="focusConflict(38.5,127.0)">
           <div class="card-header"><span class="card-title">🇰🇵 한반도</span><span class="card-badge badge-tension">긴장</span></div>
-          <div class="card-desc">북한 잠수함 시설 방문, 한미 핵추진 잠수함 사업 비난</div>
+          <div class="card-desc">미국, 한국 배치 패트리엇 미사일을 페르시아만으로 이전 → 방어 공백 우려. 중국 한미 이간 시도 포착</div>
         </div>
         <div class="conflict-card tension" onclick="focusConflict(30.0,130.0)">
           <div class="card-header"><span class="card-title">🇯🇵🇨🇳 중일 외교위기</span><span class="card-badge badge-tension">긴장</span></div>
-          <div class="card-desc">일본 총리 대만 유사시 개입 발언으로 수개월간 외교 마찰</div>
+          <div class="card-desc">일본 이오지마 방어시설 강화, 요나구니 미사일 배치. 중국 "일본 대만 무력개입 의도" 비난. LDP 방산 수출 완화 추진</div>
         </div>
       </div>
 
@@ -675,19 +936,15 @@
         </div>
         <div class="conflict-card caution" onclick="focusConflict(18.9,-72.3)">
           <div class="card-header"><span class="card-title">🇭🇹 아이티</span><span class="card-badge badge-caution">주의</span></div>
-          <div class="card-desc">갱단 포르토프랭스 장악. 경제·치안·인도적 위기 심화</div>
+          <div class="card-desc">갱단 포르토프랭스 85% 장악, 140만 실향. 과도정부 위임 종료(2/7) → 권력 공백. 선거 8·12월 잠정 예정</div>
         </div>
         <div class="conflict-card caution" onclick="focusConflict(10.5,-67.0)">
           <div class="card-header"><span class="card-title">🇻🇪 베네수엘라</span><span class="card-badge badge-caution">주의</span></div>
           <div class="card-desc">미국 마약 소탕 공습 30건+, 114명 사망</div>
         </div>
-        <div class="conflict-card protest" onclick="focusConflict(-4.0,22.0)">
-          <div class="card-header"><span class="card-title">🇨🇩 콩고민주공화국</span><span class="card-badge badge-protest">시위</span></div>
-          <div class="card-desc">동부 무장세력 활동. 종교·민족 갈등 민간인 피해</div>
-        </div>
-        <div class="conflict-card protest" onclick="focusConflict(12.0,-1.5)">
-          <div class="card-header"><span class="card-title">🇧🇫 부르키나파소</span><span class="card-badge badge-protest">시위</span></div>
-          <div class="card-desc">이슬람 무장세력 지속 공격. 종교 소수자 대상 폭력 확산</div>
+        <div class="conflict-card protest" onclick="focusConflict(-18.0,35.0)">
+          <div class="card-header"><span class="card-title">🇲🇿 모잠비크</span><span class="card-badge badge-protest">시위</span></div>
+          <div class="card-desc">북부 카보델가도 반군 활동 지속. 치안 불안정</div>
         </div>
       </div>
     </div>
@@ -750,6 +1007,11 @@
           <div class="card-desc">1950년 이후 최대 규모 홍수. 4명 사망</div>
           <div class="card-stats"><span class="stat">사망: <strong>4</strong></span></div>
         </div>
+        <div class="disaster-card flood" onclick="focusConflict(35.2,-5.3)">
+          <div class="card-header"><span class="card-title">🇲🇦 모로코 북부 대홍수</span><span class="card-badge badge-flood">홍수</span></div>
+          <div class="card-desc">기록적 폭우로 북부 지역 대규모 홍수 발생(3/18~19). 도로·인프라 심각 피해</div>
+          <div class="card-stats"><span class="stat">시기: <strong>2026.3.18~19</strong></span></div>
+        </div>
       </div>
 
       <div class="sidebar-section">
@@ -773,10 +1035,20 @@
 
       <div class="sidebar-section">
         <h3>🔥 대형화재 (Wildfire)</h3>
-        <div class="disaster-card fire" onclick="focusConflict(34.0,-118.5)">
-          <div class="card-header"><span class="card-title">🇺🇸 LA 팰리세이즈·이튼 화재</span><span class="card-badge badge-fire">화재</span></div>
-          <div class="card-desc">2025.1 산타아나 바람 속 LA 대형 산불. 31명 사망, 16,000+ 구조물 파괴. 보험 $450억, 총 $760~1,310억 피해</div>
-          <div class="card-stats"><span class="stat">사망: <strong>31</strong></span><span class="stat">면적: <strong>78mi²</strong></span></div>
+        <div class="disaster-card fire" onclick="focusConflict(41.8,-103.0)">
+          <div class="card-header"><span class="card-title">🇺🇸 네브래스카 역대 최대 산불</span><span class="card-badge badge-fire">화재</span></div>
+          <div class="card-desc">모릴 화재 460,000에이커(주 역사상 최대). 총 600,000+에이커 소실. 1명 사망, 주지사 비상사태 선포·주방위군 동원(3/14)</div>
+          <div class="card-stats"><span class="stat">사망: <strong>1</strong></span><span class="stat">면적: <strong>600,000+에이커</strong></span></div>
+        </div>
+        <div class="disaster-card fire" onclick="focusConflict(35.0,-97.5)">
+          <div class="card-header"><span class="card-title">🇺🇸 오클라호마·텍사스 산불</span><span class="card-badge badge-fire">화재</span></div>
+          <div class="card-desc">FEMA 다수 화재 관리 지원 선언. 디블크릭·점핑주니퍼·코너포켓 화재 등 다발성 산불(3/15~22)</div>
+          <div class="card-stats"><span class="stat">시기: <strong>2026.3.15~22</strong></span></div>
+        </div>
+        <div class="disaster-card fire" onclick="focusConflict(32.8,-86.8)">
+          <div class="card-header"><span class="card-title">🇺🇸 알라바마·남부 산불</span><span class="card-badge badge-fire">화재</span></div>
+          <div class="card-desc">3/24~25 알라바마 등 남부 주 전역 다발성 산불 급속 확산. 기록적 가뭄+폭염 시너지. 주지사 비상사태 선포 검토</div>
+          <div class="card-stats"><span class="stat">시기: <strong>2026.3.24~</strong></span><span class="stat">위험: <strong>확산 중</strong></span></div>
         </div>
       </div>
 
@@ -791,6 +1063,11 @@
           <div class="card-header"><span class="card-title">🇦🇫 아프가니스탄 동계 가뭄</span><span class="card-badge badge-drought">가뭄</span></div>
           <div class="card-desc">1,740만 명(인구 1/3+) 급성 식량 불안정. 겨울 가뭄으로 밀·보리 생장 지연</div>
           <div class="card-stats"><span class="stat">피해인구: <strong>1,740만</strong></span></div>
+        </div>
+        <div class="disaster-card drought" onclick="focusConflict(32.0,3.0)">
+          <div class="card-header"><span class="card-title">🇩🇿🇲🇦🇹🇳 북아프리카 가뭄</span><span class="card-badge badge-drought">가뭄</span></div>
+          <div class="card-desc">알제리·모로코·튀니지 전역 작물 생장 지연. 곡물 수입 의존도 급증</div>
+          <div class="card-stats"><span class="stat">범위: <strong>북아프리카 3국</strong></span></div>
         </div>
       </div>
 
@@ -807,17 +1084,37 @@
     <!-- COMMODITY SIDEBAR -->
     <div id="sidebar-commodity" style="display:none;">
       <div class="sidebar-section">
-        <h3>📈 원자재 시장 종합 현황 (2026.3.24)</h3>
+        <!-- 환율 배너 -->
+        <div class="fx-banner">
+          <span class="fx-title">💱 환율</span>
+          <div class="fx-item">
+            <span class="fx-pair">USD/KRW</span>
+            <span class="fx-rate">1,480원</span>
+            <span class="fx-change up">▲ +4.2%</span>
+          </div>
+          <div class="fx-item">
+            <span class="fx-pair">EUR/KRW</span>
+            <span class="fx-rate">1,672원</span>
+            <span class="fx-change up">▲ +5.2%</span>
+          </div>
+          <div class="fx-item">
+            <span class="fx-pair">JPY/KRW</span>
+            <span class="fx-rate">9.32원</span>
+            <span class="fx-change down">▼ -1.4%</span>
+          </div>
+          <span class="fx-date">2026.04.24 기준</span>
+        </div>
+        <h3>📈 원자재 시장 종합 현황 (2026.4.24)</h3>
         <div class="comm-summary-grid">
           <div class="comm-summary-item">
             <div class="s-label">상승 원자재</div>
-            <div class="s-value" style="color:#ff5566;">9개</div>
-            <div class="s-sub" style="color:#ff5566;">에너지·귀금속·곡물</div>
+            <div class="s-value" style="color:#ff5566;">7개</div>
+            <div class="s-sub" style="color:#ff5566;">금·곡물·산업금속</div>
           </div>
           <div class="comm-summary-item">
             <div class="s-label">하락 원자재</div>
-            <div class="s-value" style="color:#44aaff;">3개</div>
-            <div class="s-sub" style="color:#44aaff;">산업금속 일부</div>
+            <div class="s-value" style="color:#44aaff;">5개</div>
+            <div class="s-sub" style="color:#44aaff;">에너지·펄프 일부</div>
           </div>
           <div class="comm-summary-item">
             <div class="s-label">호르무즈 해협</div>
@@ -836,29 +1133,57 @@
       <div class="sidebar-section">
         <div class="comm-category-title">🛢️ 에너지 (Energy)</div>
 
-        <div class="commodity-card up">
-          <div class="comm-header">
-            <span class="comm-name">🛢️ 브렌트유 (Brent Crude)</span>
-            <span><span class="comm-price up">$113.21</span><span class="comm-change up">▲ +41%</span></span>
+        <div class="commodity-card down">
+          <div class="comm-toggle-wrap">
+            <button class="comm-toggle-btn active-global" onclick="toggleCommView(this,'global')">🌐 글로벌</button>
+            <button class="comm-toggle-btn" onclick="toggleCommView(this,'domestic')">🇰🇷 국내</button>
           </div>
-          <div class="comm-bar-container">
-            <span class="comm-bar-label">YTD</span>
-            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:85%;background:linear-gradient(90deg,#ff4455,#ff6677)"></div></div>
+          <div class="comm-view global active">
+            <div class="comm-header">
+              <span class="comm-name">🛢️ 브렌트유 (Brent Crude)</span>
+              <span><span class="comm-price up">$103.67</span><span class="comm-change up">▲ +3.3% (4/23)</span></span>
+            </div>
+            <div class="comm-bar-container">
+              <span class="comm-bar-label">YTD</span>
+              <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:82%;background:linear-gradient(90deg,#ff4455,#ff6677)"></div></div>
+            </div>
+            <div class="comm-detail">4월 23일 브렌트유 $103.67 기록. 이란 IRGC 연계 선박의 민간 컨테이너선 공격과 호르무즈 통행 제한 지속으로 유가 급등세 유지. WTI $94/배럴. 연간 상승률 +37.5% 수준.</div>
           </div>
-          <div class="comm-detail">이란 전쟁 → 호르무즈 해협 봉쇄(3/4) → $126 최고가 기록 후 조정. 글로벌 석유 수송 20% 차단</div>
-          <div class="comm-impact"><strong>분쟁연계:</strong> 이란 전쟁 / 예멘 후티 홍해 공격 / 카타르 LNG 시설 드론 피격</div>
+          <div class="comm-view domestic">
+            <div class="comm-header">
+              <span class="comm-name">🛢️ 국내 유류가격</span>
+              <span><span class="krw-price">휘발유 1,940원/L</span><span class="krw-change">▲ +8.9%</span></span>
+            </div>
+            <div class="krw-basis">경유 1,750원/L · 등유 1,440원/L (전국 평균). 브렌트 $103.67 → 정유마진 고려 환산 기준. 세전 원가 대비 유류세 비중 36%. 환율 1,480원 반영으로 추가 상승 압력.</div>
+            <div class="krw-source">📌 한국석유공사 OPINET 기준 · 환율 1,480원/USD 적용</div>
+          </div>
+          <div class="comm-impact"><strong>분쟁연계:</strong> 미-이란 휴전 연장 불투명 / 호르무즈 봉쇄 리스크 지속</div>
         </div>
 
         <div class="commodity-card up">
-          <div class="comm-header">
-            <span class="comm-name">⛽ 천연가스 (TTF)</span>
-            <span><span class="comm-price up">€61/MWh</span><span class="comm-change up">▲ +11%</span></span>
+          <div class="comm-toggle-wrap">
+            <button class="comm-toggle-btn active-global" onclick="toggleCommView(this,'global')">🌐 글로벌</button>
+            <button class="comm-toggle-btn" onclick="toggleCommView(this,'domestic')">🇰🇷 국내</button>
           </div>
-          <div class="comm-bar-container">
-            <span class="comm-bar-label">YTD</span>
-            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:72%;background:linear-gradient(90deg,#ff4455,#ff6677)"></div></div>
+          <div class="comm-view global active">
+            <div class="comm-header">
+              <span class="comm-name">⛽ 천연가스 (TTF)</span>
+              <span><span class="comm-price up">€61/MWh</span><span class="comm-change up">▲ +11%</span></span>
+            </div>
+            <div class="comm-bar-container">
+              <span class="comm-bar-label">YTD</span>
+              <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:72%;background:linear-gradient(90deg,#ff4455,#ff6677)"></div></div>
+            </div>
+            <div class="comm-detail">카타르 LNG 생산 차질(3/2 이란 드론 피격), 유럽 가스 재고 부족 지속. 미국 Henry Hub $2.89/MMBtu로 온화한 날씨에 소폭 하락. TTF 유럽 가스가격은 고점 대비 조정 중이나 이란 전쟁 재확산 시 재급등 우려.</div>
           </div>
-          <div class="comm-detail">카타르 LNG 생산 중단(3/2 이란 드론 피격), 유럽 가스 재고 급감. 미국 Henry Hub $3.12/MMBtu</div>
+          <div class="comm-view domestic">
+            <div class="comm-header">
+              <span class="comm-name">⛽ 도시가스 (가정용)</span>
+              <span><span class="krw-price">22.4원/MJ</span><span class="krw-change">▲ +8.3%</span></span>
+            </div>
+            <div class="krw-basis">산업용 20.1원/MJ · LNG 도입가 $18.5/MMBtu (한국가스공사). TTF 급등분이 분기별 요금에 반영. 2026년 2분기 추가 인상 예정.</div>
+            <div class="krw-source">📌 한국가스공사 도시가스 요금표 · 환율 1,590원/EUR 적용</div>
+          </div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 이란-카타르 LNG 중단 / 러시아-우크라이나 파이프라인 차단</div>
         </div>
       </div>
@@ -868,28 +1193,56 @@
         <div class="comm-category-title">✨ 귀금속 (Precious Metals)</div>
 
         <div class="commodity-card up">
-          <div class="comm-header">
-            <span class="comm-name">🥇 금 (Gold)</span>
-            <span><span class="comm-price up">$4,800/oz</span><span class="comm-change up">▲ +66% YoY</span></span>
+          <div class="comm-toggle-wrap">
+            <button class="comm-toggle-btn active-global" onclick="toggleCommView(this,'global')">🌐 글로벌</button>
+            <button class="comm-toggle-btn" onclick="toggleCommView(this,'domestic')">🇰🇷 국내</button>
           </div>
-          <div class="comm-bar-container">
-            <span class="comm-bar-label">YTD</span>
-            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:78%;background:linear-gradient(90deg,#ffcc33,#ffaa00)"></div></div>
+          <div class="comm-view global active">
+            <div class="comm-header">
+              <span class="comm-name">🥇 금 (Gold)</span>
+              <span><span class="comm-price up">$4,739/oz</span><span class="comm-change stable">▼ -0.02% (4/23)</span></span>
+            </div>
+            <div class="comm-bar-container">
+              <span class="comm-bar-label">YTD</span>
+              <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:81%;background:linear-gradient(90deg,#ffcc33,#ffaa00)"></div></div>
+            </div>
+            <div class="comm-detail">4/23 $4,739/oz (-0.02%). 전월 대비 +5.94%, 전년 대비 +41.5% 급등. 이란 전쟁 장기화와 글로벌 인플레이션 우려로 안전자산 수요 견조. 중앙은행 매입 트렌드 지속.</div>
           </div>
-          <div class="comm-detail">3월 초 $5,400 돌파 후 조정 중. 고금리 환경에서 달러 강세로 하방 압력. JP모건 Q4 전망 $5,055</div>
-          <div class="comm-impact"><strong>분쟁연계:</strong> 지정학 리스크 → 안전자산 수요 vs $120유가 → 고금리 → 달러 강세 역풍</div>
+          <div class="comm-view domestic">
+            <div class="comm-header">
+              <span class="comm-name">🥇 금 (KRX 금시장)</span>
+              <span><span class="krw-price">225,500원/g</span><span class="krw-change">▲ +3.3%</span></span>
+            </div>
+            <div class="krw-basis">$4,739/oz → $152.4/g × 환율 1,480원 = 225,552원/g. 한국금거래소 소매가 241,000원/g (매도 기준). 원/달러 환율 상승으로 달러 기준 소폭 하락에도 원화 기준 상승.</div>
+            <div class="krw-source">📌 KRX 금시장 · 한국금거래소 · 환율 1,480원/USD</div>
+          </div>
+          <div class="comm-impact"><strong>분쟁연계:</strong> 지정학 리스크 안전자산 vs Fed 금리인상 가능성 → 실질금리 상승 → 금 하방 압력</div>
         </div>
 
         <div class="commodity-card up">
-          <div class="comm-header">
-            <span class="comm-name">🥈 은 (Silver)</span>
-            <span><span class="comm-price up">$77/oz</span><span class="comm-change up">▲ +166% YoY</span></span>
+          <div class="comm-toggle-wrap">
+            <button class="comm-toggle-btn active-global" onclick="toggleCommView(this,'global')">🌐 글로벌</button>
+            <button class="comm-toggle-btn" onclick="toggleCommView(this,'domestic')">🇰🇷 국내</button>
           </div>
-          <div class="comm-bar-container">
-            <span class="comm-bar-label">YTD</span>
-            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:92%;background:linear-gradient(90deg,#ccddff,#8899cc)"></div></div>
+          <div class="comm-view global active">
+            <div class="comm-header">
+              <span class="comm-name">🥈 은 (Silver)</span>
+              <span><span class="comm-price up">$77.70/oz</span><span class="comm-change up">▲ +131% YoY</span></span>
+            </div>
+            <div class="comm-bar-container">
+              <span class="comm-bar-label">YTD</span>
+              <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:95%;background:linear-gradient(90deg,#ccddff,#8899cc)"></div></div>
+            </div>
+            <div class="comm-detail">4/22 $77.70/oz (+1.43%). 전월 대비 +12.4%, 전년 대비 +131%. 3월 패닉 $97 기록 후 조정 중이나 회복세. 5년 연속 공급 부족. 태양광·전자·EV 산업 수요 증가 지속.</div>
           </div>
-          <div class="comm-detail">3월 초 패닉 $97 기록 후 1주 -11% 급락. 5년 연속 공급 부족. 산업 수요(태양광·전자) 지속 증가</div>
+          <div class="comm-view domestic">
+            <div class="comm-header">
+              <span class="comm-name">🥈 은 (국내 소매가)</span>
+              <span><span class="krw-price">3,700원/g</span><span class="krw-change">▲ +133% YoY</span></span>
+            </div>
+            <div class="krw-basis">$77.70/oz → $2.499/g × 환율 1,480원 = 3,699원/g. 한국금거래소 매도 기준. 환율 상승으로 국내 가격 상승폭 달러 대비 더 큼. 태양광·전자 수요로 재고 타이트.</div>
+            <div class="krw-source">📌 한국금거래소 은 현물가 · 환율 1,480원/USD</div>
+          </div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 안전자산 + 산업용 이중 수요. 호르무즈 위기 시 $97까지 폭등</div>
         </div>
       </div>
@@ -899,41 +1252,83 @@
         <div class="comm-category-title">🔩 산업금속 (Industrial Metals)</div>
 
         <div class="commodity-card down">
-          <div class="comm-header">
-            <span class="comm-name">🔶 구리 (Copper)</span>
-            <span><span class="comm-price down">$5.40/lb</span><span class="comm-change down">▼ 3개월 저점</span></span>
+          <div class="comm-toggle-wrap">
+            <button class="comm-toggle-btn active-global" onclick="toggleCommView(this,'global')">🌐 글로벌</button>
+            <button class="comm-toggle-btn" onclick="toggleCommView(this,'domestic')">🇰🇷 국내</button>
           </div>
-          <div class="comm-bar-container">
-            <span class="comm-bar-label">YTD</span>
-            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:55%;background:linear-gradient(90deg,#44aaff,#6699cc)"></div></div>
+          <div class="comm-view global active">
+            <div class="comm-header">
+              <span class="comm-name">🔶 구리 (Copper)</span>
+              <span><span class="comm-price up">$5.50/lb</span><span class="comm-change up">▲ 2026 Q2 고점 근접</span></span>
+            </div>
+            <div class="comm-bar-container">
+              <span class="comm-bar-label">YTD</span>
+              <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:58%;background:linear-gradient(90deg,#44aaff,#6699cc)"></div></div>
+            </div>
+            <div class="comm-detail">LME ~$12,125/톤(4월 기준). 2026년 평균 $12,125/톤, Q2 고점 $13,000/톤 전망(Deutsche Bank). 신에너지·AI 인프라 수요 견조. 고유가로 제조업 위축 우려 상충.</div>
           </div>
-          <div class="comm-detail">LME $11,771/톤 사상 최고가 후 조정. 달러 강세 + 고에너지 비용 → 제조업 수요 둔화 우려</div>
+          <div class="comm-view domestic">
+            <div class="comm-header">
+              <span class="comm-name">🔶 구리 (국내 도매가)</span>
+              <span><span class="krw-price">17,945,000원/톤</span><span class="krw-change">▲ 환율 반영</span></span>
+            </div>
+            <div class="krw-basis">LME $12,125/톤 × 환율 1,480원 = 17,945,000원/톤. 국내 비철금속 도매가(운임·보험료 포함). 전선·건축·전자 제조업 핵심 소재. 환율 상승으로 국내가 가중 부담.</div>
+            <div class="krw-source">📌 한국비철금속협회 · LME 연동 · 환율 1,480원/USD</div>
+          </div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 고유가 → 제조업 위축 → 구리 수요 감소. 단, 신에너지·AI 인프라 장기 수요 견조</div>
         </div>
 
         <div class="commodity-card stable">
-          <div class="comm-header">
-            <span class="comm-name">🪨 철광석 (Iron Ore)</span>
-            <span><span class="comm-price stable">$99/톤</span><span class="comm-change stable">▲ 3월 반등</span></span>
+          <div class="comm-toggle-wrap">
+            <button class="comm-toggle-btn active-global" onclick="toggleCommView(this,'global')">🌐 글로벌</button>
+            <button class="comm-toggle-btn" onclick="toggleCommView(this,'domestic')">🇰🇷 국내</button>
           </div>
-          <div class="comm-bar-container">
-            <span class="comm-bar-label">YTD</span>
-            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:48%;background:linear-gradient(90deg,#88aa88,#66886e)"></div></div>
+          <div class="comm-view global active">
+            <div class="comm-header">
+              <span class="comm-name">🪨 철광석 (Iron Ore)</span>
+              <span><span class="comm-price stable">$107.11/톤</span><span class="comm-change up">▲ +1.1% (4/22)</span></span>
+            </div>
+            <div class="comm-bar-container">
+              <span class="comm-bar-label">YTD</span>
+              <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:55%;background:linear-gradient(90deg,#88aa88,#66886e)"></div></div>
+            </div>
+            <div class="comm-detail">4/22 $107.11/톤 (+0.06%). 전월 대비 +1.05%, 전년 대비 +7.01%. 중국 경기부양 기대감 속 완만한 상승세 유지. 호르무즈 봉쇄로 해상운임 상승 중.</div>
           </div>
-          <div class="comm-detail">중국 경기부양 기대감으로 3월 반등. 대련거래소 753.5위안/톤. GS 전망 $93 (약세 유지)</div>
+          <div class="comm-view domestic">
+            <div class="comm-header">
+              <span class="comm-name">🪨 철광석 (포스코 도입가 기준)</span>
+              <span><span class="krw-price">158,500원/톤</span><span class="krw-change">▲ 지속 상승</span></span>
+            </div>
+            <div class="krw-basis">$107.11/톤 × 환율 1,480원 = 158,523원/톤. 포스코·현대제철 도입 기준 (해상운임 포함 시 +15,000원/톤 추가). 국내 열연강판 가격에 6~8주 지연 반영.</div>
+            <div class="krw-source">📌 포스코 원료 도입 기준가 · 환율 1,480원/USD</div>
+          </div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 호르무즈 봉쇄 → 해상 운임 상승 → 물류비 증가. 중국 수요가 핵심 변수</div>
         </div>
 
         <div class="commodity-card stable">
-          <div class="comm-header">
-            <span class="comm-name">🔲 알루미늄 (Aluminum)</span>
-            <span><span class="comm-price stable">$3,195/톤</span><span class="comm-change up">▲ +23% YoY</span></span>
+          <div class="comm-toggle-wrap">
+            <button class="comm-toggle-btn active-global" onclick="toggleCommView(this,'global')">🌐 글로벌</button>
+            <button class="comm-toggle-btn" onclick="toggleCommView(this,'domestic')">🇰🇷 국내</button>
           </div>
-          <div class="comm-bar-container">
-            <span class="comm-bar-label">YTD</span>
-            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:62%;background:linear-gradient(90deg,#88aa88,#66886e)"></div></div>
+          <div class="comm-view global active">
+            <div class="comm-header">
+              <span class="comm-name">🔲 알루미늄 (Aluminum)</span>
+              <span><span class="comm-price stable">$3,195/톤</span><span class="comm-change up">▲ +23% YoY</span></span>
+            </div>
+            <div class="comm-bar-container">
+              <span class="comm-bar-label">YTD</span>
+              <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:62%;background:linear-gradient(90deg,#88aa88,#66886e)"></div></div>
+            </div>
+            <div class="comm-detail">LME $3,195. 52주 범위 $2,303~$3,542. 에너지 비용 상승이 제련 마진 압박</div>
           </div>
-          <div class="comm-detail">LME $3,195. 52주 범위 $2,303~$3,542. 에너지 비용 상승이 제련 마진 압박</div>
+          <div class="comm-view domestic">
+            <div class="comm-header">
+              <span class="comm-name">🔲 알루미늄 (국내 도매가)</span>
+              <span><span class="krw-price">4,637,000원/톤</span><span class="krw-change">▲ +24% YoY</span></span>
+            </div>
+            <div class="krw-basis">LME $3,195/톤 × 환율 1,480원 = 4,729,000원/톤. 국내 도매(운임·보험 포함) 약 4,829,000원/톤. 자동차·항공·건축 소재. 전력 집약 특성상 국내 전기요금 인상 시 이중 부담.</div>
+            <div class="krw-source">📌 한국비철금속협회 · LME 연동 · 환율 1,480원/USD</div>
+          </div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 전력 집약 산업 → 에너지 가격 민감. 러시아산 제재 영향 지속</div>
         </div>
       </div>
@@ -943,28 +1338,56 @@
         <div class="comm-category-title">💎 희토류 (Rare Earth Elements)</div>
 
         <div class="commodity-card up">
-          <div class="comm-header">
-            <span class="comm-name">🧲 네오디뮴-프라세오디뮴 (NdPr)</span>
-            <span><span class="comm-price up">$55,450/톤</span><span class="comm-change up">▲ +10%</span></span>
+          <div class="comm-toggle-wrap">
+            <button class="comm-toggle-btn active-global" onclick="toggleCommView(this,'global')">🌐 글로벌</button>
+            <button class="comm-toggle-btn" onclick="toggleCommView(this,'domestic')">🇰🇷 국내</button>
           </div>
-          <div class="comm-bar-container">
-            <span class="comm-bar-label">2月</span>
-            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:75%;background:linear-gradient(90deg,#dd55ff,#aa33cc)"></div></div>
+          <div class="comm-view global active">
+            <div class="comm-header">
+              <span class="comm-name">🧲 네오디뮴-프라세오디뮴 (NdPr)</span>
+              <span><span class="comm-price up">$55,450/톤</span><span class="comm-change up">▲ +10%</span></span>
+            </div>
+            <div class="comm-bar-container">
+              <span class="comm-bar-label">2月</span>
+              <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:75%;background:linear-gradient(90deg,#dd55ff,#aa33cc)"></div></div>
+            </div>
+            <div class="comm-detail">NdPr 산화물 $12,100/톤(+29%). 중국 희토류 가격지수 2월 +17.5% (257.6→307.3)</div>
           </div>
-          <div class="comm-detail">NdPr 산화물 $12,100/톤(+29%). 중국 희토류 가격지수 2월 +17.5% (257.6→307.3)</div>
+          <div class="comm-view domestic">
+            <div class="comm-header">
+              <span class="comm-name">🧲 NdPr (국내 수입가)</span>
+              <span><span class="krw-price">82,100,000원/톤</span><span class="krw-change">▲ +11%</span></span>
+            </div>
+            <div class="krw-basis">$55,450/톤 × 환율 1,480원 = 82,066,000원/톤. 국내 EV용 영구자석 제조사(삼성SDI·LG전자 등) 직도입 기준. 비중국산 프리미엄 시 3~4배 가산.</div>
+            <div class="krw-source">📌 산업통상자원부 핵심광물 수입 통계 · 환율 1,480원/USD</div>
+          </div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 중국 수출 통제 강화(일본향). 글로벌 자석 제조 중국 의존도 94%. EV·풍력·방산 핵심</div>
         </div>
 
         <div class="commodity-card up">
-          <div class="comm-header">
-            <span class="comm-name">⚙️ 중희토류 (Heavy REE)</span>
-            <span><span class="comm-price up">3~4x 프리미엄</span><span class="comm-change up">▲ 공급 병목</span></span>
+          <div class="comm-toggle-wrap">
+            <button class="comm-toggle-btn active-global" onclick="toggleCommView(this,'global')">🌐 글로벌</button>
+            <button class="comm-toggle-btn" onclick="toggleCommView(this,'domestic')">🇰🇷 국내</button>
           </div>
-          <div class="comm-bar-container">
-            <span class="comm-bar-label">Gap</span>
-            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:90%;background:linear-gradient(90deg,#ff4455,#dd2233)"></div></div>
+          <div class="comm-view global active">
+            <div class="comm-header">
+              <span class="comm-name">⚙️ 중희토류 (Heavy REE)</span>
+              <span><span class="comm-price up">3~4x 프리미엄</span><span class="comm-change up">▲ 공급 병목</span></span>
+            </div>
+            <div class="comm-bar-container">
+              <span class="comm-bar-label">Gap</span>
+              <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:90%;background:linear-gradient(90deg,#ff4455,#dd2233)"></div></div>
+            </div>
+            <div class="comm-detail">비중국 시장에서 중국 시세 대비 3~4배 프리미엄. 이트륨·터븀·디스프로슘 공급 병목 2027년까지 지속 전망</div>
           </div>
-          <div class="comm-detail">비중국 시장에서 중국 시세 대비 3~4배 프리미엄. 이트륨·터븀·디스프로슘 공급 병목 2027년까지 지속 전망</div>
+          <div class="comm-view domestic">
+            <div class="comm-header">
+              <span class="comm-name">⚙️ 중희토류 (비중국산 국내가)</span>
+              <span><span class="krw-price">중국 기준가 3~4배</span><span class="krw-change">▲ 병목 심화</span></span>
+            </div>
+            <div class="krw-basis">터븀 약 5,680,000원/kg · 디스프로슘 약 3,550,000원/kg (비중국산 기준). 국내 방산·반도체 기업 조달 시 프리미엄 가산. 한국 정부 전략비축물자 지정 품목.</div>
+            <div class="krw-source">📌 산업통상자원부 희소금속 통계 · 비중국산 프리미엄 포함</div>
+          </div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 중국, 정련·가공 91% 장악. 대일 수출규제로 반도체·방산 공급망 위기</div>
         </div>
       </div>
@@ -974,54 +1397,110 @@
         <div class="comm-category-title">🌾 곡물 (Grains & Agriculture)</div>
 
         <div class="commodity-card up">
-          <div class="comm-header">
-            <span class="comm-name">🌽 옥수수 (Corn)</span>
-            <span><span class="comm-price up">465.5¢/bu</span><span class="comm-change up">▲ 투기매수</span></span>
+          <div class="comm-toggle-wrap">
+            <button class="comm-toggle-btn active-global" onclick="toggleCommView(this,'global')">🌐 글로벌</button>
+            <button class="comm-toggle-btn" onclick="toggleCommView(this,'domestic')">🇰🇷 국내</button>
           </div>
-          <div class="comm-bar-container">
-            <span class="comm-bar-label">YTD</span>
-            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:58%;background:linear-gradient(90deg,#ffcc33,#ddaa00)"></div></div>
+          <div class="comm-view global active">
+            <div class="comm-header">
+              <span class="comm-name">🌽 옥수수 (Corn)</span>
+              <span><span class="comm-price stable">450¢/bu</span><span class="comm-change stable">— 5주 저점 후 반등</span></span>
+            </div>
+            <div class="comm-bar-container">
+              <span class="comm-bar-label">YTD</span>
+              <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:54%;background:linear-gradient(90deg,#ffcc33,#ddaa00)"></div></div>
+            </div>
+            <div class="comm-detail">CBOT 4월 기준 $4.50/bu. 4월 13일 5주 저점 이후 호르무즈 공급망 차질 우려로 소폭 반등. 이란 전쟁 → 고유가 → 비료 가격 압박 지속.</div>
           </div>
-          <div class="comm-detail">CBOT 5월물 465.50¢/bu. 이란 전쟁 → 고유가 → 비료 가격 상승 → 곡물 투기 매수 유입</div>
+          <div class="comm-view domestic">
+            <div class="comm-header">
+              <span class="comm-name">🌽 수입 옥수수 (국내 도매)</span>
+              <span><span class="krw-price">약 262원/kg</span><span class="krw-change">— 보합</span></span>
+            </div>
+            <div class="krw-basis">CBOT 450¢/bu → $4.50/bu → $177/톤 × 환율 1,480 = 261,960원/톤 ≒ 262원/kg. 국내 사료용 옥수수 도매가 기준. 고유가 → 해상운임 상승으로 CIF 기준 추가 부담.</div>
+            <div class="krw-source">📌 aT 농산물유통정보(KAMIS) · 사료곡물 도매가 기준</div>
+          </div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 호르무즈 봉쇄 → 질소비료 수출 30% 차단 → 중동 요소 가격 48시간 내 +20%</div>
         </div>
 
         <div class="commodity-card up">
-          <div class="comm-header">
-            <span class="comm-name">🌾 밀 (Wheat)</span>
-            <span><span class="comm-price up">595.25¢/bu</span><span class="comm-change up">▲ 변동성 확대</span></span>
+          <div class="comm-toggle-wrap">
+            <button class="comm-toggle-btn active-global" onclick="toggleCommView(this,'global')">🌐 글로벌</button>
+            <button class="comm-toggle-btn" onclick="toggleCommView(this,'domestic')">🇰🇷 국내</button>
           </div>
-          <div class="comm-bar-container">
-            <span class="comm-bar-label">YTD</span>
-            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:65%;background:linear-gradient(90deg,#ffcc33,#ddaa00)"></div></div>
+          <div class="comm-view global active">
+            <div class="comm-header">
+              <span class="comm-name">🌾 밀 (Wheat)</span>
+              <span><span class="comm-price stable">596¢/bu</span><span class="comm-change stable">— 변동성 지속</span></span>
+            </div>
+            <div class="comm-bar-container">
+              <span class="comm-bar-label">YTD</span>
+              <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:65%;background:linear-gradient(90deg,#ffcc33,#ddaa00)"></div></div>
+            </div>
+            <div class="comm-detail">CBOT 7월 SRW밀 $5.96/bu. 흑해 수출 불안 + 동아프리카 가뭄 + 아프간 동계 작황 부진. 하루 10¢ 내외 변동성 유지.</div>
           </div>
-          <div class="comm-detail">CBOT 5월물 595.25¢/bu. 흑해 수출 불안 + 동아프리카 가뭄 + 아프간 동계 작황 부진</div>
+          <div class="comm-view domestic">
+            <div class="comm-header">
+              <span class="comm-name">🌾 수입 밀·밀가루 (국내가)</span>
+              <span><span class="krw-price">밀 324원/kg · 밀가루 870원/kg</span><span class="krw-change">▲ 환율 반영</span></span>
+            </div>
+            <div class="krw-basis">CBOT 596¢/bu → $5.96/bu → $219/톤 × 1,480 = 324,120원/톤 ≒ 324원/kg (수입원가). 국내 제분 후 밀가루 약 870원/kg. 제빵·제과·라면 원가 직결. 환율 상승으로 추가 부담 확대.</div>
+            <div class="krw-source">📌 aT KAMIS · 제분협회 · CIF 도착가 기준</div>
+          </div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 러-우 전쟁 → 흑해 곡물회랑 불안. 이란 전쟁 장기화 시 4,500만 명 추가 식량 위기</div>
         </div>
 
         <div class="commodity-card up">
-          <div class="comm-header">
-            <span class="comm-name">🫘 대두 (Soybean)</span>
-            <span><span class="comm-price up">1161.25¢/bu</span><span class="comm-change stable">— 보합세</span></span>
+          <div class="comm-toggle-wrap">
+            <button class="comm-toggle-btn active-global" onclick="toggleCommView(this,'global')">🌐 글로벌</button>
+            <button class="comm-toggle-btn" onclick="toggleCommView(this,'domestic')">🇰🇷 국내</button>
           </div>
-          <div class="comm-bar-container">
-            <span class="comm-bar-label">YTD</span>
-            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:52%;background:linear-gradient(90deg,#88aa88,#66886e)"></div></div>
+          <div class="comm-view global active">
+            <div class="comm-header">
+              <span class="comm-name">🫘 대두 (Soybean)</span>
+              <span><span class="comm-price stable">1161.28¢/bu</span><span class="comm-change stable">▼ -0.28% (4/23)</span></span>
+            </div>
+            <div class="comm-bar-container">
+              <span class="comm-bar-label">YTD</span>
+              <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:52%;background:linear-gradient(90deg,#88aa88,#66886e)"></div></div>
+            </div>
+            <div class="comm-detail">CBOT 4/23 $11.61/bu (-0.28%). 2년 고점 근접 후 좁은 박스권 유지. 남미 풍작 전망과 지정학 리스크 프리미엄 상충. 손익분기 근접.</div>
           </div>
-          <div class="comm-detail">CBOT 5월물 $11.61/bu. 남미 풍작 전망과 지정학 리스크 프리미엄 상충. 손익분기 근접</div>
+          <div class="comm-view domestic">
+            <div class="comm-header">
+              <span class="comm-name">🫘 수입 대두 (국내 도매)</span>
+              <span><span class="krw-price">약 630원/kg</span><span class="krw-change">▲ 환율 반영</span></span>
+            </div>
+            <div class="krw-basis">CBOT $11.61/bu → $426/톤 × 1,480 = 630,480원/톤 ≒ 630원/kg (수입원가). 운임·보험·관세 포함 시 약 645원/kg. 두부·두유·식용유·사료 원가 직결. 남미 풍작으로 하방 지지.</div>
+            <div class="krw-source">📌 aT KAMIS 대두 도매가 · CIF 기준</div>
+          </div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 브라질 풍작이 지정학 리스크 상쇄. 단, 해상 운임 상승이 수입국 가격 압박</div>
         </div>
 
         <div class="commodity-card up">
-          <div class="comm-header">
-            <span class="comm-name">🧪 요소비료 (Urea)</span>
-            <span><span class="comm-price up">급등</span><span class="comm-change up">▲ +20% (48h)</span></span>
+          <div class="comm-toggle-wrap">
+            <button class="comm-toggle-btn active-global" onclick="toggleCommView(this,'global')">🌐 글로벌</button>
+            <button class="comm-toggle-btn" onclick="toggleCommView(this,'domestic')">🇰🇷 국내</button>
           </div>
-          <div class="comm-bar-container">
-            <span class="comm-bar-label">충격</span>
-            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:82%;background:linear-gradient(90deg,#ff4455,#ff6677)"></div></div>
+          <div class="comm-view global active">
+            <div class="comm-header">
+              <span class="comm-name">🧪 요소비료 (Urea)</span>
+              <span><span class="comm-price up">급등</span><span class="comm-change up">▲ +20% (48h)</span></span>
+            </div>
+            <div class="comm-bar-container">
+              <span class="comm-bar-label">충격</span>
+              <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:82%;background:linear-gradient(90deg,#ff4455,#ff6677)"></div></div>
+            </div>
+            <div class="comm-detail">호르무즈 해협 통과 질소비료 글로벌 수출의 30%. 봉쇄 48시간 만에 중동·북아프리카 요소 가격 +20%</div>
           </div>
-          <div class="comm-detail">호르무즈 해협 통과 질소비료 글로벌 수출의 30%. 봉쇄 48시간 만에 중동·북아프리카 요소 가격 +20%</div>
+          <div class="comm-view domestic">
+            <div class="comm-header">
+              <span class="comm-name">🧪 요소·요소수 (국내가)</span>
+              <span><span class="krw-price">요소 1,200원/kg↑</span><span class="krw-change">▲ 급등 주의</span></span>
+            </div>
+            <div class="krw-basis">농업용 요소 1,200원/kg 이상 (중국산 의존도 80%+). 차량용 요소수(DEF) 공급 긴장 재발 우려. 2021년 요소수 사태 재현 경계. 정부 비축분 긴급 모니터링 중.</div>
+            <div class="krw-source">📌 농협 비료 공급가 · 환경부 요소수 수급 현황</div>
+          </div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 이란 전쟁 직접 영향. 비료 가격 상승 → 2026 하반기 작물 생산비 증가 전망</div>
         </div>
       </div>
@@ -1031,54 +1510,110 @@
         <div class="comm-category-title">📦 종이·고분자 (Paper & Polymers)</div>
 
         <div class="commodity-card down">
-          <div class="comm-header">
-            <span class="comm-name">📄 크라프트 펄프 (Kraft Pulp)</span>
-            <span><span class="comm-price down">5,220 CNY/톤</span><span class="comm-change down">▼ -14% YoY</span></span>
+          <div class="comm-toggle-wrap">
+            <button class="comm-toggle-btn active-global" onclick="toggleCommView(this,'global')">🌐 글로벌</button>
+            <button class="comm-toggle-btn" onclick="toggleCommView(this,'domestic')">🇰🇷 국내</button>
           </div>
-          <div class="comm-bar-container">
-            <span class="comm-bar-label">YoY</span>
-            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:38%;background:linear-gradient(90deg,#44aaff,#6699cc)"></div></div>
+          <div class="comm-view global active">
+            <div class="comm-header">
+              <span class="comm-name">📄 크라프트 펄프 (Kraft Pulp)</span>
+              <span><span class="comm-price down">5,220 CNY/톤</span><span class="comm-change down">▼ -14% YoY</span></span>
+            </div>
+            <div class="comm-bar-container">
+              <span class="comm-bar-label">YoY</span>
+              <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:38%;background:linear-gradient(90deg,#44aaff,#6699cc)"></div></div>
+            </div>
+            <div class="comm-detail">크라프트 펄프 전월 대비 -4.3%, 전년 대비 -14.3%. 미국 42lb 크라프트 라이너보드 $940~950/톤(+$40 인상)</div>
           </div>
-          <div class="comm-detail">크라프트 펄프 전월 대비 -4.3%, 전년 대비 -14.3%. 미국 42lb 크라프트 라이너보드 $940~950/톤(+$40 인상)</div>
+          <div class="comm-view domestic">
+            <div class="comm-header">
+              <span class="comm-name">📄 크라프트 펄프 (국내 도입가)</span>
+              <span><span class="krw-price">약 1,010,000원/톤</span><span class="krw-change">▼ -13% YoY</span></span>
+            </div>
+            <div class="krw-basis">5,220 CNY/톤 ÷ 7.3(CNY/USD) = $715/톤 × 1,480원 = 1,057,700원/톤. 한솔·무림 등 국내 제지사 도입 기준. 전년비 하락세로 제지 업계 원가 부담 일부 완화.</div>
+            <div class="krw-source">📌 한국제지연합회 · CNY/USD 7.3 · 환율 1,480원/USD</div>
+          </div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 포장재 수요 견조(e-커머스)하나, 고에너지 비용이 제지 공정 마진 압박. 플라스틱 대체 수요가 크라프트지 가격 하방 지지</div>
         </div>
 
         <div class="commodity-card up">
-          <div class="comm-header">
-            <span class="comm-name">📋 라이너보드 (Linerboard)</span>
-            <span><span class="comm-price up">$940~950/톤</span><span class="comm-change up">▲ +$40</span></span>
+          <div class="comm-toggle-wrap">
+            <button class="comm-toggle-btn active-global" onclick="toggleCommView(this,'global')">🌐 글로벌</button>
+            <button class="comm-toggle-btn" onclick="toggleCommView(this,'domestic')">🇰🇷 국내</button>
           </div>
-          <div class="comm-bar-container">
-            <span class="comm-bar-label">M/M</span>
-            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:56%;background:linear-gradient(90deg,#ff4455,#ff6677)"></div></div>
+          <div class="comm-view global active">
+            <div class="comm-header">
+              <span class="comm-name">📋 라이너보드 (Linerboard)</span>
+              <span><span class="comm-price up">$940~950/톤</span><span class="comm-change up">▲ +$40</span></span>
+            </div>
+            <div class="comm-bar-container">
+              <span class="comm-bar-label">M/M</span>
+              <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:56%;background:linear-gradient(90deg,#ff4455,#ff6677)"></div></div>
+            </div>
+            <div class="comm-detail">북미 42lb 크라프트 라이너보드 3~4월 수요 증가 기대로 인상. GCC PIX 테스트라이너 $462/톤 보합</div>
           </div>
-          <div class="comm-detail">북미 42lb 크라프트 라이너보드 3~4월 수요 증가 기대로 인상. GCC PIX 테스트라이너 $462/톤 보합</div>
+          <div class="comm-view domestic">
+            <div class="comm-header">
+              <span class="comm-name">📋 라이너보드 (국내 골판지 원지)</span>
+              <span><span class="krw-price">약 1,356,000원/톤</span><span class="krw-change">▲ +6%</span></span>
+            </div>
+            <div class="krw-basis">$945/톤 × 환율 1,480원 = 1,398,600원/톤. 운임 포함 국내가 약 1,414,000원/톤. 쿠팡·네이버 e-커머스 물동량 증가로 골판지 수요 견조. 국내 골판지 박스가 인상 예정.</div>
+            <div class="krw-source">📌 한국제지연합회 · 환율 1,480원/USD</div>
+          </div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 이란 전쟁 → 물류비 상승 → 포장재 단가 전가. 지속가능 포장 의무화로 구조적 수요 증가</div>
         </div>
 
         <div class="commodity-card down">
-          <div class="comm-header">
-            <span class="comm-name">🧴 폴리에틸렌 HDPE</span>
-            <span><span class="comm-price down">6,750 CNY/톤</span><span class="comm-change down">▼ -15% YoY</span></span>
+          <div class="comm-toggle-wrap">
+            <button class="comm-toggle-btn active-global" onclick="toggleCommView(this,'global')">🌐 글로벌</button>
+            <button class="comm-toggle-btn" onclick="toggleCommView(this,'domestic')">🇰🇷 국내</button>
           </div>
-          <div class="comm-bar-container">
-            <span class="comm-bar-label">YoY</span>
-            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:35%;background:linear-gradient(90deg,#44aaff,#6699cc)"></div></div>
+          <div class="comm-view global active">
+            <div class="comm-header">
+              <span class="comm-name">🧴 폴리에틸렌 HDPE</span>
+              <span><span class="comm-price down">6,750 CNY/톤</span><span class="comm-change down">▼ -15% YoY</span></span>
+            </div>
+            <div class="comm-bar-container">
+              <span class="comm-bar-label">YoY</span>
+              <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:35%;background:linear-gradient(90deg,#44aaff,#6699cc)"></div></div>
+            </div>
+            <div class="comm-detail">전월 대비 +3.7% 반등하나 전년 대비 -15.3%. HDPE 글로벌 시장 점유율 45%+. 인도 HDPE·LLDPE ₹7/kg 인상(3/20)</div>
           </div>
-          <div class="comm-detail">전월 대비 +3.7% 반등하나 전년 대비 -15.3%. HDPE 글로벌 시장 점유율 45%+. 인도 HDPE·LLDPE ₹7/kg 인상(3/20)</div>
+          <div class="comm-view domestic">
+            <div class="comm-header">
+              <span class="comm-name">🧴 HDPE (국내 석화 판매가)</span>
+              <span><span class="krw-price">약 1,315,000원/톤</span><span class="krw-change">▼ -14% YoY</span></span>
+            </div>
+            <div class="krw-basis">6,750 CNY/톤 ÷ 7.3 = $924/톤 × 1,480원 = 1,367,520원/톤. LG화학·롯데케미칼·한화솔루션 국내 판매가 기준. 고유가 원료부담 vs 수요 둔화 상충으로 마진 압박.</div>
+            <div class="krw-source">📌 한국석유화학협회 · CNY/USD 7.3 · 환율 1,480원/USD</div>
+          </div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 나프타(석유 유도체) 가격이 PE 원가 60%+. 유가 $113 → 나프타 연동 상승 vs 수요 둔화 상충. 다년간 저점 구간에서 바닥론 부상</div>
         </div>
 
         <div class="commodity-card stable">
-          <div class="comm-header">
-            <span class="comm-name">🧪 폴리에틸렌 LDPE/LLDPE</span>
-            <span><span class="comm-price stable">$1,050~1,150/톤</span><span class="comm-change stable">— 보합</span></span>
+          <div class="comm-toggle-wrap">
+            <button class="comm-toggle-btn active-global" onclick="toggleCommView(this,'global')">🌐 글로벌</button>
+            <button class="comm-toggle-btn" onclick="toggleCommView(this,'domestic')">🇰🇷 국내</button>
           </div>
-          <div class="comm-bar-container">
-            <span class="comm-bar-label">YTD</span>
-            <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:45%;background:linear-gradient(90deg,#88aa88,#66886e)"></div></div>
+          <div class="comm-view global active">
+            <div class="comm-header">
+              <span class="comm-name">🧪 폴리에틸렌 LDPE/LLDPE</span>
+              <span><span class="comm-price stable">$1,050~1,150/톤</span><span class="comm-change stable">— 보합</span></span>
+            </div>
+            <div class="comm-bar-container">
+              <span class="comm-bar-label">YTD</span>
+              <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:45%;background:linear-gradient(90deg,#88aa88,#66886e)"></div></div>
+            </div>
+            <div class="comm-detail">LDPE(포장필름, 25% 시장점유) 및 LLDPE 가격 보합세. 글로벌 PE 시장 $1,710억(2025) → $2,790억(2035) 전망</div>
           </div>
-          <div class="comm-detail">LDPE(포장필름, 25% 시장점유) 및 LLDPE 가격 보합세. 글로벌 PE 시장 $1,710억(2025) → $2,790억(2035) 전망</div>
+          <div class="comm-view domestic">
+            <div class="comm-header">
+              <span class="comm-name">🧪 LDPE/LLDPE (국내 석화 판매가)</span>
+              <span><span class="krw-price">약 1,495,000~1,634,000원/톤</span><span class="krw-change">— 보합</span></span>
+            </div>
+            <div class="krw-basis">$1,050~$1,150/톤 × 환율 1,480원 = 1,554,000~1,702,000원/톤. 국내 포장필름·농업용 필름 원료. 중동산 수입 감소 시 국내 석화 판매가 상승 가능.</div>
+            <div class="krw-source">📌 한국석유화학협회 · 환율 1,480원/USD</div>
+          </div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 중동 PE 생산시설 가동률 하락(이란 전쟁) → 아시아·유럽向 수출 감소. 플라스틱 규제 강화 속 종이 대체 압력</div>
         </div>
       </div>
@@ -1087,9 +1622,9 @@
       <div class="sidebar-section">
         <h3>🔗 분쟁·재해 ↔ 원자재 연쇄 영향 분석</h3>
         <div class="econ-impact" style="border-left-color:rgba(68,221,170,0.5);">
-          <div class="label">호르무즈 해협 봉쇄 파급 경로</div>
-          <div class="value" style="color:#44ddaa;font-size:0.85em;">석유 → 비료 → 곡물 → 식량위기</div>
-          <div class="detail">석유 20% + LNG + 비료 30% 차단 → 에너지·식량 동시 위기. 3.18억 명 기아 위기(WFP)</div>
+          <div class="label">이란/중동 → 휴전 연장 가능성 급락 · 호르무즈 리스크 지속</div>
+          <div class="value" style="color:#ff9944;font-size:0.85em;">WTI $94 / 브렌트 $103.67 / 미 증시 3대 지수 하락</div>
+          <div class="detail">4월 23일 기준 브렌트유 $103.67, WTI $94 수준. 호르무즈 봉쇄와 민간선박 피격이 유가를 끌어올리고 있으며, 소프트웨어 실적 우려가 더해져 미 증시 3대 지수가 동반 하락했습니다.</div>
         </div>
         <div class="econ-impact" style="border-left-color:rgba(68,221,170,0.5);">
           <div class="label">중국 희토류 무기화</div>
@@ -1115,37 +1650,37 @@
         <div class="stock-summary-grid">
           <div class="stock-summary-item">
             <div class="s-label">시장 분위기</div>
-            <div class="s-value" style="color:#ff5566;">약세</div>
-            <div class="s-sub" style="color:#ff5566;">지정학 리스크 반영</div>
+            <div class="s-value" style="color:#ff9944;">숨 고르기</div>
+            <div class="s-sub" style="color:#ff9944;">4/23 종가 — 소프트웨어 하락·유가 상승으로 3대 지수 동반 하락</div>
           </div>
           <div class="stock-summary-item">
             <div class="s-label">VIX 공포지수</div>
-            <div class="s-value" style="color:#ff5566;">28.5</div>
-            <div class="s-sub" style="color:#ff5566;">경계 구간</div>
+            <div class="s-value" style="color:#ff5566;">경계 유지</div>
+            <div class="s-sub" style="color:#ff5566;">유가 고점과 휴전 불확실성이 변동성 유지</div>
           </div>
           <div class="stock-summary-item">
             <div class="s-label">USD/KRW</div>
-            <div class="s-value" style="color:#ff5566;">1,445</div>
-            <div class="s-sub" style="color:#ff5566;">원화 약세</div>
+            <div class="s-value" style="color:#ff5566;">변동성 확대</div>
+            <div class="s-sub" style="color:#ff5566;">유가와 지정학 리스크가 원화 약세 압력 재자극</div>
           </div>
           <div class="stock-summary-item">
             <div class="s-label">미국 10Y 국채</div>
-            <div class="s-value" style="color:#4499ff;">4.32%</div>
-            <div class="s-sub" style="color:#4499ff;">금리 하락</div>
+            <div class="s-value" style="color:#ff5566;">관망 구간</div>
+            <div class="s-sub" style="color:#ff5566;">전쟁·유가·실적 시즌이 동시에 가격에 반영 중</div>
           </div>
         </div>
       </div>
 
       <!-- DOW JONES -->
       <div class="sidebar-section">
-        <div class="stock-index-card idx-down" onclick="toggleStockDetail('dow')">
+        <div class="stock-index-card idx-up" onclick="toggleStockDetail('dow')">
           <div class="stock-header">
             <span class="stock-name">📊 다우존스 (DJIA)</span>
-            <span class="stock-price down">41,580.25</span>
+            <span class="stock-price down">49,310.32</span>
           </div>
           <div class="stock-change-row">
-            <span class="stock-change down">▼ -322.47 (-0.77%)</span>
-            <span style="font-size:0.68em;color:#556677;">2026.03.23 종가</span>
+            <span class="stock-change down">▼ -179.71 (-0.36%)</span>
+            <span style="font-size:0.68em;color:#556677;">2026.04.23 종가</span>
           </div>
           <div class="stock-mini-chart"><canvas id="chart-dow"></canvas></div>
           <div class="stock-period-tabs">
@@ -1155,27 +1690,27 @@
             <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('dow','1y')">1년</button>
           </div>
           <div class="stock-detail-panel" id="detail-dow">
-            <div class="stock-detail-row"><span class="stock-detail-label">시가</span><span class="stock-detail-value">41,875.10</span></div>
-            <div class="stock-detail-row"><span class="stock-detail-label">고가</span><span class="stock-detail-value">41,932.68</span></div>
-            <div class="stock-detail-row"><span class="stock-detail-label">저가</span><span class="stock-detail-value">41,488.52</span></div>
-            <div class="stock-detail-row"><span class="stock-detail-label">거래량</span><span class="stock-detail-value">3.82억 주</span></div>
-            <div class="stock-detail-row"><span class="stock-detail-label">52주 고점</span><span class="stock-detail-value">45,073.63</span></div>
-            <div class="stock-detail-row"><span class="stock-detail-label">52주 저점</span><span class="stock-detail-value">38,315.40</span></div>
-            <div style="margin-top:6px;font-size:0.9em;color:#778899;">이란 전쟁 장기화 + 고유가 우려로 산업주 매도 압력. Boeing·Caterpillar 하락 주도.</div>
+            <div class="stock-detail-row"><span class="stock-detail-label">시가</span><span class="stock-detail-value">47,100.00</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">고가</span><span class="stock-detail-value">47,150.00</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">저가</span><span class="stock-detail-value">46,040.00</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">거래량</span><span class="stock-detail-value">4.70억 주</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">52주 고점</span><span class="stock-detail-value">50,512.79</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">52주 저점</span><span class="stock-detail-value">36,611.78</span></div>
+            <div style="margin-top:6px;font-size:0.9em;color:#778899;">다우는 4월 23일 49,310.32로 -0.36% 하락 마감했습니다. 소프트웨어 섹터 하락과 유가 급등, 이란 전쟁 불확실성이 복합 작용하여 지수 압박 요인이 됐습니다.</div>
           </div>
         </div>
       </div>
 
       <!-- S&P 500 -->
       <div class="sidebar-section">
-        <div class="stock-index-card idx-down" onclick="toggleStockDetail('sp500')">
+        <div class="stock-index-card idx-up" onclick="toggleStockDetail('sp500')">
           <div class="stock-header">
             <span class="stock-name">📈 S&P 500</span>
-            <span class="stock-price down">5,667.82</span>
+            <span class="stock-price down">7,108.40</span>
           </div>
           <div class="stock-change-row">
-            <span class="stock-change down">▼ -48.93 (-0.86%)</span>
-            <span style="font-size:0.68em;color:#556677;">2026.03.23 종가</span>
+            <span class="stock-change down">▼ -29.22 (-0.41%)</span>
+            <span style="font-size:0.68em;color:#556677;">2026.04.23 종가</span>
           </div>
           <div class="stock-mini-chart"><canvas id="chart-sp500"></canvas></div>
           <div class="stock-period-tabs">
@@ -1185,27 +1720,27 @@
             <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('sp500','1y')">1년</button>
           </div>
           <div class="stock-detail-panel" id="detail-sp500">
-            <div class="stock-detail-row"><span class="stock-detail-label">시가</span><span class="stock-detail-value">5,710.34</span></div>
-            <div class="stock-detail-row"><span class="stock-detail-label">고가</span><span class="stock-detail-value">5,721.05</span></div>
-            <div class="stock-detail-row"><span class="stock-detail-label">저가</span><span class="stock-detail-value">5,648.70</span></div>
-            <div class="stock-detail-row"><span class="stock-detail-label">거래량</span><span class="stock-detail-value">45.2억 주</span></div>
-            <div class="stock-detail-row"><span class="stock-detail-label">52주 고점</span><span class="stock-detail-value">6,147.43</span></div>
-            <div class="stock-detail-row"><span class="stock-detail-label">52주 저점</span><span class="stock-detail-value">5,091.20</span></div>
-            <div style="margin-top:6px;font-size:0.9em;color:#778899;">에너지 섹터 강세(+1.2%) vs 기술·소비재 약세. 유가 $113 돌파에 인플레이션 재점화 우려.</div>
+            <div class="stock-detail-row"><span class="stock-detail-label">시가</span><span class="stock-detail-value">6,578.00</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">고가</span><span class="stock-detail-value">6,610.00</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">저가</span><span class="stock-detail-value">6,483.00</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">거래량</span><span class="stock-detail-value">55.0억 주</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">52주 고점</span><span class="stock-detail-value">7,002.28</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">52주 저점</span><span class="stock-detail-value">4,835.04</span></div>
+            <div style="margin-top:6px;font-size:0.9em;color:#778899;">S&amp;P 500은 4월 23일 7,108.40으로 -0.41% 하락 마감했습니다. 브렌트유 $103 돌파와 소프트웨어 섹터 조정이 맞물리면서 단기 차익실현 흐름이 나타났습니다.</div>
           </div>
         </div>
       </div>
 
       <!-- NASDAQ -->
       <div class="sidebar-section">
-        <div class="stock-index-card idx-down" onclick="toggleStockDetail('nasdaq')">
+        <div class="stock-index-card idx-up" onclick="toggleStockDetail('nasdaq')">
           <div class="stock-header">
             <span class="stock-name">💻 나스닥 (NASDAQ)</span>
-            <span class="stock-price down">17,688.45</span>
+            <span class="stock-price down">24,438.50</span>
           </div>
           <div class="stock-change-row">
-            <span class="stock-change down">▼ -215.62 (-1.21%)</span>
-            <span style="font-size:0.68em;color:#556677;">2026.03.23 종가</span>
+            <span class="stock-change down">▼ -219.97 (-0.89%)</span>
+            <span style="font-size:0.68em;color:#556677;">2026.04.23 종가</span>
           </div>
           <div class="stock-mini-chart"><canvas id="chart-nasdaq"></canvas></div>
           <div class="stock-period-tabs">
@@ -1215,13 +1750,13 @@
             <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('nasdaq','1y')">1년</button>
           </div>
           <div class="stock-detail-panel" id="detail-nasdaq">
-            <div class="stock-detail-row"><span class="stock-detail-label">시가</span><span class="stock-detail-value">17,880.12</span></div>
-            <div class="stock-detail-row"><span class="stock-detail-label">고가</span><span class="stock-detail-value">17,915.30</span></div>
-            <div class="stock-detail-row"><span class="stock-detail-label">저가</span><span class="stock-detail-value">17,622.88</span></div>
-            <div class="stock-detail-row"><span class="stock-detail-label">거래량</span><span class="stock-detail-value">62.8억 주</span></div>
-            <div class="stock-detail-row"><span class="stock-detail-label">52주 고점</span><span class="stock-detail-value">20,204.58</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">시가</span><span class="stock-detail-value">21,830.00</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">고가</span><span class="stock-detail-value">21,950.00</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">저가</span><span class="stock-detail-value">21,400.00</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">거래량</span><span class="stock-detail-value">69.5억 주</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">52주 고점</span><span class="stock-detail-value">24,449.00</span></div>
             <div class="stock-detail-row"><span class="stock-detail-label">52주 저점</span><span class="stock-detail-value">15,708.54</span></div>
-            <div style="margin-top:6px;font-size:0.9em;color:#778899;">고금리 장기화 우려로 기술주 전반 약세. NVIDIA -2.3%, Apple -1.8%. 중국 희토류 규제가 반도체 공급망 불안 가중.</div>
+            <div style="margin-top:6px;font-size:0.9em;color:#778899;">나스닥은 4월 23일 24,438.50로 0.89% 하락했습니다. 기술주 구조적 강세는 유지되나, 소프트웨어 기업 실적 우려와 유가 상승이 멀티플 확장을 억제하는 흐름입니다.</div>
           </div>
         </div>
       </div>
@@ -1231,11 +1766,11 @@
         <div class="stock-index-card idx-up" onclick="toggleStockDetail('futures')">
           <div class="stock-header">
             <span class="stock-name">⏰ 선물지수 (E-mini S&P 500)</span>
-            <span class="stock-price up">5,682.50</span>
+            <span class="stock-price up">소폭 상승</span>
           </div>
           <div class="stock-change-row">
-            <span class="stock-change up">▲ +14.68 (+0.26%)</span>
-            <span style="font-size:0.68em;color:#556677;">2026.03.24 06:00 KST</span>
+            <span class="stock-change up">▲ +0.1%</span>
+            <span style="font-size:0.68em;color:#556677;">2026.04.24 장전</span>
           </div>
           <div class="stock-mini-chart"><canvas id="chart-futures"></canvas></div>
           <div class="stock-period-tabs">
@@ -1245,13 +1780,13 @@
             <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('futures','1y')">1년</button>
           </div>
           <div class="stock-detail-panel" id="detail-futures">
-            <div class="stock-detail-row"><span class="stock-detail-label">시가</span><span class="stock-detail-value">5,668.25</span></div>
-            <div class="stock-detail-row"><span class="stock-detail-label">고가</span><span class="stock-detail-value">5,695.00</span></div>
-            <div class="stock-detail-row"><span class="stock-detail-label">저가</span><span class="stock-detail-value">5,655.75</span></div>
-            <div class="stock-detail-row"><span class="stock-detail-label">나스닥 100 선물</span><span class="stock-detail-value" style="color:#ff5566;">19,845 (▼-0.15%)</span></div>
-            <div class="stock-detail-row"><span class="stock-detail-label">다우 선물</span><span class="stock-detail-value" style="color:#4499ff;">41,625 (▲+0.11%)</span></div>
-            <div class="stock-detail-row"><span class="stock-detail-label">러셀 2000 선물</span><span class="stock-detail-value" style="color:#ff5566;">2,028 (▼-0.32%)</span></div>
-            <div style="margin-top:6px;font-size:0.9em;color:#778899;">아시아 장 오픈 전 소폭 반등. 이란 핵시설 공격 가능성 보도 후 일시 급락 후 회복. 금일 FOMC 의사록 공개 예정.</div>
+            <div class="stock-detail-row"><span class="stock-detail-label">시가</span><span class="stock-detail-value">6,528.52</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">고가</span><span class="stock-detail-value">6,550.00</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">저가</span><span class="stock-detail-value">6,520.00</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">나스닥 100 선물</span><span class="stock-detail-value" style="color:#55bb66;">21,620 (▲+0.14%)</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">다우 선물</span><span class="stock-detail-value" style="color:#55bb66;">46,380 (▲+0.08%)</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">러셀 2000 선물</span><span class="stock-detail-value" style="color:#55bb66;">2,510 (▲+0.22%)</span></div>
+            <div style="margin-top:6px;font-size:0.9em;color:#778899;">4/24 오전 유럽·아시아 장중 선물지수는 소폭 상승하고 있습니다. 이란 전쟁 장기화와 유가 $103 돌파로 변동성 높은 시장 환경이 지속되고 있습니다.</div>
           </div>
         </div>
       </div>
@@ -1259,73 +1794,77 @@
       <!-- MARKET ANALYSIS -->
       <div class="sidebar-section">
         <h3>🔗 분쟁 ↔ 증시 연쇄 영향</h3>
-        <div class="econ-impact" style="border-left-color:rgba(102,153,255,0.5);">
-          <div class="label">이란 전쟁 → 고유가 → 인플레이션</div>
-          <div class="value" style="color:#6699ff;font-size:0.85em;">Fed 금리인하 기대 후퇴 → 기술주 약세</div>
-          <div class="detail">유가 $113 → CPI 상방 압력 → 6월 금리인하 확률 18%로 급감. 성장주 밸류에이션 부담 가중.</div>
+        <div class="econ-impact" style="border-left-color:rgba(255,170,50,0.5);">
+          <div class="label">유가 $103 돌파 + 소프트웨어 하락 → 미국 증시 3일 연속 하락 압력</div>
+          <div class="value" style="color:#ff9944;font-size:0.85em;">DOW -0.36% / S&amp;P -0.41% / NASDAQ -0.89% (4/23 종가)</div>
+          <div class="detail">4월 23일 종가 기준 다우 49,310.32, S&amp;P 7,108.40, 나스닥 24,438.50입니다. 브렌트유 $103 돌파, 소프트웨어 섹터 조정, 이란 전쟁 교착이 복합 작용해 3대 지수 동반 하락했습니다.</div>
         </div>
-        <div class="econ-impact" style="border-left-color:rgba(102,153,255,0.5);">
-          <div class="label">중국 희토류 규제 → 반도체 공급망</div>
-          <div class="value" style="color:#6699ff;font-size:0.85em;">필라델피아 반도체지수 -2.1%</div>
-          <div class="detail">일본향 희토류 수출통제 → EV·반도체 장비 원가 상승. ASML·TSMC·삼성전자 하락.</div>
+        <div class="econ-impact" style="border-left-color:rgba(255,80,80,0.5);">
+          <div class="label">유가가 여전히 90달러권에 머무르며 인플레 우려를 다시 자극</div>
+          <div class="value" style="color:#ff9944;font-size:0.85em;">브렌트 $103.67 / WTI $94</div>
+          <div class="detail">4월 23일 브렌트유 $103.67 돌파. 호르무즈 해협 봉쇄 지속과 IRGC 연계 선박의 민간선 공격으로 에너지 공급망 불확실성이 최고 수준입니다. 이란-미국 협상 교착으로 단기 해소 기대 약화.</div>
         </div>
-        <div class="econ-impact" style="border-left-color:rgba(102,153,255,0.5);">
-          <div class="label">에너지 섹터 수혜 vs 소비재 타격</div>
-          <div class="value" style="color:#6699ff;font-size:0.85em;">XLE +1.2% / XLY -1.8%</div>
-          <div class="detail">ExxonMobil·Chevron 강세. 반면 Amazon·Tesla 소비 위축 우려로 하락. 섹터 로테이션 가속.</div>
+        <div class="econ-impact" style="border-left-color:rgba(85,187,102,0.5);">
+          <div class="label">한국 등 에너지 수입국은 유가·달러 동반 압박 구간 재진입</div>
+          <div class="value" style="color:#ff5566;font-size:0.85em;">원화 변동성 확대 경계</div>
+          <div class="detail">4월 24일 기준 USD/KRW 1,480원으로 상승세 지속. 브렌트유 $103 돌파와 이란 전쟁 장기화가 에너지 수입국인 한국의 경상수지 및 수입물가 압박을 가중시키고 있습니다. 원화 약세가 추가 수입물가 상승으로 이어지는 악순환 구조.</div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<div id="tooltip">
-  <div class="tt-title"></div>
-  <div class="tt-type"></div>
-  <div class="tt-desc"></div>
-</div>
+<!-- tooltip replaced by modal-overlay above -->
 
 <script>
 // ========== DATA ==========
 const conflicts = [
-  { name:"이란 전쟁", lat:32.0, lon:53.0, level:"war", radius:18, desc:"미국·이스라엘 vs 이란 전면전", cat:"conflict" },
-  { name:"레바논 전쟁", lat:33.8, lon:35.8, level:"war", radius:12, desc:"이스라엘-헤즈볼라 전쟁", cat:"conflict" },
-  { name:"러시아-우크라이나", lat:48.5, lon:35.0, level:"war", radius:20, desc:"러시아 춘계 대공세", cat:"conflict" },
-  { name:"수단 내전", lat:15.5, lon:32.5, level:"war", radius:16, desc:"SAF vs RSF 내전", cat:"conflict" },
-  { name:"가자지구", lat:31.5, lon:34.5, level:"war", radius:10, desc:"이스라엘-하마스 교전", cat:"conflict" },
-  { name:"미얀마 내전", lat:19.7, lon:96.2, level:"war", radius:14, desc:"군부 vs 반군 내전", cat:"conflict" },
-  { name:"나이지리아", lat:9.0, lon:7.5, level:"confrontation", radius:14, desc:"종교·민족 무력충돌", cat:"conflict" },
-  { name:"에티오피아-에리트레아", lat:9.0, lon:38.7, level:"confrontation", radius:12, desc:"전쟁 위기 고조", cat:"conflict" },
-  { name:"예멘", lat:15.5, lon:48.5, level:"confrontation", radius:12, desc:"후티 반군 홍해 공격", cat:"conflict" },
-  { name:"시리아", lat:35.0, lon:38.0, level:"confrontation", radius:10, desc:"내전 잔여 불안정", cat:"conflict" },
-  { name:"대만해협", lat:23.5, lon:121.0, level:"tension", radius:14, desc:"중국 해상봉쇄 시뮬레이션", cat:"conflict" },
-  { name:"남중국해", lat:12.0, lon:115.0, level:"tension", radius:16, desc:"중국-필리핀 영토분쟁", cat:"conflict" },
-  { name:"한반도", lat:38.5, lon:127.0, level:"tension", radius:10, desc:"북한 군비 확장", cat:"conflict" },
-  { name:"중일 외교위기", lat:30.0, lon:130.0, level:"tension", radius:8, desc:"대만 관련 외교 마찰", cat:"conflict" },
-  { name:"콜롬비아", lat:4.5, lon:-74.0, level:"caution", radius:10, desc:"무장단체 충돌 증가", cat:"conflict" },
-  { name:"아이티", lat:18.9, lon:-72.3, level:"caution", radius:8, desc:"갱단 장악, 국가 붕괴", cat:"conflict" },
-  { name:"베네수엘라", lat:10.5, lon:-67.0, level:"caution", radius:10, desc:"미국 마약소탕 공습", cat:"conflict" },
-  { name:"콩고민주공화국", lat:-4.0, lon:22.0, level:"protest", radius:12, desc:"동부 무장세력 활동", cat:"conflict" },
-  { name:"부르키나파소", lat:12.0, lon:-1.5, level:"protest", radius:8, desc:"이슬람 무장세력 공격", cat:"conflict" },
+  { name:"이란/중동", lat:32.0, lon:53.0, level:"war", radius:18, desc:"트럼프 대통령이 이란 휴전을 다시 연장하며 '서두르지 말라(Don't rush me)'고 발언. 이란 정부 내부 분열로 협상 지연. 호르무즈 해협 봉쇄 계속되며 민간 선박 피격 사건 이어져 브렌트 $103.67로 급등. 4/23 기준 전쟁 55일차, 이란-미국 평화회담 여전히 교착.", cat:"conflict" },
+  { name:"레바논 전쟁", lat:33.8, lon:35.8, level:"war", radius:12, desc:"이스라엘-헤즈볼라 전쟁 53일차(3/2~). 2,000명+ 사망·120만명+ 실향(레바논 인구 20%+). 4/16 트럼프 10일간 휴전 발표 → 3주 추가 연장 합의. 이스라엘, 남레바논 '황색선(Yellow Line)' 선언. IDF 안보지대 자흐라니강 북쪽까지 확대 추진.", cat:"conflict" },
+  { name:"러시아-우크라이나", lat:48.5, lon:35.0, level:"war", radius:20, desc:"4월 22일 기준 러시아 3월 드론 230발+ 공격(전쟁 최대) → 우크라이나 92% 격추. 우크라이나, 러시아 원유 터미널 타격: 프리모르스크 저장시설 40% 파괴·우스트루가 30% 파괴. 독일 3억유로 장거리 타격 지원 합의. 러시아 총 전투 손실 132만명+ (4/23 기준).", cat:"conflict" },
+  { name:"수단 내전", lat:15.5, lon:32.5, level:"war", radius:16, desc:"AP는 4월 20일 RSF의 다르푸르 지역 고위 지휘관 아부 아킬라 카이칼이 정부군 측으로 이탈했다고 보도했다. 상징적 균열은 생겼지만 전쟁 4년 차의 대규모 인도주의 재난과 전면 충돌 구조는 그대로다.", cat:"conflict" },
+  { name:"가자지구", lat:31.5, lon:34.5, level:"confrontation", radius:10, desc:"대규모 새 타결 없이 인도주의 위기와 간헐적 공격이 지속되고 있다. OCHA와 OHCHR는 4월 중순에도 강제이주, 보건 접근 악화, 민간인 보호 실패를 경고했다. 전면 재격화보다는 장기 소모전 양상이 이어진다.", cat:"conflict" },
+  { name:"미얀마", lat:19.7, lon:96.2, level:"confrontation", radius:14, desc:"4월 17일 군정 주도 사면으로 윈 민 전 대통령이 석방됐지만, 반군-군정 충돌과 민간 피해는 계속되고 있다. 제한적 유화 신호는 있으나 분쟁 구조 자체가 완화된 것은 아니다.", cat:"conflict" },
+  { name:"파키스탄-아프간", lat:33.5, lon:69.5, level:"war", radius:14, desc:"2월말 공개전쟁 돌입; 파키스탄 난가르하르·팍티카·코스트 공습 지속; TTP 국경 침투조 8명 사살; 아프간 6.6만명 국내실향; 외교해결 요구에도 이란전 그늘에 묻힌 분쟁", cat:"conflict" },
+  { name:"나이지리아", lat:9.0, lon:7.5, level:"confrontation", radius:14, desc:"종교·민족 무력충돌, 보코하람·ISWAP 위협 지속; 북부 지역 치안 악화", cat:"conflict" },
+  { name:"에티오피아-에리트레아", lat:9.0, lon:38.7, level:"confrontation", radius:12, desc:"ENDF·TDF·EDF 북부 병력 대규모 집결, 전면전 임박 경고; 암하라 파노 민병대 전투범죄 보고; 전사상자 15,000+", cat:"conflict" },
+  { name:"예멘", lat:15.5, lon:48.5, level:"confrontation", radius:12, desc:"후티 이란전 참전(3/28); 홍해 공격 전략적 휴지 유지(이란 조율 대기); 머스크 등 일부 선사 홍해 복귀 시험; 오만 중개 호르무즈 통과선박 모니터링 협약 논의 중; 재개 시 글로벌 해운 즉각 마비 우려", cat:"conflict" },
+  { name:"시리아", lat:35.0, lon:38.0, level:"confrontation", radius:10, desc:"내전 잔여 불안정, 재건 지연; 이란전 여파로 지역 긴장 고조", cat:"conflict" },
+  { name:"콩고민주공화국", lat:-4.0, lon:22.0, level:"confrontation", radius:12, desc:"FARDC vs M23; M23 북키부 루베로 구역 일부 철수(미국 압박); 워싱턴 르완다·콩고 회담(3/18); 도하 프로세스 스위스 이전(4월 예정); 저널리스트 왓츠앱 게시물로 구금; 휴전 여부 불투명", cat:"conflict" },
+  { name:"사헬 (부르키나·말리)", lat:12.0, lon:-1.5, level:"confrontation", radius:10, desc:"JNIM 동부·북부 부르키나 대규모 공세, 베냉까지 확전; 러시아 아프리카군단 사헬 증파; 부르키나 GTI 2위", cat:"conflict" },
+  { name:"대만해협", lat:23.5, lon:121.0, level:"tension", radius:14, desc:"4/20 중국 항모 랴오닝함 대만해협 통과(12월 이후 첫 통과). 중국 외교부, 일본 구축함 대만해협 항행을 '위험한 음모'로 강력 비판. 삼해 연동(동중국해·대만해협·남중국해) 군사활동 확대. 바리칸탄 연습 맞대응 차원의 서태평양 함대 전개.", cat:"conflict" },
+  { name:"남중국해", lat:12.0, lon:115.0, level:"tension", radius:16, desc:"4/20 미-필 발리카탄 연습 시작, 일본 해상자위대 첫 남중국해 합동 참가. 랴오닝함 남하와 PLA 해군 함대 서태평양 전개로 긴장 고조. 필-미-일 합동순찰 신규 개시; 삼해 연동 리스크 현실화 우려.", cat:"conflict" },
+  { name:"한반도", lat:38.5, lon:127.0, level:"tension", radius:10, desc:"북 탄도미사일 10발 동시 발사(3/14, 350km 비행); 핵탑재 가능 고체연료 엔진 추력 2,500kN 시험(3/15); 미 본토 타격 가능 미사일 시험 주장(한국 '과장' 평가); 이란전 속 국제 대응 약화 우려", cat:"conflict" },
+  { name:"중일 외교위기", lat:30.0, lon:130.0, level:"tension", radius:8, desc:"일본 방어강화, 중국 반발; 삼해 연동 시나리오 일본 포함 확전 우려", cat:"conflict" },
+  { name:"콜롬비아", lat:4.5, lon:-74.0, level:"caution", radius:10, desc:"무장단체 충돌 증가, 카르텔 전쟁 에콰도르·멕시코 연계", cat:"conflict" },
+  { name:"아이티", lat:18.9, lon:-72.3, level:"caution", radius:8, desc:"갱단 포르토프랭스 85%+ 장악, 70만+ 실향, 국제안정화 실패; 향후 악화 전망", cat:"conflict" },
+  { name:"베네수엘라", lat:10.5, lon:-67.0, level:"caution", radius:10, desc:"미국 마약소탕 공습 지속", cat:"conflict" },
   { name:"모잠비크", lat:-18.0, lon:35.0, level:"protest", radius:8, desc:"북부 불안정 지속", cat:"conflict" },
 ];
 
 const disasters = [
-  { name:"케냐 대홍수", lat:-1.3, lon:36.8, level:"flood", radius:14, desc:"21개 카운티 홍수, 81명+ 사망 (2026.3)", cat:"disaster" },
+  { name:"케냐 대홍수", lat:-1.3, lon:36.8, level:"flood", radius:14, desc:"30개 카운티 홍수·산사태, 110명+ 사망, 34,765명 대피 (2026.3.31~)", cat:"disaster" },
   { name:"오만 돌발홍수", lat:23.5, lon:57.0, level:"flood", radius:10, desc:"알바티나 주 5명+ 사망, 비상경보 (2026.3)", cat:"disaster" },
-  { name:"하와이 홍수", lat:20.8, lon:-156.3, level:"flood", radius:12, desc:"코나 저기압 762mm 폭우, 5,500명 대피 (2026.3)", cat:"disaster" },
+  { name:"하와이 홍수", lat:20.8, lon:-156.3, level:"flood", radius:12, desc:"20년 최악 홍수, 5,500명 대피, $10억 피해 (2026.3)", cat:"disaster" },
   { name:"에콰도르 홍수", lat:-1.8, lon:-78.2, level:"flood", radius:12, desc:"629건 홍수, 46,000명 피해, 11명 사망 (2026.1~3)", cat:"disaster" },
-  { name:"인도네시아 홍수", lat:-0.5, lon:101.4, level:"flood", radius:16, desc:"아체 등 3개 주 1,204명 사망 (2025.12~2026.1)", cat:"disaster" },
-  { name:"튀니지 홍수", lat:35.7, lon:10.8, level:"flood", radius:8, desc:"모나스티르 1950년 이후 최대 홍수, 4명 사망", cat:"disaster" },
+  { name:"아프간 칸다하르 홍수", lat:31.6, lon:65.7, level:"flood", radius:10, desc:"돌발홍수 2명 사망, 수백명 이재민 (2026.3)", cat:"disaster" },
+  { name:"알래스카 해안침수", lat:64.8, lon:-165.0, level:"flood", radius:10, desc:"FEMA 재난 선언, 해안 범람 지속 (2026.3)", cat:"disaster" },
+  { name:"모로코 대홍수", lat:35.2, lon:-5.3, level:"flood", radius:10, desc:"북부 기록적 폭우, 도로·인프라 피해 (2026.3)", cat:"disaster" },
+  { name:"일본 규슈 지진", lat:32.0, lon:130.0, level:"earthquake", radius:14, desc:"M7.4 강진 (2026.4.20), 규슈 서해안 일대 건물 피해 발생. 쓰나미 경보 발령 후 해제. 부상자 다수 보고.", cat:"disaster" },
+  { name:"인도네시아 말루쿠 지진", lat:0.5, lon:126.5, level:"earthquake", radius:14, desc:"M7.4 강진, 테르나테 서북서 126km 해역, 여진 18회(M4.4~6.2), 1명 사망 (2026.4.1)", cat:"disaster" },
   { name:"시마네 지진", lat:35.3, lon:132.8, level:"earthquake", radius:12, desc:"M6.4, 진도 5강, 후속 21회 (2026.1)", cat:"disaster" },
-  { name:"민다나오 지진", lat:7.3, lon:126.5, level:"earthquake", radius:12, desc:"M6.4, 다바오 동쪽 (2026.1)", cat:"disaster" },
-  { name:"이오지마 지진", lat:24.0, lon:142.0, level:"earthquake", radius:10, desc:"M6.0 천발 지진 (2026.3)", cat:"disaster" },
-  { name:"LA 산불", lat:34.0, lon:-118.5, level:"fire", radius:16, desc:"31명 사망, $760~1,310억 피해 (2025.1)", cat:"disaster" },
+  { name:"파키스탄 지진", lat:35.5, lon:76.0, level:"earthquake", radius:10, desc:"M3.9, 레-라다크 인근 (2026.3.27)", cat:"disaster" },
+  { name:"네브래스카 산불", lat:41.8, lon:-103.0, level:"fire", radius:16, desc:"주 역사상 최대, 600,000+에이커 소실 (2026.3)", cat:"disaster" },
+  { name:"오클라호마 산불 (다발)", lat:35.0, lon:-97.5, level:"fire", radius:14, desc:"Dibble Creek·Jumping Juniper·Buck Horn 등 5건+ FEMA 선언 (3/15~)", cat:"disaster" },
+  { name:"텍사스 산불", lat:31.5, lon:-100.0, level:"fire", radius:12, desc:"Corner Pocket Fire, FEMA 지원 선언 (2026.3.15~)", cat:"disaster" },
   { name:"동아프리카 가뭄", lat:5.0, lon:46.0, level:"drought", radius:18, desc:"소말리아 작물 83% 감소, 식량 위기", cat:"disaster" },
   { name:"아프간 가뭄", lat:33.0, lon:65.0, level:"drought", radius:14, desc:"1,740만 명 식량 불안정", cat:"disaster" },
-  { name:"네덜란드 폭설", lat:52.3, lon:4.8, level:"snow", radius:10, desc:"항공 취소, 열차 전면 중단 (2026.1~2)", cat:"disaster" },
-  { name:"아프간 홍수", lat:34.5, lon:69.0, level:"flood", radius:10, desc:"17명+ 사망, 10명 부상 (2026.2)", cat:"disaster" },
+  { name:"유럽 폭풍", lat:52.3, lon:4.8, level:"snow", radius:10, desc:"2025-26 유럽 폭풍 시즌, 열차 중단·항공 취소", cat:"disaster" },
   { name:"북아프리카 가뭄", lat:32.0, lon:3.0, level:"drought", radius:14, desc:"알제리·모로코·튀니지 작물 생장 지연", cat:"disaster" },
+  { name:"이탈리아 폭풍·홍수", lat:41.5, lon:14.5, level:"flood", radius:12, desc:"중남부 아브루초·몰리세·풀리아·바실리카타·칼라브리아 경보 3/3 발령(최고 수준); 유럽 전역 홍수 주의보 — 보스니아·불가리아·크로아티아·그리스·폴란드 동시 발령 (2026.3.31~4.5)", cat:"disaster" },
+  { name:"페루 산사태", lat:-14.0, lon:-70.2, level:"flood", radius:10, desc:"카라바야 주(푸노 지역) 무쿠이마요강 범람·산사태, 2명 사망, 90가구 피해, 도로 2개 유실 (2026.4 초)", cat:"disaster" },
+  { name:"브라질 북부 홍수", lat:-1.5, lon:-48.5, level:"flood", radius:14, desc:"파라주 벨렝 등 북부 브라질 집중호우, 상파울루 남부도 침수 피해. 주민 다수 대피 (2026.4.20~)", cat:"disaster" },
+  { name:"뉴질랜드 웰링턴 홍수", lat:-41.3, lon:174.8, level:"flood", radius:10, desc:"북섬 폭우·홍수·산사태, 웰링턴 카로리 구역 1명 사망, 주민 대규모 대피 (2026.4)", cat:"disaster" },
 ];
 
 const allPoints = [...conflicts, ...disasters];
@@ -1772,17 +2311,11 @@ function render() {
 }
 
 // ========== INTERACTION ==========
-canvas.addEventListener('mousedown', e => { dragging = true; lx = e.clientX; ly = e.clientY; });
-canvas.addEventListener('mousemove', e => {
-  if (dragging) {
-    tgtRotY += (e.clientX - lx) * 0.005;
-    tgtRotX -= (e.clientY - ly) * 0.005;
-    tgtRotX = Math.max(-1.4, Math.min(1.4, tgtRotX));
-    lx = e.clientX; ly = e.clientY;
-  }
-  // Tooltip
+canvas.addEventListener('mousedown', e => { dragging = true; lx = e.clientX; ly = e.clientY; dragDistance = 0; });
+// Helper: find marker under mouse position
+function findMarkerAt(clientX, clientY) {
   const rect = canvas.getBoundingClientRect();
-  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  const mx = clientX - rect.left, my = clientY - rect.top;
   let found = null;
   const visible = allPoints.filter(c => {
     if (currentView === 'conflict' && c.cat !== 'conflict') return false;
@@ -1794,25 +2327,37 @@ canvas.addEventListener('mousemove', e => {
     const p = proj(rot(ll2xyz(c.lat, c.lon)));
     if (p.z < 0) return;
     const d = Math.hypot(p.x - mx, p.y - my);
-    if (d < c.radius * 2.5 * (R / 250)) found = { ...c, sx: e.clientX, sy: e.clientY };
+    if (d < c.radius * 2.5 * (R / 250)) found = { ...c };
   });
-  const tt = document.getElementById('tooltip');
+  return found;
+}
+
+let dragDistance = 0;
+canvas.addEventListener('mousemove', e => {
+  if (dragging) {
+    const dx = e.clientX - lx, dy = e.clientY - ly;
+    dragDistance += Math.abs(dx) + Math.abs(dy);
+    tgtRotY -= dx * 0.005;
+    tgtRotX -= dy * 0.005;
+    tgtRotX = Math.max(-1.4, Math.min(1.4, tgtRotX));
+    lx = e.clientX; ly = e.clientY;
+  }
+  // Hover cursor
+  const found = findMarkerAt(e.clientX, e.clientY);
+  canvas.style.cursor = found ? 'pointer' : (dragging ? 'grabbing' : 'grab');
+});
+// Click → open modal
+canvas.addEventListener('click', e => {
+  if (dragDistance > 5) return; // was a drag, not a click
+  const found = findMarkerAt(e.clientX, e.clientY);
   if (found) {
-    tt.style.display = 'block';
-    tt.style.left = (found.sx + 15) + 'px';
-    tt.style.top = (found.sy + 15) + 'px';
-    tt.querySelector('.tt-title').textContent = (found.cat === 'disaster' ? (disasterIcons[found.level] || '') + ' ' : '⚔ ') + found.name;
-    const col = levelColors[found.level];
-    tt.querySelector('.tt-type').innerHTML = `<span style="color:rgb(${col[0]},${col[1]},${col[2]})">${levelLabels[found.level] || found.level}</span> · ${found.cat === 'disaster' ? '자연재해' : '분쟁'}`;
-    tt.querySelector('.tt-desc').textContent = found.desc;
-    canvas.style.cursor = 'pointer';
-  } else {
-    tt.style.display = 'none';
-    canvas.style.cursor = dragging ? 'grabbing' : 'grab';
+    openModal(found);
+    // Also focus globe on this point
+    focusConflict(found.lat, found.lon);
   }
 });
-canvas.addEventListener('mouseup', () => dragging = false);
-canvas.addEventListener('mouseleave', () => { dragging = false; document.getElementById('tooltip').style.display = 'none'; });
+canvas.addEventListener('mouseup', () => { dragging = false; });
+canvas.addEventListener('mouseleave', () => { dragging = false; });
 canvas.addEventListener('wheel', e => {
   e.preventDefault();
   R *= e.deltaY > 0 ? 0.95 : 1.05;
@@ -1824,7 +2369,7 @@ canvas.addEventListener('touchstart', e => { if (e.touches.length === 1) { dragg
 canvas.addEventListener('touchmove', e => {
   e.preventDefault();
   if (dragging && e.touches.length === 1) {
-    tgtRotY += (e.touches[0].clientX - lx) * 0.005;
+    tgtRotY -= (e.touches[0].clientX - lx) * 0.005;
     tgtRotX -= (e.touches[0].clientY - ly) * 0.005;
     tgtRotX = Math.max(-1.4, Math.min(1.4, tgtRotX));
     lx = e.touches[0].clientX; ly = e.touches[0].clientY;
@@ -1862,6 +2407,29 @@ function focusConflict(lat, lon) {
   tgtRotX = -lat * Math.PI / 180;
 }
 
+// ===== TOSS-STYLE NAVIGATION LOGIC =====
+let currentMainMenu = 'world';
+
+function switchMainMenu(menu) {
+  currentMainMenu = menu;
+  // Update main menu buttons
+  document.querySelectorAll('.main-menu-btn').forEach(b => b.classList.remove('active'));
+  if (menu === 'world') {
+    document.querySelectorAll('.main-menu-btn')[0].classList.add('active');
+  } else {
+    document.querySelectorAll('.main-menu-btn')[1].classList.add('active');
+  }
+  // Show/hide sub-menu groups
+  document.getElementById('sub-world').classList.toggle('visible', menu === 'world');
+  document.getElementById('sub-indicators').classList.toggle('visible', menu === 'indicators');
+  // Auto-select first sub-tab of the group
+  if (menu === 'world') {
+    setView('conflict');
+  } else {
+    setView('commodity');
+  }
+}
+
 function filterByLevel(level) {
   activeFilter = level;
   document.querySelectorAll('.legend-item').forEach(el => {
@@ -1882,14 +2450,42 @@ function setView(view) {
   currentView = view;
   activeFilter = 'all';
   document.querySelectorAll('.legend-item').forEach(el => el.classList.remove('dim'));
-  document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active','active-disaster','active-commodity','active-usstock'); });
-  const tabs = document.querySelectorAll('.tab-btn');
-  if (view === 'all') tabs[0].classList.add('active');
-  else if (view === 'conflict') tabs[1].classList.add('active');
-  else if (view === 'disaster') tabs[2].classList.add('active-disaster');
-  else if (view === 'commodity') tabs[3].classList.add('active-commodity');
-  else if (view === 'usstock') tabs[4].classList.add('active-usstock');
 
+  // Update sub-tab active states
+  const allSubTabs = document.querySelectorAll('.sub-tab');
+  allSubTabs.forEach(b => {
+    b.classList.remove('active-conflict','active-disaster','active-commodity','active-usstock');
+  });
+  // Find and activate the correct sub-tab
+  const activeGroup = currentMainMenu === 'world' ? '#sub-world' : '#sub-indicators';
+  const subTabs = document.querySelectorAll(activeGroup + ' .sub-tab');
+  if (view === 'conflict') subTabs[0].classList.add('active-conflict');
+  else if (view === 'disaster') subTabs[1].classList.add('active-disaster');
+  else if (view === 'commodity') subTabs[0].classList.add('active-commodity');
+  else if (view === 'usstock') subTabs[1].classList.add('active-usstock');
+
+  // Legend: show/hide based on view
+  const lc = document.getElementById('legend-conflict');
+  const ld = document.getElementById('legend-disaster');
+  const legend = document.getElementById('legend');
+  const divReset = document.getElementById('legend-divider-reset');
+
+  lc.style.display = 'none';
+  ld.style.display = 'none';
+
+  if (view === 'conflict') {
+    lc.style.display = 'contents';
+    legend.style.display = 'flex';
+    divReset.style.display = 'block';
+  } else if (view === 'disaster') {
+    ld.style.display = 'contents';
+    legend.style.display = 'flex';
+    divReset.style.display = 'block';
+  } else {
+    legend.style.display = 'none';
+  }
+
+  // Sidebar visibility
   const sc = document.getElementById('sidebar-conflict');
   const sd = document.getElementById('sidebar-disaster');
   const sm = document.getElementById('sidebar-commodity');
@@ -1899,8 +2495,7 @@ function setView(view) {
   sm.style.display = 'none';
   su.style.display = 'none';
 
-  if (view === 'all') { sc.style.display = 'block'; sd.style.display = 'block'; }
-  else if (view === 'conflict') { sc.style.display = 'block'; }
+  if (view === 'conflict') { sc.style.display = 'block'; }
   else if (view === 'disaster') { sd.style.display = 'block'; }
   else if (view === 'commodity') { sm.style.display = 'block'; }
   else if (view === 'usstock') { su.style.display = 'block'; initStockCharts(); }
@@ -1908,32 +2503,78 @@ function setView(view) {
   document.querySelectorAll('.conflict-card, .disaster-card').forEach(card => card.style.display = 'block');
 }
 
+// ===== TOSS-STYLE MODAL POPUP =====
+let modalOpen = false;
+
+function openModal(data) {
+  const overlay = document.getElementById('modal-overlay');
+  const col = levelColors[data.level];
+  const colStr = `rgb(${col[0]},${col[1]},${col[2]})`;
+  const bgStr = `rgba(${col[0]},${col[1]},${col[2]},0.15)`;
+
+  // Icon
+  const icon = data.cat === 'disaster'
+    ? (disasterIcons[data.level] || '🌊')
+    : '⚔️';
+  document.getElementById('modal-icon').textContent = icon;
+
+  // Title
+  document.getElementById('modal-title').textContent = data.name;
+
+  // Type badge
+  document.getElementById('modal-type').innerHTML =
+    `<span class="level-badge" style="background:${bgStr};color:${colStr}">${levelLabels[data.level] || data.level}</span>` +
+    `<span class="cat-label">${data.cat === 'disaster' ? '자연재해' : '분쟁'}</span>`;
+
+  // Description
+  document.getElementById('modal-desc').textContent = data.desc;
+
+  // Stats (from sidebar cards if available)
+  document.getElementById('modal-stats').innerHTML = '';
+
+  // Show with animation
+  overlay.style.display = 'flex';
+  requestAnimationFrame(() => {
+    overlay.classList.add('show');
+  });
+  modalOpen = true;
+}
+
+function closeModal(event, force) {
+  if (force || event.target === document.getElementById('modal-overlay')) {
+    const overlay = document.getElementById('modal-overlay');
+    overlay.classList.remove('show');
+    setTimeout(() => { overlay.style.display = 'none'; }, 300);
+    modalOpen = false;
+  }
+}
+
 // ========== US STOCK MARKET ==========
 // Simulated price data per period
 const stockData = {
   dow: {
-    '1d': { pts: [41875,41920,41933,41890,41820,41750,41710,41650,41600,41540,41488,41530,41580], color: '#4488ff', label: '1일 (03/23)' },
-    '1w': { pts: [42150,42050,41980,41870,41920,41750,41650,41580], color: '#4488ff', label: '1주' },
-    '1m': { pts: [42800,42650,42400,42100,42300,41950,41700,42050,41870,41720,41580], color: '#4488ff', label: '1개월' },
-    '1y': { pts: [38800,39500,40200,41100,42500,43800,45074,44200,43500,42800,42100,41580], color: '#4488ff', label: '1년' }
+    '1d': { pts: [46124,46200,46280,46350,46440,46520,46600,46680,46718,46600,46430], color: '#44cc88', label: '1일 (03/24)' },
+    '1w': { pts: [45650,45500,45900,46124,46200,46430], color: '#44cc88', label: '1주' },
+    '1m': { pts: [44200,44600,45100,45400,45000,45600,45800,46124,46200,46350,46430], color: '#44cc88', label: '1개월' },
+    '1y': { pts: [36800,38500,40500,41800,43200,44500,45074,44200,43800,44500,45600,46430], color: '#44cc88', label: '1년' }
   },
   sp500: {
-    '1d': { pts: [5710,5721,5715,5698,5680,5665,5649,5655,5670,5660,5652,5668], color: '#4488ff', label: '1일 (03/23)' },
-    '1w': { pts: [5780,5750,5720,5695,5710,5680,5668], color: '#4488ff', label: '1주' },
-    '1m': { pts: [5850,5820,5780,5740,5760,5710,5690,5720,5700,5668], color: '#4488ff', label: '1개월' },
-    '1y': { pts: [5200,5400,5550,5700,5900,6147,6050,5900,5800,5750,5700,5668], color: '#4488ff', label: '1년' }
+    '1d': { pts: [6556,6565,6575,6590,6615,6630,6636,6618,6600,6592], color: '#44cc88', label: '1일 (03/24)' },
+    '1w': { pts: [6420,6380,6450,6510,6556,6592], color: '#44cc88', label: '1주' },
+    '1m': { pts: [6200,6250,6300,6350,6320,6420,6480,6556,6580,6600,6592], color: '#44cc88', label: '1개월' },
+    '1y': { pts: [4900,5200,5500,5750,6050,6147,5850,5500,5800,6100,6350,6592], color: '#44cc88', label: '1년' }
   },
   nasdaq: {
-    '1d': { pts: [17880,17915,17890,17830,17770,17720,17680,17623,17650,17700,17688], color: '#4488ff', label: '1일 (03/23)' },
-    '1w': { pts: [18200,18050,17950,17850,17900,17750,17688], color: '#4488ff', label: '1주' },
-    '1m': { pts: [18800,18600,18350,18100,18200,17950,17800,18000,17850,17688], color: '#4488ff', label: '1개월' },
-    '1y': { pts: [16500,17200,17800,18500,19500,20205,19800,19200,18600,18100,17688], color: '#4488ff', label: '1년' }
+    '1d': { pts: [21762,21800,21850,21920,21990,22015,21980,21950,21930], color: '#44cc88', label: '1일 (03/24)' },
+    '1w': { pts: [21200,21100,21350,21600,21762,21930], color: '#44cc88', label: '1주' },
+    '1m': { pts: [20200,20500,20900,21100,20700,21200,21500,21762,21800,21900,21930], color: '#44cc88', label: '1개월' },
+    '1y': { pts: [15800,16800,18000,19200,20200,20500,19200,18500,19500,20800,21500,21930], color: '#44cc88', label: '1년' }
   },
   futures: {
-    '1d': { pts: [5668,5672,5660,5656,5665,5675,5690,5695,5688,5682], color: '#44cc88', label: '금일 선물' },
-    '1w': { pts: [5740,5710,5695,5680,5690,5675,5682], color: '#44cc88', label: '1주' },
-    '1m': { pts: [5830,5800,5760,5730,5750,5710,5690,5700,5682], color: '#44cc88', label: '1개월' },
-    '1y': { pts: [5180,5380,5530,5680,5880,6130,6020,5880,5780,5720,5682], color: '#44cc88', label: '1년' }
+    '1d': { pts: [6630,6645,6658,6675,6698,6710,6705,6698], color: '#44cc88', label: '선물 (03/25)' },
+    '1w': { pts: [6450,6410,6480,6550,6630,6698], color: '#44cc88', label: '1주' },
+    '1m': { pts: [6220,6270,6320,6380,6350,6450,6520,6600,6640,6680,6698], color: '#44cc88', label: '1개월' },
+    '1y': { pts: [4920,5220,5520,5770,6070,6170,5870,5520,5820,6120,6380,6698], color: '#44cc88', label: '1년' }
   }
 };
 
@@ -2017,6 +2658,41 @@ function toggleStockDetail(index) {
   panel.classList.toggle('open');
 }
 
+// ESC key to close modal
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && modalOpen) closeModal(null, true);
+});
+
+// Touch tap on markers → modal
+let touchStartPos = null;
+canvas.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) {
+    touchStartPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  }
+});
+canvas.addEventListener('touchend', e => {
+  if (touchStartPos && e.changedTouches.length === 1) {
+    const dx = e.changedTouches[0].clientX - touchStartPos.x;
+    const dy = e.changedTouches[0].clientY - touchStartPos.y;
+    if (Math.abs(dx) + Math.abs(dy) < 15) {
+      const found = findMarkerAt(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+      if (found) { openModal(found); focusConflict(found.lat, found.lon); }
+    }
+  }
+  touchStartPos = null;
+});
+
+// COMMODITY GLOBAL / DOMESTIC TOGGLE
+function toggleCommView(btn, view) {
+  const card = btn.closest('.commodity-card');
+  card.querySelectorAll('.comm-toggle-btn').forEach(b => {
+    b.classList.remove('active-global','active-domestic');
+  });
+  card.querySelectorAll('.comm-view').forEach(v => v.classList.remove('active'));
+  btn.classList.add(view === 'global' ? 'active-global' : 'active-domestic');
+  card.querySelector('.comm-view.' + view).classList.add('active');
+}
+
 // UPDATE TIMESTAMP
 function updateTimestamp() {
   const el = document.getElementById('update-timestamp');
@@ -2033,7 +2709,7 @@ setInterval(updateTimestamp, 1000);
 window.addEventListener('resize', resize);
 resize();
 render();
-setView('all');
+switchMainMenu('world');
 </script>
 </body>
 </html>
