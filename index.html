@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🌍 Global Conflict & Disaster Monitor - 2026년 4월 24일</title>
+<title>🌍 Global Conflict & Disaster Monitor - 2026년 4월 27일</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -720,6 +720,33 @@
   .stock-summary-item .s-label { font-size: 0.68em; color: #556677; }
   .stock-summary-item .s-value { font-size: 1.0em; font-weight: 700; margin-top: 2px; }
   .stock-summary-item .s-sub { font-size: 0.62em; margin-top: 1px; }
+  /* STOCK MARKET TOGGLE */
+  .stock-market-toggle {
+    display: flex; gap: 0; margin-bottom: 14px;
+    background: rgba(15,22,45,0.6);
+    border-radius: 8px; overflow: hidden;
+    border: 1px solid rgba(100,140,255,0.15);
+  }
+  .stock-mkt-btn {
+    flex: 1; padding: 8px 0;
+    background: transparent;
+    border: none; color: #667;
+    font-size: 0.82em; font-weight: 600;
+    font-family: inherit; cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.03em;
+  }
+  .stock-mkt-btn:hover { background: rgba(100,140,255,0.08); color: #aab; }
+  .stock-mkt-btn.active-us {
+    background: rgba(59,130,246,0.22);
+    color: #6eb0ff;
+    box-shadow: inset 0 -2px 0 #3b82f6;
+  }
+  .stock-mkt-btn.active-kr {
+    background: rgba(220,50,50,0.18);
+    color: #ff7788;
+    box-shadow: inset 0 -2px 0 #cc3344;
+  }
   @media (max-width: 900px) {
     #main { flex-direction: column; height: auto; }
     #sidebar { width: 100%; }
@@ -731,7 +758,7 @@
 
 <div id="header">
   <h1>🌍 Global <span class="accent1">Conflict</span> & <span class="accent2">Disaster</span> Monitor</h1>
-  <div class="date">2026.04.24 기준 | 분쟁 21개 · 자연재해 20개 추적중</div>
+  <div class="date">2026.04.27 기준 | 분쟁 21개 · 자연재해 20개 추적중</div>
 </div>
 
 <div id="nav-wrapper">
@@ -752,7 +779,7 @@
     </div>
     <div class="sub-menu-group" id="sub-indicators">
       <button class="sub-tab" onclick="setView('commodity')">📈 원자재</button>
-      <button class="sub-tab" onclick="setView('usstock')">🇺🇸 미국증시</button>
+      <button class="sub-tab" onclick="setView('usstock')">📈 증시</button>
     </div>
   </div>
 </div>
@@ -821,18 +848,18 @@
         <h3>📊 경제 파급효과 핵심 지표</h3>
         <div class="econ-impact">
           <div class="label">브렌트유 가격</div>
-          <div class="value">$103.67/배럴 <span style="font-size:0.55em;color:#ff4444">급등세 지속 (WTI $94/배럴)</span></div>
-          <div class="detail">2026년 4월 23일 기준 브렌트유는 $103.67, WTI는 $94 수준입니다. 트럼프가 휴전을 연장했지만 호르무즈 해협 봉쇄가 계속되며 상업 선박 피격 사건이 이어져 유가 압박이 심화되고 있습니다.</div>
+          <div class="value">$105.33/배럴 <span style="font-size:0.55em;color:#44aa66">하락세 전환 (WTI $94.40/배럴)</span></div>
+          <div class="detail">2026년 4월 27일 기준 브렌트유 $105.33, WTI $94.40 수준 유지(주말 기준). 미-이란 2차 평화협상 파키스탄 통해 준비 중. 호르무즈 완전 개방 선언 이후 유가 하락 전환 유지 중.</div>
         </div>
         <div class="econ-impact">
           <div class="label">미국 증시</div>
-          <div class="value">S&amp;P 7,108.40 <span style="font-size:0.55em;color:#ff9944">다우 49,310.32 · 나스닥 24,438.50</span></div>
-          <div class="detail">4월 23일 뉴욕증시는 소프트웨어 섹터 하락과 유가 상승 속에 하락 마감했습니다. S&amp;P500 -0.41%, 다우 -0.36%, 나스닥 -0.89%로 이란 전쟁 불확실성이 주가에 지속 반영 중입니다.</div>
+          <div class="value">S&amp;P 7,165.08 <span style="font-size:0.55em;color:#55bb66">다우 49,230.71 · 나스닥 24,836.60</span></div>
+          <div class="detail">4월 25일 뉴욕증시는 S&amp;P500·나스닥 신고점 경신 흐름이 지속됐습니다. 이란 호르무즈 개방 발표로 지정학적 완화 기대감이 높아지며 기술주 강세가 계속됐습니다. 다우 49,230.71 소폭 상승.</div>
         </div>
         <div class="econ-impact">
           <div class="label">원/달러 변동성</div>
           <div class="value">상승 압력 <span style="font-size:0.55em;color:#ff4444">유가-달러 동반 부담</span></div>
-          <div class="detail">4월 24일 기준 USD/KRW 1,480원으로 상승했습니다. 브렌트유 $103 돌파와 이란 전쟁 장기화가 에너지 수입국인 한국의 원화 약세 압력을 가중시키고 있습니다.</div>
+          <div class="detail">4월 27일 기준 USD/KRW 1,476~1,477원 수준. 미-이란 2차 평화협상 기대감 속 원화 약세 압력 일부 완화. 다만 휴전 교착 지속으로 불확실성 유지됩니다.</div>
         </div>
         <div class="econ-impact">
           <div class="label">공급망 핵심 위험</div>
@@ -845,8 +872,8 @@
         <h3>🔴 전쟁 (War)</h3>
         <div class="conflict-card war" onclick="focusConflict(32.0,53.0)">
           <div class="card-header"><span class="card-title">🇮🇷 이란/중동</span><span class="card-badge badge-war">전쟁</span></div>
-          <div class="card-desc">트럼프 대통령이 휴전을 다시 연장하고 '서두르지 않겠다'고 발언. 이란 내부 분열로 협상 교착. 호르무즈 봉쇄 지속·민간선박 피격으로 브렌트유 $103.67 급등. 전쟁 55일차.</div>
-          <div class="card-stats"><span class="stat">상태: <strong>휴전 연장·교착</strong></span><span class="stat">핵심: <strong>호르무즈 봉쇄</strong></span></div>
+          <div class="card-desc">4/27 전쟁 60일차. 트럼프 이란 휴전 개방형 연장(이란의 항구적 종전 제안 제출까지). 호르무즈 해협 '완전 개방' 이행 확인 중, 유가 $105.33 수준 보합. 미-이란 핵협상 쟁점: 우라늄 농축 권리·핵시설 해체 대립. 이란 항구 봉쇄 지속.</div>
+          <div class="card-stats"><span class="stat">상태: <strong>휴전 연장·협상 중</strong></span><span class="stat">핵심: <strong>호르무즈 개방 선언</strong></span></div>
         </div>
         <div class="conflict-card war" onclick="focusConflict(33.8,35.8)">
           <div class="card-header"><span class="card-title">🇱🇧 레바논 전쟁</span><span class="card-badge badge-war">전쟁</span></div>
@@ -855,7 +882,7 @@
         </div>
         <div class="conflict-card war" onclick="focusConflict(48.5,35.0)">
           <div class="card-header"><span class="card-title">🇺🇦 러시아-우크라이나</span><span class="card-badge badge-war">전쟁</span></div>
-          <div class="card-desc">3월 러시아 드론 230발+ 공격(전쟁 최대) → 우크라이나 92% 격추. 우크라이나, 러시아 원유 터미널 타격(프리모르스크 40%, 우스트루가 30% 파괴). 독일 3억유로 장거리 타격 지원 합의.</div>
+          <div class="card-desc">4/26 러시아, 드론 144발 공습(124발 격추·86% 요격). 크림반도 대규모 드론 공격(카차·벨벡 비행장·세바스토폴). 최소 8명 사망·21명 부상. 149건 교전. 우크라이나 SBU, 크림 군함·전투기·방공 자산 타격. 누적 병력 손실 1,325,650명.</div>
           <div class="card-stats"><span class="stat">상태: <strong>고강도 교전 지속</strong></span><span class="stat">기간: <strong>4년차</strong></span></div>
         </div>
         <div class="conflict-card war" onclick="focusConflict(15.5,32.5)">
@@ -874,7 +901,7 @@
         <h3>🟠 대치 (Confrontation)</h3>
         <div class="conflict-card confrontation" onclick="focusConflict(31.5,34.5)">
           <div class="card-header"><span class="card-title">🇵🇸 가자지구</span><span class="card-badge badge-confrontation">대치</span></div>
-          <div class="card-desc">대규모 신규 타결 없이 인도주의 위기와 간헐적 공격이 이어지고 있습니다. OCHA와 OHCHR 모두 강제이주, 보건 접근 악화, 민간인 보호 실패를 경고하고 있습니다.</div>
+          <div class="card-desc">휴전 6개월차. 이스라엘, 휴전 중에도 가자 내 12명+ 사망 공격 지속. 트럼프 12개항 계획 이행 지지부진. 재건 미착수·국제 안보군 미편성. 2,073건+ 휴전 위반 누적(10월~3월). 인도적 접근 극히 제한.</div>
           <div class="card-stats"><span class="stat">상태: <strong>장기 소모전</strong></span><span class="stat">핵심: <strong>인도주의 악화</strong></span></div>
         </div>
         <div class="conflict-card confrontation" onclick="focusConflict(19.7,96.2)">
@@ -912,7 +939,7 @@
         <h3>🟡 긴장 (Tension)</h3>
         <div class="conflict-card tension" onclick="focusConflict(23.5,121.0)">
           <div class="card-header"><span class="card-title">🇹🇼 대만해협</span><span class="card-badge badge-tension">긴장</span></div>
-          <div class="card-desc">PLA ADIZ 침범 2월 147회(라이 취임 후 최저). 중국 국방비 7% 증액($2,780억). ODNI "2027 침공 가능성 낮음" 판단. 3해역 연쇄위기 경고(베이징 싱크탱크)</div>
+          <div class="card-desc">4/7~12 대만 KMT 정주원 주석 시진핑 초청 방중, 양안 '전쟁 불가피 아냐' 강조. 야당(KMT·TPP) 핵심 무기체계 획득 예산 차단으로 군비 지연 우려. 중국 국방비 7% 증액($2,780억). ODNI "2027 침공 가능성 낮음" 판단.</div>
         </div>
         <div class="conflict-card tension" onclick="focusConflict(12.0,115.0)">
           <div class="card-header"><span class="card-title">🇨🇳🇵🇭 남중국해</span><span class="card-badge badge-tension">긴장</span></div>
@@ -920,7 +947,7 @@
         </div>
         <div class="conflict-card tension" onclick="focusConflict(38.5,127.0)">
           <div class="card-header"><span class="card-title">🇰🇵 한반도</span><span class="card-badge badge-tension">긴장</span></div>
-          <div class="card-desc">미국, 한국 배치 패트리엇 미사일을 페르시아만으로 이전 → 방어 공백 우려. 중국 한미 이간 시도 포착</div>
+          <div class="card-desc">4/13 北, 최현함에서 순항·대함미사일 시험 발사(김정은 직접 참관). IAEA 북한 핵무기 생산 능력 '매우 심각한 진전' 경고. 영변 우라늄 농축 신시설 가동 정황. 미국 패트리엇 페르시아만 전용 → 한반도 방어 공백 우려.</div>
         </div>
         <div class="conflict-card tension" onclick="focusConflict(30.0,130.0)">
           <div class="card-header"><span class="card-title">🇯🇵🇨🇳 중일 외교위기</span><span class="card-badge badge-tension">긴장</span></div>
@@ -1016,20 +1043,20 @@
 
       <div class="sidebar-section">
         <h3>🔶 지진 (Earthquake)</h3>
+        <div class="disaster-card earthquake" onclick="focusConflict(38.5,143.5)">
+          <div class="card-header"><span class="card-title">🇯🇵 일본 산리쿠 해역 지진 🆕</span><span class="card-badge badge-earthquake">지진</span></div>
+          <div class="card-desc">M7.4 강진(4/20). 혼슈 동해안 산리쿠 해역(깊이 9.6km). 쓰나미 경보 발령(최대 파고 80cm 관측) 후 해제. 10명 부상, 아오모리 건물 39동+ 피해. 일본 기상청 대형 후속 지진 발생 위험 경고.</div>
+          <div class="card-stats"><span class="stat">규모: <strong>M7.4</strong></span><span class="stat">시기: <strong>2026.4.20</strong></span></div>
+        </div>
+        <div class="disaster-card earthquake" onclick="focusConflict(0.5,126.5)">
+          <div class="card-header"><span class="card-title">🇮🇩 인도네시아 말루쿠 지진</span><span class="card-badge badge-earthquake">지진</span></div>
+          <div class="card-desc">M7.4 강진(4/1). 테르나테 서북서 126km 해역. 여진 18회(M4.4~6.2). 1명 사망</div>
+          <div class="card-stats"><span class="stat">규모: <strong>M7.4</strong></span><span class="stat">시기: <strong>2026.4.1</strong></span></div>
+        </div>
         <div class="disaster-card earthquake" onclick="focusConflict(35.3,132.8)">
           <div class="card-header"><span class="card-title">🇯🇵 일본 시마네현 지진</span><span class="card-badge badge-earthquake">지진</span></div>
           <div class="card-desc">M6.4 지진 발생(1/6). 진도 5강, 후속 지진 21회+. 5명 부상, 건물 피해</div>
           <div class="card-stats"><span class="stat">규모: <strong>M6.4</strong></span><span class="stat">시기: <strong>2026.1.6</strong></span></div>
-        </div>
-        <div class="disaster-card earthquake" onclick="focusConflict(7.3,126.5)">
-          <div class="card-header"><span class="card-title">🇵🇭 필리핀 민다나오 지진</span><span class="card-badge badge-earthquake">지진</span></div>
-          <div class="card-desc">M6.4 지진(1/7). 다바오 동쪽 해저 진원. 슈퍼태풍 라가사 직후 연쇄 재해</div>
-          <div class="card-stats"><span class="stat">규모: <strong>M6.4</strong></span><span class="stat">시기: <strong>2026.1.7</strong></span></div>
-        </div>
-        <div class="disaster-card earthquake" onclick="focusConflict(24.0,142.0)">
-          <div class="card-header"><span class="card-title">🇯🇵 이오지마 해역 지진</span><span class="card-badge badge-earthquake">지진</span></div>
-          <div class="card-desc">화산열도(이오섬) 해역에서 M6.0 천발 지진 발생</div>
-          <div class="card-stats"><span class="stat">규모: <strong>M6.0</strong></span><span class="stat">시기: <strong>2026.3.2</strong></span></div>
         </div>
       </div>
 
@@ -1084,22 +1111,22 @@
           <span class="fx-title">💱 환율</span>
           <div class="fx-item">
             <span class="fx-pair">USD/KRW</span>
-            <span class="fx-rate">1,480원</span>
-            <span class="fx-change up">▲ +4.2%</span>
+            <span class="fx-rate">1,477원</span>
+            <span class="fx-change up">▲ +4.0%</span>
           </div>
           <div class="fx-item">
             <span class="fx-pair">EUR/KRW</span>
-            <span class="fx-rate">1,672원</span>
-            <span class="fx-change up">▲ +5.2%</span>
+            <span class="fx-rate">1,734원</span>
+            <span class="fx-change up">▲ +8.9%</span>
           </div>
           <div class="fx-item">
             <span class="fx-pair">JPY/KRW</span>
-            <span class="fx-rate">9.32원</span>
-            <span class="fx-change down">▼ -1.4%</span>
+            <span class="fx-rate">9.28원</span>
+            <span class="fx-change down">▼ -1.8%</span>
           </div>
-          <span class="fx-date">2026.04.24 기준</span>
+          <span class="fx-date">2026.04.27 기준</span>
         </div>
-        <h3>📈 원자재 시장 종합 현황 (2026.4.24)</h3>
+        <h3>📈 원자재 시장 종합 현황 (2026.4.27)</h3>
         <div class="comm-summary-grid">
           <div class="comm-summary-item">
             <div class="s-label">상승 원자재</div>
@@ -1113,8 +1140,8 @@
           </div>
           <div class="comm-summary-item">
             <div class="s-label">호르무즈 해협</div>
-            <div class="s-value" style="color:#ff5566;">봉쇄</div>
-            <div class="s-sub" style="color:#ff5566;">글로벌 석유 20% 차단</div>
+            <div class="s-value" style="color:#ffaa33;">개방 선언</div>
+            <div class="s-sub" style="color:#ffaa33;">이란 완전 개방 발표, 이행 확인 중</div>
           </div>
           <div class="comm-summary-item">
             <div class="s-label">중국 희토류</div>
@@ -1136,21 +1163,21 @@
           <div class="comm-view global active">
             <div class="comm-header">
               <span class="comm-name">🛢️ 브렌트유 (Brent Crude)</span>
-              <span><span class="comm-price up">$103.67</span><span class="comm-change up">▲ +3.3% (4/23)</span></span>
+              <span><span class="comm-price down">$105.33</span><span class="comm-change down">▼ -1.5% (4/24 종가·주말 보합)</span></span>
             </div>
             <div class="comm-bar-container">
               <span class="comm-bar-label">YTD</span>
               <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:82%;background:linear-gradient(90deg,#ff4455,#ff6677)"></div></div>
             </div>
-            <div class="comm-detail">4월 23일 브렌트유 $103.67 기록. 이란 IRGC 연계 선박의 민간 컨테이너선 공격과 호르무즈 통행 제한 지속으로 유가 급등세 유지. WTI $94/배럴. 연간 상승률 +37.5% 수준.</div>
+            <div class="comm-detail">4/27 브렌트유 $105.33, WTI $94.40(주말 기준). 미-이란 2차 평화협상 파키스탄 통해 준비 중. 호르무즈 개방 선언 이후 유가 하락 전환 유지. 연간 상승률 +39% 수준.</div>
           </div>
           <div class="comm-view domestic">
             <div class="comm-header">
               <span class="comm-name">🛢️ 국내 유류가격</span>
-              <span><span class="krw-price">휘발유 1,940원/L</span><span class="krw-change">▲ +8.9%</span></span>
+              <span><span class="krw-price">휘발유 1,975원/L</span><span class="krw-change">▲ +10.8%</span></span>
             </div>
-            <div class="krw-basis">경유 1,750원/L · 등유 1,440원/L (전국 평균). 브렌트 $103.67 → 정유마진 고려 환산 기준. 세전 원가 대비 유류세 비중 36%. 환율 1,480원 반영으로 추가 상승 압력.</div>
-            <div class="krw-source">📌 한국석유공사 OPINET 기준 · 환율 1,480원/USD 적용</div>
+            <div class="krw-basis">경유 1,775원/L · 등유 1,455원/L (전국 평균). 브렌트 $105.33 → 정유마진 고려 환산 기준. 세전 원가 대비 유류세 비중 36%. 환율 1,477원 반영.</div>
+            <div class="krw-source">📌 한국석유공사 OPINET 기준 · 환율 1,477원/USD 적용</div>
           </div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 미-이란 휴전 연장 불투명 / 호르무즈 봉쇄 리스크 지속</div>
         </div>
@@ -1163,13 +1190,13 @@
           <div class="comm-view global active">
             <div class="comm-header">
               <span class="comm-name">⛽ 천연가스 (TTF)</span>
-              <span><span class="comm-price up">€61/MWh</span><span class="comm-change up">▲ +11%</span></span>
+              <span><span class="comm-price up">€44.72/MWh</span><span class="comm-change up">▲ +0.5% (4/24)</span></span>
             </div>
             <div class="comm-bar-container">
               <span class="comm-bar-label">YTD</span>
               <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:72%;background:linear-gradient(90deg,#ff4455,#ff6677)"></div></div>
             </div>
-            <div class="comm-detail">카타르 LNG 생산 차질(3/2 이란 드론 피격), 유럽 가스 재고 부족 지속. 미국 Henry Hub $2.89/MMBtu로 온화한 날씨에 소폭 하락. TTF 유럽 가스가격은 고점 대비 조정 중이나 이란 전쟁 재확산 시 재급등 우려.</div>
+            <div class="comm-detail">TTF 천연가스 €44.72/MWh (4/24). 전월 대비 -15.7%, 전년 대비 +37.9%. 이란 호르무즈 개방 선언으로 LNG 수급 기대 개선. 미국 Henry Hub $2.52/MMBtu. 이란 전쟁 재확산 시 재급등 리스크 잔존.</div>
           </div>
           <div class="comm-view domestic">
             <div class="comm-header">
@@ -1195,21 +1222,21 @@
           <div class="comm-view global active">
             <div class="comm-header">
               <span class="comm-name">🥇 금 (Gold)</span>
-              <span><span class="comm-price up">$4,739/oz</span><span class="comm-change stable">▼ -0.02% (4/23)</span></span>
+              <span><span class="comm-price down">$4,709/oz</span><span class="comm-change down">▼ -0.2% (4/24 종가)</span></span>
             </div>
             <div class="comm-bar-container">
               <span class="comm-bar-label">YTD</span>
               <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:81%;background:linear-gradient(90deg,#ffcc33,#ffaa00)"></div></div>
             </div>
-            <div class="comm-detail">4/23 $4,739/oz (-0.02%). 전월 대비 +5.94%, 전년 대비 +41.5% 급등. 이란 전쟁 장기화와 글로벌 인플레이션 우려로 안전자산 수요 견조. 중앙은행 매입 트렌드 지속.</div>
+            <div class="comm-detail">4/27 기준 $4,709/oz(4/24 종가·주말 보합). 이란 휴전 연장·호르무즈 개방 기대로 안전자산 수요 소폭 약화. 전년 대비 +40% 수준 유지. 중앙은행 매입 트렌드 지속. Fed 금리인상 가능성 상쇄 요인.</div>
           </div>
           <div class="comm-view domestic">
             <div class="comm-header">
               <span class="comm-name">🥇 금 (KRX 금시장)</span>
-              <span><span class="krw-price">225,500원/g</span><span class="krw-change">▲ +3.3%</span></span>
+              <span><span class="krw-price">225,000원/g</span><span class="krw-change">▲ +3.1%</span></span>
             </div>
-            <div class="krw-basis">$4,739/oz → $152.4/g × 환율 1,480원 = 225,552원/g. 한국금거래소 소매가 241,000원/g (매도 기준). 원/달러 환율 상승으로 달러 기준 소폭 하락에도 원화 기준 상승.</div>
-            <div class="krw-source">📌 KRX 금시장 · 한국금거래소 · 환율 1,480원/USD</div>
+            <div class="krw-basis">$4,709/oz → $151.4/g × 환율 1,477원 = 223,617원/g. 한국금거래소 소매가 약 239,000원/g (매도 기준). 주말 보합세 유지.</div>
+            <div class="krw-source">📌 KRX 금시장 · 한국금거래소 · 환율 1,477원/USD</div>
           </div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 지정학 리스크 안전자산 vs Fed 금리인상 가능성 → 실질금리 상승 → 금 하방 압력</div>
         </div>
@@ -1222,21 +1249,21 @@
           <div class="comm-view global active">
             <div class="comm-header">
               <span class="comm-name">🥈 은 (Silver)</span>
-              <span><span class="comm-price up">$77.70/oz</span><span class="comm-change up">▲ +131% YoY</span></span>
+              <span><span class="comm-price up">$76.94/oz</span><span class="comm-change up">▲ +2.6% (4/24 종가)</span></span>
             </div>
             <div class="comm-bar-container">
               <span class="comm-bar-label">YTD</span>
               <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:95%;background:linear-gradient(90deg,#ccddff,#8899cc)"></div></div>
             </div>
-            <div class="comm-detail">4/22 $77.70/oz (+1.43%). 전월 대비 +12.4%, 전년 대비 +131%. 3월 패닉 $97 기록 후 조정 중이나 회복세. 5년 연속 공급 부족. 태양광·전자·EV 산업 수요 증가 지속.</div>
+            <div class="comm-detail">4/27 기준 $76.94/oz(4/24 종가·주말 보합). 주간 하락세에서 반등. 3월 $97 고점 대비 차익실현 매물 소화 중. 호르무즈 개방 기대로 제조업 수요 회복 전망. 태양광·전자·EV 구조적 수요는 지속.</div>
           </div>
           <div class="comm-view domestic">
             <div class="comm-header">
               <span class="comm-name">🥈 은 (국내 소매가)</span>
-              <span><span class="krw-price">3,700원/g</span><span class="krw-change">▲ +133% YoY</span></span>
+              <span><span class="krw-price">3,654원/g</span><span class="krw-change">▲ +2.5% (4/24 기준)</span></span>
             </div>
-            <div class="krw-basis">$77.70/oz → $2.499/g × 환율 1,480원 = 3,699원/g. 한국금거래소 매도 기준. 환율 상승으로 국내 가격 상승폭 달러 대비 더 큼. 태양광·전자 수요로 재고 타이트.</div>
-            <div class="krw-source">📌 한국금거래소 은 현물가 · 환율 1,480원/USD</div>
+            <div class="krw-basis">$76.94/oz → $2.474/g × 환율 1,477원 = 3,654원/g. 한국금거래소 매도 기준. 글로벌 반등에 연동하여 국내가 상승. 구조적 산업 수요로 지지력 유지.</div>
+            <div class="krw-source">📌 한국금거래소 은 현물가 · 환율 1,477원/USD</div>
           </div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 안전자산 + 산업용 이중 수요. 호르무즈 위기 시 $97까지 폭등</div>
         </div>
@@ -1254,21 +1281,21 @@
           <div class="comm-view global active">
             <div class="comm-header">
               <span class="comm-name">🔶 구리 (Copper)</span>
-              <span><span class="comm-price up">$5.50/lb</span><span class="comm-change up">▲ 2026 Q2 고점 근접</span></span>
+              <span><span class="comm-price down">$5.98/lb</span><span class="comm-change down">▼ -1.57% (4/24)</span></span>
             </div>
             <div class="comm-bar-container">
               <span class="comm-bar-label">YTD</span>
               <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:58%;background:linear-gradient(90deg,#44aaff,#6699cc)"></div></div>
             </div>
-            <div class="comm-detail">LME ~$12,125/톤(4월 기준). 2026년 평균 $12,125/톤, Q2 고점 $13,000/톤 전망(Deutsche Bank). 신에너지·AI 인프라 수요 견조. 고유가로 제조업 위축 우려 상충.</div>
+            <div class="comm-detail">$5.98/lb(LME ~$13,181/톤) 4/24. 전일 대비 -1.57%. 이란 호르무즈 개방 기대에도 제조업 지표 부진으로 하락. 신에너지·AI 인프라 수요 견조. 2026 Q2 평균 $13,000/톤 전망(Deutsche Bank) 유효.</div>
           </div>
           <div class="comm-view domestic">
             <div class="comm-header">
               <span class="comm-name">🔶 구리 (국내 도매가)</span>
-              <span><span class="krw-price">17,945,000원/톤</span><span class="krw-change">▲ 환율 반영</span></span>
+              <span><span class="krw-price">19,469,000원/톤</span><span class="krw-change">▲ 환율 반영</span></span>
             </div>
-            <div class="krw-basis">LME $12,125/톤 × 환율 1,480원 = 17,945,000원/톤. 국내 비철금속 도매가(운임·보험료 포함). 전선·건축·전자 제조업 핵심 소재. 환율 상승으로 국내가 가중 부담.</div>
-            <div class="krw-source">📌 한국비철금속협회 · LME 연동 · 환율 1,480원/USD</div>
+            <div class="krw-basis">LME $13,181/톤 × 환율 1,477원 = 19,469,000원/톤. 국내 비철금속 도매가(운임·보험료 포함). 전선·건축·전자 제조업 핵심 소재. 구리 가격 상승과 환율 하락이 상충.</div>
+            <div class="krw-source">📌 한국비철금속협회 · LME 연동 · 환율 1,477원/USD</div>
           </div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 고유가 → 제조업 위축 → 구리 수요 감소. 단, 신에너지·AI 인프라 장기 수요 견조</div>
         </div>
@@ -1281,20 +1308,20 @@
           <div class="comm-view global active">
             <div class="comm-header">
               <span class="comm-name">🪨 철광석 (Iron Ore)</span>
-              <span><span class="comm-price stable">$107.11/톤</span><span class="comm-change up">▲ +1.1% (4/22)</span></span>
+              <span><span class="comm-price down">$105.85/톤</span><span class="comm-change down">▼ 2025년 11월 이후 최저</span></span>
             </div>
             <div class="comm-bar-container">
               <span class="comm-bar-label">YTD</span>
               <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:55%;background:linear-gradient(90deg,#88aa88,#66886e)"></div></div>
             </div>
-            <div class="comm-detail">4/22 $107.11/톤 (+0.06%). 전월 대비 +1.05%, 전년 대비 +7.01%. 중국 경기부양 기대감 속 완만한 상승세 유지. 호르무즈 봉쇄로 해상운임 상승 중.</div>
+            <div class="comm-detail">$105.85/톤 (4/24), 2025년 11월 이후 최저치. 중국 수요 기대 약화. 호르무즈 개방 기대로 해상운임 소폭 완화 전망. 중국 경기부양 정책이 핵심 변수.</div>
           </div>
           <div class="comm-view domestic">
             <div class="comm-header">
               <span class="comm-name">🪨 철광석 (포스코 도입가 기준)</span>
-              <span><span class="krw-price">158,500원/톤</span><span class="krw-change">▲ 지속 상승</span></span>
+              <span><span class="krw-price">158,556원/톤</span><span class="krw-change">▲ 보합</span></span>
             </div>
-            <div class="krw-basis">$107.11/톤 × 환율 1,480원 = 158,523원/톤. 포스코·현대제철 도입 기준 (해상운임 포함 시 +15,000원/톤 추가). 국내 열연강판 가격에 6~8주 지연 반영.</div>
+            <div class="krw-basis">$107.06/톤 × 환율 1,481원 = 158,556원/톤. 포스코·현대제철 도입 기준 (해상운임 포함 시 +15,000원/톤 추가). 국내 열연강판 가격에 6~8주 지연 반영.</div>
             <div class="krw-source">📌 포스코 원료 도입 기준가 · 환율 1,480원/USD</div>
           </div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 호르무즈 봉쇄 → 해상 운임 상승 → 물류비 증가. 중국 수요가 핵심 변수</div>
@@ -1399,13 +1426,13 @@
           <div class="comm-view global active">
             <div class="comm-header">
               <span class="comm-name">🌽 옥수수 (Corn)</span>
-              <span><span class="comm-price stable">450¢/bu</span><span class="comm-change stable">— 5주 저점 후 반등</span></span>
+              <span><span class="comm-price stable">415¢/bu</span><span class="comm-change stable">— USDA 시즌평균 $4.15/bu</span></span>
             </div>
             <div class="comm-bar-container">
               <span class="comm-bar-label">YTD</span>
               <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:54%;background:linear-gradient(90deg,#ffcc33,#ddaa00)"></div></div>
             </div>
-            <div class="comm-detail">CBOT 4월 기준 $4.50/bu. 4월 13일 5주 저점 이후 호르무즈 공급망 차질 우려로 소폭 반등. 이란 전쟁 → 고유가 → 비료 가격 압박 지속.</div>
+            <div class="comm-detail">USDA 4월 WASDE 시즌 평균 $4.15/bu(5¢ 상향). 호르무즈 개방 기대로 비료·물류 비용 완화 전망. 이란 전쟁 → 고유가 → 비료 가격 압박은 여전히 리스크 요인.</div>
           </div>
           <div class="comm-view domestic">
             <div class="comm-header">
@@ -1426,13 +1453,13 @@
           <div class="comm-view global active">
             <div class="comm-header">
               <span class="comm-name">🌾 밀 (Wheat)</span>
-              <span><span class="comm-price stable">596¢/bu</span><span class="comm-change stable">— 변동성 지속</span></span>
+              <span><span class="comm-price stable">500¢/bu</span><span class="comm-change stable">— USDA 시즌평균 $5.00/bu</span></span>
             </div>
             <div class="comm-bar-container">
               <span class="comm-bar-label">YTD</span>
               <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:65%;background:linear-gradient(90deg,#ffcc33,#ddaa00)"></div></div>
             </div>
-            <div class="comm-detail">CBOT 7월 SRW밀 $5.96/bu. 흑해 수출 불안 + 동아프리카 가뭄 + 아프간 동계 작황 부진. 하루 10¢ 내외 변동성 유지.</div>
+            <div class="comm-detail">USDA 4월 WASDE 시즌 평균 $5.00/bu(5¢ 상향 조정). 흑해 수출 불안 + 동아프리카 가뭄 + 아프간 동계 작황 부진. USDA 공급 추정 상향으로 CBOT 선물은 변동성 유지.</div>
           </div>
           <div class="comm-view domestic">
             <div class="comm-header">
@@ -1453,13 +1480,13 @@
           <div class="comm-view global active">
             <div class="comm-header">
               <span class="comm-name">🫘 대두 (Soybean)</span>
-              <span><span class="comm-price stable">1161.28¢/bu</span><span class="comm-change stable">▼ -0.28% (4/23)</span></span>
+              <span><span class="comm-price stable">1030¢/bu</span><span class="comm-change stable">— USDA 시즌평균 $10.30/bu</span></span>
             </div>
             <div class="comm-bar-container">
               <span class="comm-bar-label">YTD</span>
               <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:52%;background:linear-gradient(90deg,#88aa88,#66886e)"></div></div>
             </div>
-            <div class="comm-detail">CBOT 4/23 $11.61/bu (-0.28%). 2년 고점 근접 후 좁은 박스권 유지. 남미 풍작 전망과 지정학 리스크 프리미엄 상충. 손익분기 근접.</div>
+            <div class="comm-detail">USDA 4월 WASDE 시즌 평균 $10.30/bu(10¢ 상향). 남미 풍작 전망이 지정학 리스크 프리미엄 상쇄. 브라질 풍작이 공급 하방 압력으로 작용 중. 손익분기 근접.</div>
           </div>
           <div class="comm-view domestic">
             <div class="comm-header">
@@ -1617,9 +1644,9 @@
       <div class="sidebar-section">
         <h3>🔗 분쟁·재해 ↔ 원자재 연쇄 영향 분석</h3>
         <div class="econ-impact" style="border-left-color:rgba(68,221,170,0.5);">
-          <div class="label">이란/중동 → 휴전 연장 가능성 급락 · 호르무즈 리스크 지속</div>
-          <div class="value" style="color:#ff9944;font-size:0.85em;">WTI $94 / 브렌트 $103.67 / 미 증시 3대 지수 하락</div>
-          <div class="detail">4월 23일 기준 브렌트유 $103.67, WTI $94 수준. 호르무즈 봉쇄와 민간선박 피격이 유가를 끌어올리고 있으며, 소프트웨어 실적 우려가 더해져 미 증시 3대 지수가 동반 하락했습니다.</div>
+          <div class="label">이란/중동 → 호르무즈 개방 선언 · 유가 소폭 하락 전환</div>
+          <div class="value" style="color:#44aa66;font-size:0.85em;">WTI $94.40 / 브렌트 $105.33 / S&amp;P·나스닥 신고점</div>
+          <div class="detail">4월 27일 기준. 브렌트유 $105.33, WTI $94.40(주말 기준). 전쟁 60일차, 미-이란 2차 협상 파키스탄 통해 준비 중. S&amp;P·나스닥 신고점 경신 흐름 지속(4/25 종가).</div>
         </div>
         <div class="econ-impact" style="border-left-color:rgba(68,221,170,0.5);">
           <div class="label">중국 희토류 무기화</div>
@@ -1638,15 +1665,23 @@
         </div>
       </div>
     </div>
-    <!-- US STOCK MARKET -->
+    <!-- US / KR STOCK MARKET -->
     <div id="sidebar-usstock" style="display:none;">
+      <!-- Market toggle -->
+      <div class="stock-market-toggle">
+        <button class="stock-mkt-btn active-us" id="btn-mkt-us" onclick="toggleStockMarket('us')">🇺🇸 미국</button>
+        <button class="stock-mkt-btn" id="btn-mkt-kr" onclick="toggleStockMarket('kr')">🇰🇷 한국</button>
+      </div>
+
+      <!-- ===== US STOCKS ===== -->
+      <div id="stock-view-us">
       <div class="sidebar-section">
         <h3>🇺🇸 미국 증시 (전일 종가 기준)</h3>
         <div class="stock-summary-grid">
           <div class="stock-summary-item">
             <div class="s-label">시장 분위기</div>
-            <div class="s-value" style="color:#ff9944;">숨 고르기</div>
-            <div class="s-sub" style="color:#ff9944;">4/23 종가 — 소프트웨어 하락·유가 상승으로 3대 지수 동반 하락</div>
+            <div class="s-value" style="color:#55bb66;">기술주 랠리</div>
+            <div class="s-sub" style="color:#55bb66;">4/25 종가 — 이란 호르무즈 개방 발표, S&amp;P·나스닥 신고점 경신</div>
           </div>
           <div class="stock-summary-item">
             <div class="s-label">VIX 공포지수</div>
@@ -1671,11 +1706,11 @@
         <div class="stock-index-card idx-up" onclick="toggleStockDetail('dow')">
           <div class="stock-header">
             <span class="stock-name">📊 다우존스 (DJIA)</span>
-            <span class="stock-price down">49,310.32</span>
+            <span class="stock-price up">49,230.71</span>
           </div>
           <div class="stock-change-row">
-            <span class="stock-change down">▼ -179.71 (-0.36%)</span>
-            <span style="font-size:0.68em;color:#556677;">2026.04.23 종가</span>
+            <span class="stock-change up">▲ +18.61 (+0.04%)</span>
+            <span style="font-size:0.68em;color:#556677;">2026.04.25 종가</span>
           </div>
           <div class="stock-mini-chart"><canvas id="chart-dow"></canvas></div>
           <div class="stock-period-tabs">
@@ -1691,7 +1726,7 @@
             <div class="stock-detail-row"><span class="stock-detail-label">거래량</span><span class="stock-detail-value">4.70억 주</span></div>
             <div class="stock-detail-row"><span class="stock-detail-label">52주 고점</span><span class="stock-detail-value">50,512.79</span></div>
             <div class="stock-detail-row"><span class="stock-detail-label">52주 저점</span><span class="stock-detail-value">36,611.78</span></div>
-            <div style="margin-top:6px;font-size:0.9em;color:#778899;">다우는 4월 23일 49,310.32로 -0.36% 하락 마감했습니다. 소프트웨어 섹터 하락과 유가 급등, 이란 전쟁 불확실성이 복합 작용하여 지수 압박 요인이 됐습니다.</div>
+            <div style="margin-top:6px;font-size:0.9em;color:#778899;">다우는 4월 25일 49,230.71로 소폭 상승 마감했습니다. 이란 호르무즈 개방 발표로 지정학적 긴장 완화 기대감이 높아지며 에너지·소재주가 반등했습니다.</div>
           </div>
         </div>
       </div>
@@ -1701,11 +1736,11 @@
         <div class="stock-index-card idx-up" onclick="toggleStockDetail('sp500')">
           <div class="stock-header">
             <span class="stock-name">📈 S&P 500</span>
-            <span class="stock-price down">7,108.40</span>
+            <span class="stock-price up">7,165.08</span>
           </div>
           <div class="stock-change-row">
-            <span class="stock-change down">▼ -29.22 (-0.41%)</span>
-            <span style="font-size:0.68em;color:#556677;">2026.04.23 종가</span>
+            <span class="stock-change up">▲ +56.68 (+0.80%)</span>
+            <span style="font-size:0.68em;color:#556677;">2026.04.25 종가</span>
           </div>
           <div class="stock-mini-chart"><canvas id="chart-sp500"></canvas></div>
           <div class="stock-period-tabs">
@@ -1719,9 +1754,9 @@
             <div class="stock-detail-row"><span class="stock-detail-label">고가</span><span class="stock-detail-value">6,610.00</span></div>
             <div class="stock-detail-row"><span class="stock-detail-label">저가</span><span class="stock-detail-value">6,483.00</span></div>
             <div class="stock-detail-row"><span class="stock-detail-label">거래량</span><span class="stock-detail-value">55.0억 주</span></div>
-            <div class="stock-detail-row"><span class="stock-detail-label">52주 고점</span><span class="stock-detail-value">7,002.28</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">52주 고점</span><span class="stock-detail-value">7,165.08</span></div>
             <div class="stock-detail-row"><span class="stock-detail-label">52주 저점</span><span class="stock-detail-value">4,835.04</span></div>
-            <div style="margin-top:6px;font-size:0.9em;color:#778899;">S&amp;P 500은 4월 23일 7,108.40으로 -0.41% 하락 마감했습니다. 브렌트유 $103 돌파와 소프트웨어 섹터 조정이 맞물리면서 단기 차익실현 흐름이 나타났습니다.</div>
+            <div style="margin-top:6px;font-size:0.9em;color:#778899;">S&amp;P 500은 4월 25일 7,165.08로 신고점 경신 흐름 지속. 이란 호르무즈 개방 발표로 에너지 비용 완화 기대가 더해지며 기술주와 소비주 강세가 이어졌습니다.</div>
           </div>
         </div>
       </div>
@@ -1731,11 +1766,11 @@
         <div class="stock-index-card idx-up" onclick="toggleStockDetail('nasdaq')">
           <div class="stock-header">
             <span class="stock-name">💻 나스닥 (NASDAQ)</span>
-            <span class="stock-price down">24,438.50</span>
+            <span class="stock-price up">24,836.60</span>
           </div>
           <div class="stock-change-row">
-            <span class="stock-change down">▼ -219.97 (-0.89%)</span>
-            <span style="font-size:0.68em;color:#556677;">2026.04.23 종가</span>
+            <span class="stock-change up">▲ +398.10 (+1.63%)</span>
+            <span style="font-size:0.68em;color:#556677;">2026.04.25 종가</span>
           </div>
           <div class="stock-mini-chart"><canvas id="chart-nasdaq"></canvas></div>
           <div class="stock-period-tabs">
@@ -1749,9 +1784,9 @@
             <div class="stock-detail-row"><span class="stock-detail-label">고가</span><span class="stock-detail-value">21,950.00</span></div>
             <div class="stock-detail-row"><span class="stock-detail-label">저가</span><span class="stock-detail-value">21,400.00</span></div>
             <div class="stock-detail-row"><span class="stock-detail-label">거래량</span><span class="stock-detail-value">69.5억 주</span></div>
-            <div class="stock-detail-row"><span class="stock-detail-label">52주 고점</span><span class="stock-detail-value">24,449.00</span></div>
+            <div class="stock-detail-row"><span class="stock-detail-label">52주 고점</span><span class="stock-detail-value">24,836.60</span></div>
             <div class="stock-detail-row"><span class="stock-detail-label">52주 저점</span><span class="stock-detail-value">15,708.54</span></div>
-            <div style="margin-top:6px;font-size:0.9em;color:#778899;">나스닥은 4월 23일 24,438.50로 0.89% 하락했습니다. 기술주 구조적 강세는 유지되나, 소프트웨어 기업 실적 우려와 유가 상승이 멀티플 확장을 억제하는 흐름입니다.</div>
+            <div style="margin-top:6px;font-size:0.9em;color:#778899;">나스닥은 4월 25일 24,836.60으로 신고점 경신. 이란 호르무즈 개방 발표, 유가 하락 전환, 기술주 랠리 지속. 엔비디아·인텔 강세 흐름 이어짐.</div>
           </div>
         </div>
       </div>
@@ -1790,21 +1825,188 @@
       <div class="sidebar-section">
         <h3>🔗 분쟁 ↔ 증시 연쇄 영향</h3>
         <div class="econ-impact" style="border-left-color:rgba(255,170,50,0.5);">
-          <div class="label">유가 $103 돌파 + 소프트웨어 하락 → 미국 증시 3일 연속 하락 압력</div>
-          <div class="value" style="color:#ff9944;font-size:0.85em;">DOW -0.36% / S&amp;P -0.41% / NASDAQ -0.89% (4/23 종가)</div>
-          <div class="detail">4월 23일 종가 기준 다우 49,310.32, S&amp;P 7,108.40, 나스닥 24,438.50입니다. 브렌트유 $103 돌파, 소프트웨어 섹터 조정, 이란 전쟁 교착이 복합 작용해 3대 지수 동반 하락했습니다.</div>
+          <div class="label">이란 호르무즈 개방 선언 + 기술주 강세 → S&P·나스닥 신고점 경신</div>
+          <div class="value" style="color:#55bb66;font-size:0.85em;">DOW +0.04% / S&amp;P +0.80% / NASDAQ +1.63% (4/25 종가)</div>
+          <div class="detail">4월 25일 종가 기준 다우 49,230.71, S&amp;P 7,165.08, 나스닥 24,836.60. 이란 호르무즈 개방 발표로 에너지 비용 완화 기대감, 기술주 강세와 함께 S&amp;P·나스닥 신고점 경신.</div>
         </div>
         <div class="econ-impact" style="border-left-color:rgba(255,80,80,0.5);">
-          <div class="label">유가가 여전히 90달러권에 머무르며 인플레 우려를 다시 자극</div>
-          <div class="value" style="color:#ff9944;font-size:0.85em;">브렌트 $103.67 / WTI $94</div>
-          <div class="detail">4월 23일 브렌트유 $103.67 돌파. 호르무즈 해협 봉쇄 지속과 IRGC 연계 선박의 민간선 공격으로 에너지 공급망 불확실성이 최고 수준입니다. 이란-미국 협상 교착으로 단기 해소 기대 약화.</div>
+          <div class="label">이란 호르무즈 '완전 개방' 선언 → 유가 하락 전환, 협상 기대감</div>
+          <div class="value" style="color:#44aa66;font-size:0.85em;">브렌트 $105.33 / WTI $94.40(-1.51%)</div>
+          <div class="detail">4월 27일 기준. 이란 호르무즈 '완전 개방' 선언 이행 확인 중, 유가 $105.33 보합. 트럼프 개방형 휴전 연장(항구적 종전 제안 제출 조건). 미-이란 2차 핵협상 준비 중. 실질 이행 여부가 관건.</div>
         </div>
         <div class="econ-impact" style="border-left-color:rgba(85,187,102,0.5);">
           <div class="label">한국 등 에너지 수입국은 유가·달러 동반 압박 구간 재진입</div>
           <div class="value" style="color:#ff5566;font-size:0.85em;">원화 변동성 확대 경계</div>
-          <div class="detail">4월 24일 기준 USD/KRW 1,480원으로 상승세 지속. 브렌트유 $103 돌파와 이란 전쟁 장기화가 에너지 수입국인 한국의 경상수지 및 수입물가 압박을 가중시키고 있습니다. 원화 약세가 추가 수입물가 상승으로 이어지는 악순환 구조.</div>
+          <div class="detail">4월 27일 기준 USD/KRW 1,476~1,477원. 미-이란 2차 평화협상 기대감으로 에너지 수입 부담 완화 기대 유지. 실질 유가 하락이 경상수지 개선으로 이어질지 주목.</div>
         </div>
       </div>
+      </div><!-- /stock-view-us -->
+
+      <!-- ===== KOREAN STOCKS ===== -->
+      <div id="stock-view-kr" style="display:none;">
+        <div class="sidebar-section">
+          <h3>🇰🇷 한국 증시 (전일 종가 기준)</h3>
+          <div class="stock-summary-grid">
+            <div class="stock-summary-item">
+              <div class="s-label">시장 분위기</div>
+              <div class="s-value" style="color:#ff9944;">혼조세</div>
+              <div class="s-sub" style="color:#ff9944;">4/23 — 대형주 강세·코스닥 소폭 하락. 유가 상승발 수입 부담 경계</div>
+            </div>
+            <div class="stock-summary-item">
+              <div class="s-label">USD/KRW</div>
+              <div class="s-value" style="color:#ffaa33;">1,477원</div>
+              <div class="s-sub" style="color:#ffaa33;">원화 소폭 강세 — 호르무즈 개방 기대 반영</div>
+            </div>
+            <div class="stock-summary-item">
+              <div class="s-label">외국인 순매수</div>
+              <div class="s-value" style="color:#55bb66;">순매수 우위</div>
+              <div class="s-sub" style="color:#55bb66;">반도체·배터리 중심 외국인 수급 개선</div>
+            </div>
+            <div class="stock-summary-item">
+              <div class="s-label">한국 10Y 국채</div>
+              <div class="s-value" style="color:#ff9944;">관망 구간</div>
+              <div class="s-sub" style="color:#ff9944;">글로벌 금리·유가 상승이 국내 채권 압박</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KOSPI -->
+        <div class="sidebar-section">
+          <div class="stock-index-card idx-up" onclick="toggleStockDetail('kospi')">
+            <div class="stock-header">
+              <span class="stock-name">📊 코스피 (KOSPI)</span>
+              <span class="stock-price up">6,475.81</span>
+            </div>
+            <div class="stock-change-row">
+              <span class="stock-change up">▲ +57.70 (+0.90%)</span>
+              <span style="font-size:0.68em;color:#556677;">2026.04.23 종가</span>
+            </div>
+            <div class="stock-mini-chart"><canvas id="chart-kospi"></canvas></div>
+            <div class="stock-period-tabs">
+              <button class="stock-period-btn active" onclick="event.stopPropagation();setStockPeriod('kospi','1d')">1일</button>
+              <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('kospi','1w')">1주</button>
+              <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('kospi','1m')">1개월</button>
+              <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('kospi','1y')">1년</button>
+            </div>
+            <div class="stock-detail-panel" id="detail-kospi">
+              <div class="stock-detail-row"><span class="stock-detail-label">시가</span><span class="stock-detail-value">6,420.00</span></div>
+              <div class="stock-detail-row"><span class="stock-detail-label">고가</span><span class="stock-detail-value">6,490.00</span></div>
+              <div class="stock-detail-row"><span class="stock-detail-label">저가</span><span class="stock-detail-value">6,408.00</span></div>
+              <div class="stock-detail-row"><span class="stock-detail-label">거래대금</span><span class="stock-detail-value">12.4조원</span></div>
+              <div class="stock-detail-row"><span class="stock-detail-label">52주 고점</span><span class="stock-detail-value">6,615.40</span></div>
+              <div class="stock-detail-row"><span class="stock-detail-label">52주 저점</span><span class="stock-detail-value">4,822.17</span></div>
+              <div style="margin-top:6px;font-size:0.9em;color:#778899;">코스피는 4월 23일 6,475.81로 +0.90% 상승 마감. 삼성전자·SK하이닉스 중심 반도체 섹터 반등과 외국인 순매수가 지수를 견인했습니다. 유가 상승 부담에도 대형주 중심 수급이 유입됐습니다.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KOSDAQ -->
+        <div class="sidebar-section">
+          <div class="stock-index-card idx-down" onclick="toggleStockDetail('kosdaq')">
+            <div class="stock-header">
+              <span class="stock-name">💻 코스닥 (KOSDAQ)</span>
+              <span class="stock-price down">1,174.31</span>
+            </div>
+            <div class="stock-change-row">
+              <span class="stock-change down">▼ -6.83 (-0.58%)</span>
+              <span style="font-size:0.68em;color:#556677;">2026.04.23 종가</span>
+            </div>
+            <div class="stock-mini-chart"><canvas id="chart-kosdaq"></canvas></div>
+            <div class="stock-period-tabs">
+              <button class="stock-period-btn active" onclick="event.stopPropagation();setStockPeriod('kosdaq','1d')">1일</button>
+              <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('kosdaq','1w')">1주</button>
+              <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('kosdaq','1m')">1개월</button>
+              <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('kosdaq','1y')">1년</button>
+            </div>
+            <div class="stock-detail-panel" id="detail-kosdaq">
+              <div class="stock-detail-row"><span class="stock-detail-label">시가</span><span class="stock-detail-value">1,184.00</span></div>
+              <div class="stock-detail-row"><span class="stock-detail-label">고가</span><span class="stock-detail-value">1,188.50</span></div>
+              <div class="stock-detail-row"><span class="stock-detail-label">저가</span><span class="stock-detail-value">1,170.00</span></div>
+              <div class="stock-detail-row"><span class="stock-detail-label">거래대금</span><span class="stock-detail-value">8.7조원</span></div>
+              <div class="stock-detail-row"><span class="stock-detail-label">52주 고점</span><span class="stock-detail-value">1,276.83</span></div>
+              <div class="stock-detail-row"><span class="stock-detail-label">52주 저점</span><span class="stock-detail-value">860.00</span></div>
+              <div style="margin-top:6px;font-size:0.9em;color:#778899;">코스닥은 4월 23일 1,174.31로 -0.58% 하락. 바이오·2차전지 중소형주 약세와 기관 매도세가 지수 하방 압력으로 작용했습니다. 코스피와의 차별화 흐름이 지속 중입니다.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KOSPI 200 -->
+        <div class="sidebar-section">
+          <div class="stock-index-card idx-up" onclick="toggleStockDetail('kospi200')">
+            <div class="stock-header">
+              <span class="stock-name">📈 코스피 200</span>
+              <span class="stock-price up">862.40</span>
+            </div>
+            <div class="stock-change-row">
+              <span class="stock-change up">▲ +7.80 (+0.91%)</span>
+              <span style="font-size:0.68em;color:#556677;">2026.04.23 종가</span>
+            </div>
+            <div class="stock-mini-chart"><canvas id="chart-kospi200"></canvas></div>
+            <div class="stock-period-tabs">
+              <button class="stock-period-btn active" onclick="event.stopPropagation();setStockPeriod('kospi200','1d')">1일</button>
+              <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('kospi200','1w')">1주</button>
+              <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('kospi200','1m')">1개월</button>
+              <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('kospi200','1y')">1년</button>
+            </div>
+            <div class="stock-detail-panel" id="detail-kospi200">
+              <div class="stock-detail-row"><span class="stock-detail-label">구성 종목</span><span class="stock-detail-value">코스피 상위 200개</span></div>
+              <div class="stock-detail-row"><span class="stock-detail-label">시가총액 비중</span><span class="stock-detail-value">코스피의 약 93%</span></div>
+              <div class="stock-detail-row"><span class="stock-detail-label">52주 고점</span><span class="stock-detail-value">880.25</span></div>
+              <div class="stock-detail-row"><span class="stock-detail-label">52주 저점</span><span class="stock-detail-value">638.70</span></div>
+              <div style="margin-top:6px;font-size:0.9em;color:#778899;">코스피 200은 코스피 대형주 200개를 대상으로 산출되는 대표 벤치마크 지수로, 선물·옵션·ETF의 기초 지수로 활용됩니다. 4월 23일 코스피와 동조하여 +0.91% 상승했습니다.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 코스닥 150 -->
+        <div class="sidebar-section">
+          <div class="stock-index-card idx-down" onclick="toggleStockDetail('kosdaq150')">
+            <div class="stock-header">
+              <span class="stock-name">🚀 코스닥 150</span>
+              <span class="stock-price down">743.20</span>
+            </div>
+            <div class="stock-change-row">
+              <span class="stock-change down">▼ -4.30 (-0.58%)</span>
+              <span style="font-size:0.68em;color:#556677;">2026.04.23 종가</span>
+            </div>
+            <div class="stock-mini-chart"><canvas id="chart-kosdaq150"></canvas></div>
+            <div class="stock-period-tabs">
+              <button class="stock-period-btn active" onclick="event.stopPropagation();setStockPeriod('kosdaq150','1d')">1일</button>
+              <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('kosdaq150','1w')">1주</button>
+              <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('kosdaq150','1m')">1개월</button>
+              <button class="stock-period-btn" onclick="event.stopPropagation();setStockPeriod('kosdaq150','1y')">1년</button>
+            </div>
+            <div class="stock-detail-panel" id="detail-kosdaq150">
+              <div class="stock-detail-row"><span class="stock-detail-label">구성 종목</span><span class="stock-detail-value">코스닥 상위 150개</span></div>
+              <div class="stock-detail-row"><span class="stock-detail-label">주요 섹터</span><span class="stock-detail-value">바이오·IT·2차전지</span></div>
+              <div class="stock-detail-row"><span class="stock-detail-label">52주 고점</span><span class="stock-detail-value">812.50</span></div>
+              <div class="stock-detail-row"><span class="stock-detail-label">52주 저점</span><span class="stock-detail-value">550.40</span></div>
+              <div style="margin-top:6px;font-size:0.9em;color:#778899;">코스닥 150은 코스닥 시장의 대표 중소형·기술주 150개로 구성된 지수입니다. 4월 23일 코스닥 지수와 동조하여 -0.58% 하락, 바이오·2차전지 약세가 주된 요인입니다.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KR MARKET ANALYSIS -->
+        <div class="sidebar-section">
+          <h3>🔗 분쟁 ↔ 한국 증시 연쇄 영향</h3>
+          <div class="econ-impact" style="border-left-color:rgba(255,170,50,0.5);">
+            <div class="label">유가 $103 + 원화 약세 → 에너지·수입 비용 이중 압박</div>
+            <div class="value" style="color:#ff9944;font-size:0.85em;">브렌트 $105.33 / USD/KRW 1,477원</div>
+            <div class="detail">한국은 원유 수입 의존도 97%+. 이란 호르무즈 개방 발표로 유가 소폭 하락. 환율도 1,477원으로 소폭 하락하며 실질 에너지 수입 부담이 일부 완화. 그러나 전년 대비 여전히 +17% 이상 확대 구간.</div>
+          </div>
+          <div class="econ-impact" style="border-left-color:rgba(85,187,255,0.5);">
+            <div class="label">반도체·방산 수혜 — 코스피 대형주 차별화</div>
+            <div class="value" style="color:#55bbff;font-size:0.85em;">KOSPI +0.90% vs KOSDAQ -0.58%</div>
+            <div class="detail">이란 전쟁 장기화와 대만해협 긴장이 글로벌 방산 수요를 자극. 한국 방산(한화에어로스페이스·현대로템)과 반도체(삼성·SK하이닉스) 수출 수혜 기대. 코스피 대형주와 코스닥 중소형주 간 수급 차별화가 심화되고 있습니다.</div>
+          </div>
+          <div class="econ-impact" style="border-left-color:rgba(220,50,80,0.5);">
+            <div class="label">남중국해·대만 긴장 — 공급망 우회 비용 부담</div>
+            <div class="value" style="color:#ff5566;font-size:0.85em;">한국 수출입 물류 리스크 고조</div>
+            <div class="detail">중국의 남중국해 실효 지배 강화와 대만해협 긴장이 한국 주요 수출입 항로에 불확실성을 더하고 있습니다. 해운 운임 상승과 보험료 급등이 수출 기업 마진 압박 요인으로 부상. 2025년 이후 글로벌 공급망 재편 가속 중.</div>
+          </div>
+        </div>
+      </div><!-- /stock-view-kr -->
+
     </div>
   </div>
 </div>
@@ -1814,11 +2016,11 @@
 <script>
 // ========== DATA ==========
 const conflicts = [
-  { name:"이란/중동", lat:32.0, lon:53.0, level:"war", radius:18, desc:"트럼프 대통령이 이란 휴전을 다시 연장하며 '서두르지 말라(Don't rush me)'고 발언. 이란 정부 내부 분열로 협상 지연. 호르무즈 해협 봉쇄 계속되며 민간 선박 피격 사건 이어져 브렌트 $103.67로 급등. 4/23 기준 전쟁 55일차, 이란-미국 평화회담 여전히 교착.", cat:"conflict" },
-  { name:"레바논 전쟁", lat:33.8, lon:35.8, level:"war", radius:12, desc:"이스라엘-헤즈볼라 전쟁 53일차(3/2~). 2,000명+ 사망·120만명+ 실향(레바논 인구 20%+). 4/16 트럼프 10일간 휴전 발표 → 3주 추가 연장 합의. 이스라엘, 남레바논 '황색선(Yellow Line)' 선언. IDF 안보지대 자흐라니강 북쪽까지 확대 추진.", cat:"conflict" },
-  { name:"러시아-우크라이나", lat:48.5, lon:35.0, level:"war", radius:20, desc:"4월 22일 기준 러시아 3월 드론 230발+ 공격(전쟁 최대) → 우크라이나 92% 격추. 우크라이나, 러시아 원유 터미널 타격: 프리모르스크 저장시설 40% 파괴·우스트루가 30% 파괴. 독일 3억유로 장거리 타격 지원 합의. 러시아 총 전투 손실 132만명+ (4/23 기준).", cat:"conflict" },
-  { name:"수단 내전", lat:15.5, lon:32.5, level:"war", radius:16, desc:"AP는 4월 20일 RSF의 다르푸르 지역 고위 지휘관 아부 아킬라 카이칼이 정부군 측으로 이탈했다고 보도했다. 상징적 균열은 생겼지만 전쟁 4년 차의 대규모 인도주의 재난과 전면 충돌 구조는 그대로다.", cat:"conflict" },
-  { name:"가자지구", lat:31.5, lon:34.5, level:"confrontation", radius:10, desc:"대규모 새 타결 없이 인도주의 위기와 간헐적 공격이 지속되고 있다. OCHA와 OHCHR는 4월 중순에도 강제이주, 보건 접근 악화, 민간인 보호 실패를 경고했다. 전면 재격화보다는 장기 소모전 양상이 이어진다.", cat:"conflict" },
+  { name:"이란/중동", lat:32.0, lon:53.0, level:"war", radius:18, desc:"4/27 전쟁 60일차. 트럼프 휴전 연장 유지 중. 미-이란 2차 평화협상 파키스탄 통해 준비 중(S&P·나스닥 신고점 견인). 이란 통합 제안 협상 교착 지속. 이스라엘-레바논 10일 휴전(4/16~) 유지 중. 브렌트 $105.33, WTI $94.40(주말 기준) 유지.", cat:"conflict" },
+  { name:"레바논 전쟁", lat:33.8, lon:35.8, level:"war", radius:12, desc:"이스라엘-헤즈볼라 전쟁 57일차(3/2~). 2,000명+ 사망·120만명+ 실향. 4/16 트럼프 이스라엘-레바논 10일 휴전 발표·유지 중. 이스라엘 남레바논 안보지대 유지 입장 고수. 이란 전쟁 휴전 연동 협상 진행 중. 이란 전쟁 후 레바논 재건 논의 시작 단계.", cat:"conflict" },
+  { name:"러시아-우크라이나", lat:48.5, lon:35.0, level:"war", radius:20, desc:"4/26~27 149회 교전. 러 미사일 50발·드론 9,658기 공습, 우크라이나 8명 사망·21명 부상. 우크라이나 크림반도 대규모 드론 공격(카차·벨벡 공군기지·발라클라바). 러 야로슬라블 정유소 화재. 러 국방장관 벨루소프 북한 방문(4/26). 24시간 손실 960명(누적 132만5,650명+).", cat:"conflict" },
+  { name:"수단 내전", lat:15.5, lon:32.5, level:"war", radius:16, desc:"전쟁 3년 진입. 세계 최대 인도주의 위기. 민간인 사망 15만+(2024년말 추정). 4/20 RSF 다르푸르 지역 고위 지휘관 정부군 이탈(상징적 균열, 전황 변화는 제한적). 전면 충돌 구조 지속.", cat:"conflict" },
+  { name:"가자지구", lat:31.5, lon:34.5, level:"confrontation", radius:10, desc:"휴전 6개월+(10월~). 4/26 이스라엘 가자 공세 확대 재개. 738명+ 추가 사망. 2,073건+ 휴전 위반 누적. 하마스 경무기 반납 의향 표명(4/19). 이스라엘 완전 철수 우선 요구. 트럼프 12개항 계획 이행 교착. 재건 미착수·국제안보군 미편성.", cat:"conflict" },
   { name:"미얀마", lat:19.7, lon:96.2, level:"confrontation", radius:14, desc:"4월 17일 군정 주도 사면으로 윈 민 전 대통령이 석방됐지만, 반군-군정 충돌과 민간 피해는 계속되고 있다. 제한적 유화 신호는 있으나 분쟁 구조 자체가 완화된 것은 아니다.", cat:"conflict" },
   { name:"파키스탄-아프간", lat:33.5, lon:69.5, level:"war", radius:14, desc:"2월말 공개전쟁 돌입; 파키스탄 난가르하르·팍티카·코스트 공습 지속; TTP 국경 침투조 8명 사살; 아프간 6.6만명 국내실향; 외교해결 요구에도 이란전 그늘에 묻힌 분쟁", cat:"conflict" },
   { name:"나이지리아", lat:9.0, lon:7.5, level:"confrontation", radius:14, desc:"종교·민족 무력충돌, 보코하람·ISWAP 위협 지속; 북부 지역 치안 악화", cat:"conflict" },
@@ -1827,9 +2029,9 @@ const conflicts = [
   { name:"시리아", lat:35.0, lon:38.0, level:"confrontation", radius:10, desc:"내전 잔여 불안정, 재건 지연; 이란전 여파로 지역 긴장 고조", cat:"conflict" },
   { name:"콩고민주공화국", lat:-4.0, lon:22.0, level:"confrontation", radius:12, desc:"FARDC vs M23; M23 북키부 루베로 구역 일부 철수(미국 압박); 워싱턴 르완다·콩고 회담(3/18); 도하 프로세스 스위스 이전(4월 예정); 저널리스트 왓츠앱 게시물로 구금; 휴전 여부 불투명", cat:"conflict" },
   { name:"사헬 (부르키나·말리)", lat:12.0, lon:-1.5, level:"confrontation", radius:10, desc:"JNIM 동부·북부 부르키나 대규모 공세, 베냉까지 확전; 러시아 아프리카군단 사헬 증파; 부르키나 GTI 2위", cat:"conflict" },
-  { name:"대만해협", lat:23.5, lon:121.0, level:"tension", radius:14, desc:"4/20 중국 항모 랴오닝함 대만해협 통과(12월 이후 첫 통과). 중국 외교부, 일본 구축함 대만해협 항행을 '위험한 음모'로 강력 비판. 삼해 연동(동중국해·대만해협·남중국해) 군사활동 확대. 바리칸탄 연습 맞대응 차원의 서태평양 함대 전개.", cat:"conflict" },
+  { name:"대만해협", lat:23.5, lon:121.0, level:"tension", radius:14, desc:"4/7~12 KMT 정주원 방중, 양안 '전쟁 불가피 아냐' 강조. 4/20 랴오닝함 대만해협 통과. 야당 핵심 무기체계 획득 예산 차단·군비 지연. 미-필-일 발리카탄 합동훈련(4/20~). ODNI '2027 침공 가능성 낮음' 판단 유지.", cat:"conflict" },
   { name:"남중국해", lat:12.0, lon:115.0, level:"tension", radius:16, desc:"4/20 미-필 발리카탄 연습 시작, 일본 해상자위대 첫 남중국해 합동 참가. 랴오닝함 남하와 PLA 해군 함대 서태평양 전개로 긴장 고조. 필-미-일 합동순찰 신규 개시; 삼해 연동 리스크 현실화 우려.", cat:"conflict" },
-  { name:"한반도", lat:38.5, lon:127.0, level:"tension", radius:10, desc:"북 탄도미사일 10발 동시 발사(3/14, 350km 비행); 핵탑재 가능 고체연료 엔진 추력 2,500kN 시험(3/15); 미 본토 타격 가능 미사일 시험 주장(한국 '과장' 평가); 이란전 속 국제 대응 약화 우려", cat:"conflict" },
+  { name:"한반도", lat:38.5, lon:127.0, level:"tension", radius:10, desc:"4/13 北 최현함 순항·대함미사일 시험(김정은 직접 참관). IAEA '매우 심각한 진전' 경고, 영변 신규 우라늄 농축시설 가동. 미국 한국 배치 패트리엇 페르시아만 전용 → 방어 공백 우려. 중국 한미동맹 이간 시도 포착.", cat:"conflict" },
   { name:"중일 외교위기", lat:30.0, lon:130.0, level:"tension", radius:8, desc:"일본 방어강화, 중국 반발; 삼해 연동 시나리오 일본 포함 확전 우려", cat:"conflict" },
   { name:"콜롬비아", lat:4.5, lon:-74.0, level:"caution", radius:10, desc:"무장단체 충돌 증가, 카르텔 전쟁 에콰도르·멕시코 연계", cat:"conflict" },
   { name:"아이티", lat:18.9, lon:-72.3, level:"caution", radius:8, desc:"갱단 포르토프랭스 85%+ 장악, 70만+ 실향, 국제안정화 실패; 향후 악화 전망", cat:"conflict" },
@@ -1845,7 +2047,7 @@ const disasters = [
   { name:"아프간 칸다하르 홍수", lat:31.6, lon:65.7, level:"flood", radius:10, desc:"돌발홍수 2명 사망, 수백명 이재민 (2026.3)", cat:"disaster" },
   { name:"알래스카 해안침수", lat:64.8, lon:-165.0, level:"flood", radius:10, desc:"FEMA 재난 선언, 해안 범람 지속 (2026.3)", cat:"disaster" },
   { name:"모로코 대홍수", lat:35.2, lon:-5.3, level:"flood", radius:10, desc:"북부 기록적 폭우, 도로·인프라 피해 (2026.3)", cat:"disaster" },
-  { name:"일본 규슈 지진", lat:32.0, lon:130.0, level:"earthquake", radius:14, desc:"M7.4 강진 (2026.4.20), 규슈 서해안 일대 건물 피해 발생. 쓰나미 경보 발령 후 해제. 부상자 다수 보고.", cat:"disaster" },
+  { name:"일본 산리쿠 지진", lat:38.5, lon:143.5, level:"earthquake", radius:14, desc:"M7.4 강진 (2026.4.20), 혼슈 동해안 산리쿠 해역(깊이 9.6km). 쓰나미 경보(최대 파고 80cm 관측) 발령 후 해제. 10명 부상, 아오모리 건물 39동+ 피해. 일본 기상청 대형 후속 지진 위험 경고.", cat:"disaster" },
   { name:"인도네시아 말루쿠 지진", lat:0.5, lon:126.5, level:"earthquake", radius:14, desc:"M7.4 강진, 테르나테 서북서 126km 해역, 여진 18회(M4.4~6.2), 1명 사망 (2026.4.1)", cat:"disaster" },
   { name:"시마네 지진", lat:35.3, lon:132.8, level:"earthquake", radius:12, desc:"M6.4, 진도 5강, 후속 21회 (2026.1)", cat:"disaster" },
   { name:"파키스탄 지진", lat:35.5, lon:76.0, level:"earthquake", radius:10, desc:"M3.9, 레-라다크 인근 (2026.3.27)", cat:"disaster" },
@@ -2568,6 +2770,31 @@ const stockData = {
     '1w': { pts: [6450,6410,6480,6550,6630,6698], color: '#44cc88', label: '1주' },
     '1m': { pts: [6220,6270,6320,6380,6350,6450,6520,6600,6640,6680,6698], color: '#44cc88', label: '1개월' },
     '1y': { pts: [4920,5220,5520,5770,6070,6170,5870,5520,5820,6120,6380,6698], color: '#44cc88', label: '1년' }
+  },
+  // Korean indices
+  kospi: {
+    '1d': { pts: [6290,6315,6340,6372,6408,6430,6455,6462,6476], color: '#ff5566', label: '1일 (04/23)' },
+    '1w': { pts: [6180,6220,6340,6410,6418,6476], color: '#ff5566', label: '1주' },
+    '1m': { pts: [5900,5980,6100,6200,6150,6280,6350,6418,6440,6460,6476], color: '#ff5566', label: '1개월' },
+    '1y': { pts: [4820,5100,5400,5650,5900,6050,5700,5400,5800,6100,6350,6476], color: '#ff5566', label: '1년' }
+  },
+  kosdaq: {
+    '1d': { pts: [1198,1194,1188,1182,1179,1175,1178,1174], color: '#4499ff', label: '1일 (04/23)' },
+    '1w': { pts: [1155,1162,1180,1190,1181,1174], color: '#4499ff', label: '1주' },
+    '1m': { pts: [1080,1100,1130,1155,1140,1165,1175,1181,1186,1180,1174], color: '#4499ff', label: '1개월' },
+    '1y': { pts: [860,920,980,1040,1100,1140,1050,990,1050,1120,1160,1174], color: '#4499ff', label: '1년' }
+  },
+  kospi200: {
+    '1d': { pts: [836,839,843,847,853,857,861,862], color: '#ff5566', label: '1일 (04/23)' },
+    '1w': { pts: [820,825,840,850,855,862], color: '#ff5566', label: '1주' },
+    '1m': { pts: [785,794,808,818,810,832,845,854,857,860,862], color: '#ff5566', label: '1개월' },
+    '1y': { pts: [639,675,714,745,778,800,755,715,762,808,842,862], color: '#ff5566', label: '1년' }
+  },
+  kosdaq150: {
+    '1d': { pts: [752,749,746,744,742,740,743,743], color: '#4499ff', label: '1일 (04/23)' },
+    '1w': { pts: [728,734,745,752,748,743], color: '#4499ff', label: '1주' },
+    '1m': { pts: [685,695,710,722,714,730,738,748,751,748,743], color: '#4499ff', label: '1개월' },
+    '1y': { pts: [550,586,622,658,694,720,665,628,668,710,735,743], color: '#4499ff', label: '1년' }
   }
 };
 
@@ -2649,6 +2876,30 @@ function setStockPeriod(index, period) {
 function toggleStockDetail(index) {
   const panel = document.getElementById('detail-' + index);
   panel.classList.toggle('open');
+}
+
+function toggleStockMarket(market) {
+  const usView  = document.getElementById('stock-view-us');
+  const krView  = document.getElementById('stock-view-kr');
+  const btnUs   = document.getElementById('btn-mkt-us');
+  const btnKr   = document.getElementById('btn-mkt-kr');
+  if (market === 'us') {
+    usView.style.display = '';
+    krView.style.display = 'none';
+    btnUs.classList.add('active-us');
+    btnUs.classList.remove('active-kr');
+    btnKr.classList.remove('active-us','active-kr');
+  } else {
+    usView.style.display = 'none';
+    krView.style.display = '';
+    btnKr.classList.add('active-kr');
+    btnKr.classList.remove('active-us');
+    btnUs.classList.remove('active-us','active-kr');
+    // Draw Korean charts on first show
+    ['kospi','kosdaq','kospi200','kosdaq150'].forEach(id => {
+      drawMiniChart('chart-' + id, stockData[id]['1d']);
+    });
+  }
 }
 
 // ESC key to close modal
