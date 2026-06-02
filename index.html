@@ -1204,9 +1204,9 @@
             <div class="s-sub" style="color:#ff5566;">브렌트 ~$94.8(6/1)·WTI ~$92(▲6%)·휴전 연장 베팅에 주간 최대 낙폭</div>
           </div>
           <div class="comm-summary-item">
-            <div class="s-label">금 상승</div>
-            <div class="s-value" style="color:#ffaa33;">$4,517</div>
-            <div class="s-sub" style="color:#ffaa33;">금 $4,517(6/1)·은 ~$75.5·구리 ~$6.43/lb(▲1.08%)</div>
+            <div class="s-label">금 소폭 조정</div>
+            <div class="s-value" style="color:#44aaff;">$4,455</div>
+            <div class="s-sub" style="color:#44aaff;">금 $4,455(6/1, ▼1.90%)·은 ~$75.6·구리 ~$6.43/lb(▲1.08%)</div>
           </div>
           <div class="comm-summary-item">
             <div class="s-label">중동 휴전 연장 협상</div>
@@ -1292,20 +1292,20 @@
           <div class="comm-view global active">
             <div class="comm-header">
               <span class="comm-name">🥇 금 (Gold)</span>
-              <span><span class="comm-price up">$4,517/oz</span><span class="comm-change up">▲ (6/1)</span></span>
+              <span><span class="comm-price down">$4,455/oz</span><span class="comm-change down">▼ -1.90% (6/1)</span></span>
             </div>
             <div class="comm-bar-container">
               <span class="comm-bar-label">YTD</span>
               <div class="comm-bar-bg"><div class="comm-bar-fill" style="width:72%;background:linear-gradient(90deg,#ffcc33,#ffaa00)"></div></div>
             </div>
-            <div class="comm-detail">6/1 기준 $4,517/oz. 휴전 연장 협상에도 지정학 불확실성 지속으로 안전자산 수요 유지. 역대 최고가 $5,602(1/28) 대비 -19.4%. 전년 대비 +37%대 상승 유지. $4,500대 지지.</div>
+            <div class="comm-detail">6/1 기준 $4,455/oz(▼1.90%). 휴전 연장 베팅에 안전자산 수요 일부 후퇴하며 소폭 조정. 역대 최고가 $5,602(1/28) 대비 -20.5%. 단 전년 대비 +31.8% 상승 유지. 이란 협상 결과가 단기 방향성 핵심 변수.</div>
           </div>
           <div class="comm-view domestic">
             <div class="comm-header">
               <span class="comm-name">🥇 금 (KRX 금시장)</span>
               <span><span class="krw-price">219,000원/g</span><span class="krw-change">▲ +0.5%</span></span>
             </div>
-            <div class="krw-basis">$4,517/oz → $145.2/g × 환율 1,504원 = 218,380원/g. 한국금거래소 소매가 약 218,000원/g (매도 기준). 금 가격 강세 유지.</div>
+            <div class="krw-basis">$4,455/oz → $143.2/g × 환율 1,504원 = 215,370원/g. 한국금거래소 소매가 약 215,000원/g (매도 기준). 글로벌 금값 소폭 조정 반영.</div>
             <div class="krw-source">📌 KRX 금시장 · 한국금거래소 · 환율 1,504원/USD</div>
           </div>
           <div class="comm-impact"><strong>분쟁연계:</strong> 이란 공습 재개·안전자산 수요 재증가 가능. 미-이란 협상 결과가 핵심 변수.</div>
@@ -2086,7 +2086,7 @@
 <script>
 // ========== DATA ==========
 const conflicts = [
-  { name:"이란/중동", lat:32.0, lon:53.0, level:"war", radius:18, desc:"6/1~2 휴전 연장 협상 국면. 트럼프, 6/1 이스라엘-헤즈볼라 적대행위 중단 합의 발표·美이란 협상 '빠른 속도' 주장. 단 이란 국영매체는 협상 중단 주장하며 입장 충돌, 레바논 현지 공습은 지속. 시장은 60일 휴전 연장·호르무즈 부분 재개통 베팅 → 브렌트 주간 최대 낙폭 후 ~$92대. WTI 6/1 +6%로 $92 상회. TTF €47.75. 4/8 휴전(4/21 무기한 연장) 골격 유지되나 이행 불투명·재봉쇄 시 $120+ 위험.", cat:"conflict" },
+  { name:"이란/중동", lat:32.0, lon:53.0, level:"war", radius:18, desc:"6/1 이란, 이스라엘의 레바논 작전·휴전 위반 항의로 美와의 평화협상 중단 발표 → 트럼프는 협상 '빠른 속도' 진행 주장하며 입장 충돌. IRGC 연계 매체, 후티에 바브엘만데브 해협 상선 공격 재개 청신호 보도. 시장은 60일 휴전 연장·호르무즈 부분 재개통 베팅 → 브렌트 주간 최대 낙폭 후 ~$92대. WTI 6/1 +6%로 $92 상회. TTF €47.75. 4/8 휴전(4/21 무기한 연장) 골격 유지되나 이행 불투명·재봉쇄 시 $120+ 위험.", cat:"conflict" },
   { name:"레바논 전쟁", lat:33.8, lon:35.8, level:"war", radius:12, desc:"6/1 트럼프, 이스라엘-헤즈볼라 적대행위 중단·베이루트 진격 중단 합의 발표. 단 레바논 국영통신은 남부 공습 지속 보도·네타냐후 '계획대로 작전 지속' 발언으로 휴전 이행 불투명. 직전까지 이스라엘 다히에 등 베이루트 남부 교외 공습·수천명 대피. 누적 3,000명+ 사망·100만명+(인구 20%) 실향. 124만명 식량부족.", cat:"conflict" },
   { name:"러시아-우크라이나", lat:48.5, lon:35.0, level:"war", radius:20, desc:"6/2 1559일차. 러, 6/2 새벽 키이우·하르키우·오데사 대규모 미사일·드론 공습 — 다수 사상. 우크라, 5월 한 달간 러 정유시설 18곳 타격(드론). 부다노프 국방정보국장 '겨울 전 종전' 목표 언급. 러군 손실 누계 약 136.5만명(우크라 발표). 도네츠크 영토·철군 조건 이견으로 종전 협상 교착 지속.", cat:"conflict" },
   { name:"수단 내전", lat:15.5, lon:32.5, level:"war", radius:16, desc:"전쟁 4년차. 세계 최대 인도주의 위기·3,300만명+ 기아. SAF, RSF·SPLM-N 대규모 공세 격퇴·하빌라 탈환·달랑 포위 해제, 북코르도판 RSF 거점 드론 타격. EU, 헤메티 동생 등 7명 제재·UN 안보리 엘파시르 학살 RSF 지휘관 4명 제재. 다르푸르 '대량학살 징후' UN 보고. 민간인 사망 15만+(추정).", cat:"conflict" },
@@ -2095,7 +2095,7 @@ const conflicts = [
   { name:"파키스탄-아프간", lat:33.5, lon:69.5, level:"war", radius:14, desc:"2/26~3/5 교전 시 민간인 56명 사망·129명 부상(여성·아동 55%). 중국 중재 대화 합의 후 소규모 충돌 지속. 누적 사망 수백+명·실향 10만+명. 양국 무역·외교 단절 상태 유지.", cat:"conflict" },
   { name:"나이지리아", lat:9.0, lon:7.5, level:"confrontation", radius:14, desc:"종교·민족 무력충돌, 보코하람·ISWAP 위협 지속; 북부 지역 치안 악화", cat:"conflict" },
   { name:"에티오피아-에리트레아", lat:9.0, lon:38.7, level:"confrontation", radius:12, desc:"ENDF·TDF·EDF 북부 병력 대규모 집결, 전면전 임박 경고; 암하라 파노 민병대 전투범죄 보고; 전사상자 15,000+", cat:"conflict" },
-  { name:"예멘", lat:15.5, lon:48.5, level:"confrontation", radius:12, desc:"후티 이란전 참전(3/28); 홍해 공격 전략적 휴지 유지(이란 조율 대기); 머스크 등 일부 선사 홍해 복귀 시험; 오만 중개 호르무즈 통과선박 모니터링 협약 논의 중; 재개 시 글로벌 해운 즉각 마비 우려", cat:"conflict" },
+  { name:"예멘", lat:15.5, lon:48.5, level:"confrontation", radius:12, desc:"6/1 IRGC 연계 매체, 후티에 바브엘만데브 해협 상선 공격 재개 청신호 보도(레바논 공습 대응). 후티 이란전 참전(3/28); 그간 홍해 공격 전략적 휴지 유지했으나 재개 신호로 긴장 급등. 머스크 등 일부 선사 홍해 복귀 시험; 오만 중개 호르무즈 통과선박 모니터링 협약 논의 중; 재개 시 글로벌 해운 즉각 마비 우려", cat:"conflict" },
   { name:"시리아", lat:35.0, lon:38.0, level:"confrontation", radius:10, desc:"내전 잔여 불안정, 재건 지연; 이란전 여파로 지역 긴장 고조", cat:"conflict" },
   { name:"콩고민주공화국", lat:-4.0, lon:22.0, level:"confrontation", radius:12, desc:"FARDC vs M23; M23 북키부 루베로 구역 일부 철수(미국 압박); 워싱턴 르완다·콩고 회담(3/18); 도하 프로세스 스위스 이전(4월 예정); 저널리스트 왓츠앱 게시물로 구금; 휴전 여부 불투명", cat:"conflict" },
   { name:"사헬 (부르키나·말리)", lat:12.0, lon:-1.5, level:"confrontation", radius:10, desc:"JNIM 동부·북부 부르키나 대규모 공세, 베냉까지 확전; 러시아 아프리카군단 사헬 증파; 부르키나 GTI 2위", cat:"conflict" },
